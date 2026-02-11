@@ -1,0 +1,47 @@
+# Git
+.git
+.gitignore
+
+# Node modules
+**/node_modules
+**/npm-debug.log
+**/yarn-error.log
+**/pnpm-debug.log
+
+# Build outputs
+**/build
+**/dist
+**/tmp
+**/.adonisjs
+
+# Environment files
+**/.env
+**/.env.local
+**/.env.*.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+**/logs
+**/*.log
+
+# Documentation
+docs
+*.md
+!README.md
+
+# Test coverage
+**/coverage
+
+# Cache
+**/.cache
+**/.parcel-cache
