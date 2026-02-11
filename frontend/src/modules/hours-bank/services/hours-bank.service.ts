@@ -18,16 +18,16 @@ class HoursBankService {
    * Busca saldo do banco de horas de um colaborador
    */
   async getBalance(employeeId: number): Promise<HoursBankSummary> {
-    const response = await api.get<HoursBankSummary>(`/employees/${employeeId}/hours-bank/balance`)
-    return response.data
+    const response = await api.get<{ data: HoursBankSummary }>(`/employees/${employeeId}/hours-bank/balance`)
+    return response.data.data
   }
 
   /**
    * Calcula banco de horas de um colaborador para um mes/ano
    */
   async calculate(employeeId: number, month: number, year: number): Promise<HoursBankEntry> {
-    const response = await api.post<HoursBankEntry>(`/employees/${employeeId}/hours-bank/calculate`, { month, year })
-    return response.data
+    const response = await api.post<{ data: HoursBankEntry }>(`/employees/${employeeId}/hours-bank/calculate`, { month, year })
+    return response.data.data
   }
 }
 

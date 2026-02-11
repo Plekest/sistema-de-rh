@@ -19,6 +19,13 @@ const TimeEntriesController = () => import('#controllers/time_entries_controller
 const HoursBankController = () => import('#controllers/hours_bank_controller')
 const EmployeeHistoriesController = () => import('#controllers/employee_histories_controller')
 const UsersController = () => import('#controllers/users_controller')
+const RolePermissionsController = () => import('#controllers/role_permissions_controller')
+const LeavesController = () => import('#controllers/leaves_controller')
+const BenefitsController = () => import('#controllers/benefits_controller')
+const PayrollController = () => import('#controllers/payroll_controller')
+const DashboardController = () => import('#controllers/dashboard_controller')
+const PerformanceController = () => import('#controllers/performance_controller')
+const RecruitmentController = () => import('#controllers/recruitment_controller')
 
 router.get('/', async () => {
   return {
@@ -29,8 +36,10 @@ router.get('/', async () => {
 // Rotas de autenticacao
 router
   .group(() => {
-    // Rota publica
+    // Rotas publicas
     router.post('login', [AuthController, 'login'])
+    router.post('forgot-password', [AuthController, 'forgotPassword'])
+    router.post('reset-password', [AuthController, 'resetPassword'])
 
     // Rotas autenticadas
     router
@@ -48,6 +57,10 @@ router
 // ==========================================
 router
   .group(() => {
+    // --- Dashboard ---
+    router.get('dashboard/admin', [DashboardController, 'admin'])
+    router.get('dashboard/employee', [DashboardController, 'employee'])
+
     // --- Departamentos ---
     router.get('departments', [DepartmentsController, 'index'])
     router.get('departments/:id', [DepartmentsController, 'show'])
@@ -135,6 +148,214 @@ router
       })
       .prefix('users')
       .use(middleware.role({ roles: ['admin'] }))
+
+    // --- Ferias e Licencas ---
+    router.get('leaves', [LeavesController, 'index'])
+    router.get('leaves/calendar', [LeavesController, 'calendar'])
+    router.get('leaves/:id', [LeavesController, 'show'])
+    router.post('leaves', [LeavesController, 'store'])
+    router
+      .patch('leaves/:id/approve', [LeavesController, 'approve'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .patch('leaves/:id/reject', [LeavesController, 'reject'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router.patch('leaves/:id/cancel', [LeavesController, 'cancel'])
+
+    // --- Saldo de Ferias ---
+    router.get('employees/:employeeId/leave-balance', [LeavesController, 'balances'])
+    router
+      .post('employees/:employeeId/leave-balance/calculate', [LeavesController, 'calculateBalances'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+
+    // --- Configuracoes de Licencas (admin only) ---
+    router
+      .group(() => {
+        router.get('/', [LeavesController, 'configs'])
+        router.put('/:id', [LeavesController, 'updateConfig'])
+      })
+      .prefix('leave-configs')
+      .use(middleware.role({ roles: ['admin'] }))
+
+    // --- Beneficios ---
+    router.get('benefits', [BenefitsController, 'index'])
+    router.get('benefits/:id', [BenefitsController, 'show'])
+    router
+      .post('benefits', [BenefitsController, 'store'])
+      .use(middleware.role({ roles: ['admin'] }))
+    router
+      .put('benefits/:id', [BenefitsController, 'update'])
+      .use(middleware.role({ roles: ['admin'] }))
+    router
+      .delete('benefits/:id', [BenefitsController, 'destroy'])
+      .use(middleware.role({ roles: ['admin'] }))
+
+    // --- Planos de Beneficio ---
+    router
+      .post('benefits/:id/plans', [BenefitsController, 'storePlan'])
+      .use(middleware.role({ roles: ['admin'] }))
+    router
+      .put('benefit-plans/:id', [BenefitsController, 'updatePlan'])
+      .use(middleware.role({ roles: ['admin'] }))
+
+    // --- Beneficios do Colaborador ---
+    router.get('employees/:employeeId/benefits', [BenefitsController, 'employeeBenefits'])
+    router
+      .post('employees/:employeeId/benefits', [BenefitsController, 'enroll'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .delete('employees/:employeeId/benefits/:id', [BenefitsController, 'cancelEnrollment'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+
+    // --- Dependentes de Beneficio ---
+    router
+      .post('employee-benefits/:id/dependents', [BenefitsController, 'addDependent'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .delete('benefit-dependents/:id', [BenefitsController, 'removeDependent'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+
+    // --- Folha de Pagamento ---
+    router.get('payroll/periods', [PayrollController, 'periods'])
+    router
+      .post('payroll/periods', [PayrollController, 'createPeriod'])
+      .use(middleware.role({ roles: ['admin'] }))
+    router
+      .patch('payroll/periods/:id/close', [PayrollController, 'closePeriod'])
+      .use(middleware.role({ roles: ['admin'] }))
+    router
+      .post('payroll/periods/:id/calculate', [PayrollController, 'calculatePayroll'])
+      .use(middleware.role({ roles: ['admin'] }))
+    router.get('payroll/periods/:periodId/slips', [PayrollController, 'slips'])
+
+    // --- Contracheques ---
+    router.get('payroll/slips', [PayrollController, 'employeeSlips'])
+    router.get('payroll/slips/:id', [PayrollController, 'slipDetail'])
+
+    // --- Componentes Salariais ---
+    router.get('employees/:employeeId/payroll-components', [PayrollController, 'components'])
+    router
+      .post('payroll/components', [PayrollController, 'createComponent'])
+      .use(middleware.role({ roles: ['admin'] }))
+    router
+      .put('payroll/components/:id', [PayrollController, 'updateComponent'])
+      .use(middleware.role({ roles: ['admin'] }))
+
+    // --- Lancamentos ---
+    router
+      .post('payroll/entries', [PayrollController, 'createEntry'])
+      .use(middleware.role({ roles: ['admin'] }))
+
+    // --- Permissoes (admin only) ---
+    router
+      .group(() => {
+        router.get('/', [RolePermissionsController, 'index'])
+        router.put('/', [RolePermissionsController, 'update'])
+      })
+      .prefix('admin/permissions')
+      .use(middleware.role({ roles: ['admin'] }))
+
+    // --- Performance / Avaliacao de Desempenho ---
+    router.get('performance/cycles', [PerformanceController, 'listCycles'])
+    router
+      .post('performance/cycles', [PerformanceController, 'createCycle'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router.get('performance/cycles/:id', [PerformanceController, 'getCycle'])
+    router
+      .put('performance/cycles/:id', [PerformanceController, 'updateCycle'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .patch('performance/cycles/:id/advance', [PerformanceController, 'advanceCycleStatus'])
+      .use(middleware.role({ roles: ['admin'] }))
+    router
+      .post('performance/cycles/:id/competencies', [PerformanceController, 'addCompetency'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .delete('performance/cycles/:cycleId/competencies/:competencyId', [PerformanceController, 'removeCompetency'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+
+    router.get('performance/competencies', [PerformanceController, 'listCompetencies'])
+    router
+      .post('performance/competencies', [PerformanceController, 'createCompetency'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .put('performance/competencies/:id', [PerformanceController, 'updateCompetency'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+
+    router.get('performance/cycles/:cycleId/goals', [PerformanceController, 'listGoals'])
+    router
+      .post('performance/goals', [PerformanceController, 'createGoal'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .put('performance/goals/:id', [PerformanceController, 'updateGoal'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+
+    router.get('performance/cycles/:cycleId/evaluations', [PerformanceController, 'listEvaluations'])
+    router.get('performance/evaluations/:id', [PerformanceController, 'getEvaluation'])
+    router.post('performance/evaluations', [PerformanceController, 'createEvaluation'])
+    router.post('performance/evaluations/:id/submit', [PerformanceController, 'submitEvaluation'])
+
+    router.get('performance/development-plans', [PerformanceController, 'listDevelopmentPlans'])
+    router
+      .post('performance/development-plans', [PerformanceController, 'createDevelopmentPlan'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .put('performance/development-plans/:id', [PerformanceController, 'updateDevelopmentPlan'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+
+    // --- Recrutamento ---
+    router.get('recruitment/requisitions', [RecruitmentController, 'requisitions'])
+    router.get('recruitment/requisitions/:id', [RecruitmentController, 'showRequisition'])
+    router
+      .post('recruitment/requisitions', [RecruitmentController, 'createRequisition'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .put('recruitment/requisitions/:id', [RecruitmentController, 'updateRequisition'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .patch('recruitment/requisitions/:id/approve', [RecruitmentController, 'approveRequisition'])
+      .use(middleware.role({ roles: ['admin'] }))
+    router
+      .patch('recruitment/requisitions/:id/cancel', [RecruitmentController, 'cancelRequisition'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router.get('recruitment/requisitions/:id/stats', [RecruitmentController, 'requisitionStats'])
+
+    router.get('recruitment/stages', [RecruitmentController, 'stages'])
+
+    router.get('recruitment/candidates', [RecruitmentController, 'candidates'])
+    router.get('recruitment/candidates/:id', [RecruitmentController, 'showCandidate'])
+    router
+      .post('recruitment/candidates', [RecruitmentController, 'createCandidate'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .put('recruitment/candidates/:id', [RecruitmentController, 'updateCandidate'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .patch('recruitment/candidates/:id/move', [RecruitmentController, 'moveCandidate'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .patch('recruitment/candidates/:id/hire', [RecruitmentController, 'hireCandidate'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .patch('recruitment/candidates/:id/reject', [RecruitmentController, 'rejectCandidate'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+
+    router.get('recruitment/interviews', [RecruitmentController, 'allInterviews'])
+    router.get('recruitment/candidates/:candidateId/interviews', [RecruitmentController, 'interviews'])
+    router
+      .post('recruitment/interviews', [RecruitmentController, 'createInterview'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .put('recruitment/interviews/:id', [RecruitmentController, 'updateInterview'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .patch('recruitment/interviews/:id/complete', [RecruitmentController, 'completeInterview'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .patch('recruitment/interviews/:id/cancel', [RecruitmentController, 'cancelInterview'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+
+    router.get('recruitment/dashboard', [RecruitmentController, 'dashboard'])
   })
   .prefix('api/v1')
   .use(middleware.auth({ guards: ['api'] }))

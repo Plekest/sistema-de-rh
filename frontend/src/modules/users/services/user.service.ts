@@ -18,24 +18,24 @@ class UserService {
    * Busca usuario por ID
    */
   async getById(id: number): Promise<SystemUser> {
-    const response = await api.get<SystemUser>(`/users/${id}`)
-    return response.data
+    const response = await api.get<{ data: SystemUser }>(`/users/${id}`)
+    return response.data.data
   }
 
   /**
    * Cria novo usuario
    */
   async create(data: UserFormData): Promise<SystemUser> {
-    const response = await api.post<SystemUser>('/users', data)
-    return response.data
+    const response = await api.post<{ data: SystemUser }>('/users', data)
+    return response.data.data
   }
 
   /**
    * Atualiza usuario existente
    */
   async update(id: number, data: Partial<UserFormData>): Promise<SystemUser> {
-    const response = await api.put<SystemUser>(`/users/${id}`, data)
-    return response.data
+    const response = await api.put<{ data: SystemUser }>(`/users/${id}`, data)
+    return response.data.data
   }
 
   /**

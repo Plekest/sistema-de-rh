@@ -1,11 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import documentService from '../services/document.service'
 import employeeService from '@/modules/employees/services/employee.service'
 import type { EmployeeDocument } from '../types'
 import { DOCUMENT_TYPES } from '../types'
 import type { Employee } from '@/modules/employees/types'
 import { formatDate, formatFileSize } from '@/utils/formatters'
+import { useAuthStore } from '@/stores/auth'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
+
+const authStore = useAuthStore()
+const { confirm: confirmDialog } = useConfirmDialog()
 
 // Estado
 const documents = ref<EmployeeDocument[]>([])
@@ -17,6 +22,8 @@ const currentPage = ref(1)
 
 // Filtro
 const selectedEmployee = ref<number | null>(null)
+
+const isAdmin = computed(() => authStore.isAdmin || authStore.isManager)
 
 // Upload
 const showUploadForm = ref(false)
@@ -177,7 +184,14 @@ async function handleUpload() {
  * Exclui documento
  */
 async function handleDelete(doc: EmployeeDocument) {
-  if (!confirm(`Deseja excluir o documento "${doc.title}"?`)) return
+  const result = await confirmDialog({
+    title: 'Excluir Documento',
+    message: `Deseja excluir o documento "${doc.title}"?`,
+    variant: 'danger',
+    confirmLabel: 'Excluir',
+  })
+
+  if (!result) return
 
   try {
     await documentService.delete(doc.id)
@@ -223,7 +237,11 @@ watch(selectedEmployee, () => {
 })
 
 onMounted(() => {
-  loadEmployees()
+  if (isAdmin.value) {
+    loadEmployees()
+  } else if (authStore.employeeId) {
+    selectedEmployee.value = authStore.employeeId
+  }
 })
 </script>
 
@@ -231,13 +249,13 @@ onMounted(() => {
   <div class="documents-view">
     <div class="page-header">
       <h1 class="page-title">Documentos</h1>
-      <button class="btn btn-primary" @click="openUploadForm" :disabled="!selectedEmployee">
+      <button v-if="isAdmin" class="btn btn-primary" @click="openUploadForm" :disabled="!selectedEmployee">
         Enviar Documento
       </button>
     </div>
 
     <!-- Filtro colaborador -->
-    <div class="filters-bar">
+    <div v-if="isAdmin" class="filters-bar">
       <div class="filter-group filter-grow">
         <label for="filter-emp">Colaborador</label>
         <select id="filter-emp" v-model="selectedEmployee">
@@ -286,7 +304,7 @@ onMounted(() => {
               <td class="td-actions">
                 <button class="btn-action" @click="viewDocument(doc)" title="Visualizar">Ver</button>
                 <button class="btn-action" @click="downloadDocument(doc)" title="Download">Baixar</button>
-                <button class="btn-action btn-action-danger" @click="handleDelete(doc)" title="Excluir">Excluir</button>
+                <button v-if="isAdmin" class="btn-action btn-action-danger" @click="handleDelete(doc)" title="Excluir">Excluir</button>
               </td>
             </tr>
           </tbody>
@@ -295,7 +313,7 @@ onMounted(() => {
 
       <div v-else class="empty-state">
         <p class="empty-title">Nenhum documento encontrado</p>
-        <p class="empty-description">Envie um novo documento para este colaborador.</p>
+        <p class="empty-description">{{ isAdmin ? 'Envie um novo documento para este colaborador.' : 'Nenhum documento disponivel.' }}</p>
       </div>
     </template>
 
@@ -402,8 +420,8 @@ onMounted(() => {
   transition: all 0.15s ease;
 }
 
-.btn-primary { background-color: #2b6cb0; color: #fff; }
-.btn-primary:hover:not(:disabled) { background-color: #2c5282; }
+.btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; }
+.btn-primary:hover:not(:disabled) { box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35); transform: translateY(-1px); }
 .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 .btn-secondary { background-color: #edf2f7; color: #4a5568; }
 .btn-secondary:hover { background-color: #e2e8f0; }
@@ -423,7 +441,7 @@ onMounted(() => {
 .filter-grow { flex: 1; }
 .filter-group label { font-size: 0.75rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.025em; }
 .filter-group select { padding: 0.5rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 5px; font-size: 0.875rem; color: #2d3748; background: #fff; outline: none; }
-.filter-group select:focus { border-color: #2b6cb0; }
+.filter-group select:focus { border-color: #667eea; }
 
 /* Tabela */
 .table-container { background: #fff; border-radius: 8px; border: 1px solid #e2e8f0; overflow-x: auto; }
@@ -468,7 +486,7 @@ onMounted(() => {
 .form-group textarea { padding: 0.5rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 5px; font-size: 0.875rem; color: #2d3748; background: #fff; outline: none; font-family: inherit; }
 .form-group input:focus,
 .form-group select:focus,
-.form-group textarea:focus { border-color: #2b6cb0; }
+.form-group textarea:focus { border-color: #667eea; }
 
 /* Upload area */
 .upload-area {
@@ -484,7 +502,7 @@ onMounted(() => {
 }
 
 .upload-area-active {
-  border-color: #2b6cb0;
+  border-color: #667eea;
   background: #ebf8ff;
 }
 
@@ -494,8 +512,8 @@ onMounted(() => {
 }
 
 .upload-text { font-size: 0.875rem; color: #718096; }
-.upload-browse { font-size: 0.875rem; color: #2b6cb0; font-weight: 500; cursor: pointer; text-decoration: underline; }
-.upload-browse:hover { color: #2c5282; }
+.upload-browse { font-size: 0.875rem; color: #667eea; font-weight: 500; cursor: pointer; text-decoration: underline; }
+.upload-browse:hover { color: #764ba2; }
 .upload-input { display: none; }
 .upload-filename { font-size: 0.875rem; font-weight: 500; color: #2d3748; }
 .upload-filesize { font-size: 0.75rem; color: #718096; }

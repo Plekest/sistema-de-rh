@@ -37,24 +37,13 @@ api.interceptors.request.use(
 
 /**
  * Interceptor de resposta - trata erros globais
+ * Nao faz redirect aqui - o router guard e o auth store cuidam disso
  */
 api.interceptors.response.use(
   (response) => {
     return response
   },
   (error) => {
-    // Token inválido ou expirado - redireciona para login
-    if (error.response?.status === 401) {
-      // Limpa token armazenado
-      localStorage.removeItem('auth_token')
-      sessionStorage.removeItem('auth_token')
-
-      // Redireciona para login apenas se não estiver já na página de login
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login'
-      }
-    }
-
     return Promise.reject(error)
   }
 )

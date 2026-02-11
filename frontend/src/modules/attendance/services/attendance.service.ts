@@ -22,56 +22,56 @@ class AttendanceService {
    * Busca registros do dia atual do usuario logado
    */
   async getToday(): Promise<TimeEntry | null> {
-    const response = await api.get<TimeEntry | null>('/attendance/today')
-    return response.data
+    const response = await api.get<{ data: TimeEntry | null }>('/attendance/today')
+    return response.data.data
   }
 
   /**
    * Busca registros recentes do usuario logado (ultimos 7 dias)
    */
   async getRecent(): Promise<TimeEntry[]> {
-    const response = await api.get<TimeEntry[]>('/attendance/recent')
-    return response.data
+    const response = await api.get<{ data: TimeEntry[] }>('/attendance/recent')
+    return response.data.data
   }
 
   /**
    * Registra entrada
    */
   async clockIn(): Promise<TimeEntry> {
-    const response = await api.post<TimeEntry>('/attendance/clock-in')
-    return response.data
+    const response = await api.post<{ data: TimeEntry }>('/attendance/clock-in')
+    return response.data.data
   }
 
   /**
    * Registra saida
    */
   async clockOut(): Promise<TimeEntry> {
-    const response = await api.post<TimeEntry>('/attendance/clock-out')
-    return response.data
+    const response = await api.post<{ data: TimeEntry }>('/attendance/clock-out')
+    return response.data.data
   }
 
   /**
    * Registra saida para almoco
    */
   async lunchStart(): Promise<TimeEntry> {
-    const response = await api.post<TimeEntry>('/attendance/lunch-start')
-    return response.data
+    const response = await api.post<{ data: TimeEntry }>('/attendance/lunch-start')
+    return response.data.data
   }
 
   /**
    * Registra volta do almoco
    */
   async lunchEnd(): Promise<TimeEntry> {
-    const response = await api.post<TimeEntry>('/attendance/lunch-end')
-    return response.data
+    const response = await api.post<{ data: TimeEntry }>('/attendance/lunch-end')
+    return response.data.data
   }
 
   /**
    * Cria registro de ponto manual (admin/manager)
    */
   async create(employeeId: number, data: Omit<TimeEntryFormData, 'employeeId'>): Promise<TimeEntry> {
-    const response = await api.post<TimeEntry>(`/employees/${employeeId}/attendance`, data)
-    return response.data
+    const response = await api.post<{ data: TimeEntry }>(`/employees/${employeeId}/attendance`, data)
+    return response.data.data
   }
 }
 

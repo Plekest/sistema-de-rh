@@ -1,6 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import AuthService from '#services/auth_service'
-import { loginValidator, registerValidator } from '#validators/auth_validator'
+import { loginValidator, registerValidator, forgotPasswordValidator, resetPasswordValidator } from '#validators/auth_validator'
 
 export default class AuthController {
   private authService: AuthService
@@ -11,7 +11,7 @@ export default class AuthController {
 
   /**
    * POST /api/v1/auth/login
-   * Autentica o usuário e retorna um access token
+   * Autentica o usuario e retorna um access token
    */
   async login({ request, response }: HttpContext) {
     try {
@@ -20,17 +20,11 @@ export default class AuthController {
 
       return response.ok({
         token: result.token.value!.release(),
-        user: {
-          id: result.user.id,
-          fullName: result.user.fullName,
-          email: result.user.email,
-          role: result.user.role,
-          isActive: result.user.isActive,
-        },
+        user: result.user,
       })
     } catch (error) {
       return response.unauthorized({
-        message: error.message || 'Credenciais inválidas',
+        message: error.message || 'Credenciais invalidas',
       })
     }
   }
@@ -56,23 +50,17 @@ export default class AuthController {
 
   /**
    * GET /api/v1/auth/me
-   * Retorna os dados do usuário autenticado
+   * Retorna os dados do usuario autenticado com employeeId e permissions
    */
   async me({ auth, response }: HttpContext) {
     try {
       const user = auth.getUserOrFail()
       const userData = await this.authService.me(user)
 
-      return response.ok({
-        id: userData.id,
-        fullName: userData.fullName,
-        email: userData.email,
-        role: userData.role,
-        isActive: userData.isActive,
-      })
+      return response.ok(userData)
     } catch (error) {
       return response.unauthorized({
-        message: 'Não autenticado',
+        message: 'Nao autenticado',
       })
     }
   }
@@ -98,6 +86,43 @@ export default class AuthController {
     } catch (error) {
       return response.badRequest({
         message: error.message || 'Erro ao registrar usuário',
+      })
+    }
+  }
+
+  /**
+   * POST /api/v1/auth/forgot-password
+   * Solicita recuperação de senha
+   */
+  async forgotPassword({ request, response }: HttpContext) {
+    try {
+      const data = await request.validateUsing(forgotPasswordValidator)
+      await this.authService.forgotPassword(data.email)
+      return response.ok({
+        message: 'Se o email existir, um link de recuperação será enviado',
+      })
+    } catch (error) {
+      // Sempre retorna sucesso para não revelar existência de emails
+      return response.ok({
+        message: 'Se o email existir, um link de recuperação será enviado',
+      })
+    }
+  }
+
+  /**
+   * POST /api/v1/auth/reset-password
+   * Redefine a senha usando o token
+   */
+  async resetPassword({ request, response }: HttpContext) {
+    try {
+      const data = await request.validateUsing(resetPasswordValidator)
+      await this.authService.resetPassword(data.token, data.password)
+      return response.ok({
+        message: 'Senha redefinida com sucesso',
+      })
+    } catch (error) {
+      return response.badRequest({
+        message: error.message || 'Erro ao redefinir senha',
       })
     }
   }

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { RouterView, RouterLink, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import type { UserPermissions } from '@/modules/auth/types'
 
 const route = useRoute()
 const authStore = useAuthStore()
@@ -23,18 +24,29 @@ function closeMobileMenu() {
   isMobileMenuOpen.value = false
 }
 
-// Itens do menu principal
-const menuItems = [
-  { name: 'Colaboradores', path: '/employees' },
-  { name: 'Registro de Ponto', path: '/attendance' },
-  { name: 'Banco de Horas', path: '/hours-bank' },
-  { name: 'Documentos', path: '/documents' },
-  { name: 'Historico', path: '/history' },
-]
+// Itens do menu principal filtrados por permissao
+const menuItems = computed(() => {
+  const all = [
+    { name: 'Inicio', path: '/home', module: null },
+    { name: 'Colaboradores', path: '/employees', module: 'employees' },
+    { name: 'Registro de Ponto', path: '/attendance', module: 'attendance' },
+    { name: 'Banco de Horas', path: '/hours-bank', module: 'hours_bank' },
+    { name: 'Documentos', path: '/documents', module: 'documents' },
+    { name: 'Historico', path: '/history', module: 'history' },
+    { name: 'Ferias e Licencas', path: '/leave', module: 'leave' },
+    { name: 'Beneficios', path: '/benefits', module: 'benefits' },
+    { name: 'Folha de Pagamento', path: '/payroll', module: 'payroll' },
+    { name: 'Avaliacao', path: '/performance', module: 'performance' },
+    { name: 'Recrutamento', path: '/recruitment', module: 'recruitment' },
+  ]
+  if (!authStore.permissions) return all
+  return all.filter(item => !item.module || authStore.permissions![item.module as keyof UserPermissions])
+})
 
 // Itens do menu admin (separados)
 const adminMenuItems = [
   { name: 'Usuarios', path: '/users' },
+  { name: 'Permissoes', path: '/admin/permissions' },
 ]
 
 /**
@@ -42,6 +54,7 @@ const adminMenuItems = [
  */
 function getPageTitle(): string {
   const path = route.path
+  if (path === '/home') return 'Inicio'
   if (path.startsWith('/employees')) {
     if (path.includes('/new')) return 'Novo Colaborador'
     if (path.includes('/edit')) return 'Editar Colaborador'
@@ -55,11 +68,20 @@ function getPageTitle(): string {
   if (path.startsWith('/hours-bank')) return 'Banco de Horas'
   if (path.startsWith('/documents')) return 'Documentos'
   if (path.startsWith('/history')) return 'Historico'
+  if (path.startsWith('/leave')) {
+    if (path.includes('/new')) return 'Nova Solicitacao'
+    if (path.includes('/calendar')) return 'Calendario de Ausencias'
+    return 'Ferias e Licencas'
+  }
+  if (path.startsWith('/payroll')) return 'Folha de Pagamento'
+  if (path.startsWith('/performance')) return 'Avaliacao de Desempenho'
+  if (path.startsWith('/recruitment')) return 'Recrutamento e Selecao'
   if (path.startsWith('/users')) {
     if (path.includes('/new')) return 'Novo Usuario'
     if (path.includes('/edit')) return 'Editar Usuario'
     return 'Usuarios'
   }
+  if (path.startsWith('/admin/permissions')) return 'Permissoes'
   return 'Sistema RH'
 }
 </script>
@@ -71,10 +93,11 @@ function getPageTitle(): string {
       v-if="isMobileMenuOpen"
       class="sidebar-overlay"
       @click="closeMobileMenu"
+      @keydown.escape="isMobileMenuOpen = false"
     ></div>
 
     <!-- Sidebar -->
-    <aside class="sidebar" :class="{ 'sidebar-open': isMobileMenuOpen }">
+    <aside class="sidebar" :class="{ 'sidebar-open': isMobileMenuOpen }" role="navigation" aria-label="Menu principal">
       <div class="sidebar-header">
         <span class="sidebar-logo">RH</span>
         <span class="sidebar-brand">Sistema RH</span>
@@ -125,7 +148,7 @@ function getPageTitle(): string {
       <!-- Header -->
       <header class="header">
         <div class="header-left">
-          <button class="hamburger" @click="isMobileMenuOpen = !isMobileMenuOpen" aria-label="Abrir menu">
+          <button class="hamburger" @click="isMobileMenuOpen = !isMobileMenuOpen" aria-label="Abrir menu" :aria-expanded="isMobileMenuOpen">
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>

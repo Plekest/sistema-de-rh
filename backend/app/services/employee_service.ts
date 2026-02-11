@@ -1,6 +1,8 @@
 import Employee from '#models/employee'
+import User from '#models/user'
 import Department from '#models/department'
 import EmployeeHistoryService from '#services/employee_history_service'
+import { generateRandomPassword } from '#utils/password_generator'
 import { DateTime } from 'luxon'
 
 interface ListFilters {
@@ -92,8 +94,28 @@ export default class EmployeeService {
   }
 
   async create(data: CreateEmployeeData, currentUserId?: number) {
+    // Se nao foi informado um userId, cria automaticamente um usuario para o colaborador
+    let userId = data.userId || null
+    if (!userId) {
+      const existingUser = await User.findBy('email', data.email)
+      if (existingUser) {
+        userId = existingUser.id
+      } else {
+        const randomPassword = generateRandomPassword()
+        const newUser = await User.create({
+          fullName: data.fullName,
+          email: data.email,
+          password: randomPassword,
+          role: 'employee',
+          isActive: true,
+        })
+        userId = newUser.id
+      }
+    }
+
     const employee = await Employee.create({
       ...data,
+      userId,
       hireDate: DateTime.fromISO(data.hireDate),
       terminationDate: data.terminationDate ? DateTime.fromISO(data.terminationDate) : null,
       birthDate: data.birthDate ? DateTime.fromISO(data.birthDate) : null,
@@ -119,6 +141,8 @@ export default class EmployeeService {
 
     const oldSalary = employee.salary
     const oldDepartmentId = employee.departmentId
+    const oldStatus = employee.status
+    const oldPositionId = employee.positionId
 
     const updateData: Record<string, unknown> = { ...data }
 
@@ -167,16 +191,61 @@ export default class EmployeeService {
       )
     }
 
+    // Registra mudanca de status
+    if (data.status !== undefined && data.status !== oldStatus) {
+      await this.historyService.recordStatusChange(
+        employee.id,
+        oldStatus,
+        data.status,
+        currentUserId
+      )
+    }
+
+    // Registra mudanca de cargo
+    if (data.positionId !== undefined && data.positionId !== oldPositionId) {
+      let oldPosTitle: string | null = null
+      let newPosTitle: string | null = null
+
+      if (oldPositionId) {
+        const { default: Position } = await import('#models/position')
+        const oldPos = await Position.find(oldPositionId)
+        oldPosTitle = oldPos?.title || null
+      }
+      if (data.positionId) {
+        const { default: Position } = await import('#models/position')
+        const newPos = await Position.find(data.positionId)
+        newPosTitle = newPos?.title || null
+      }
+
+      await this.historyService.create(employee.id, {
+        type: 'promotion',
+        title: 'Alteracao de cargo',
+        oldValue: oldPosTitle,
+        newValue: newPosTitle,
+        eventDate: DateTime.now().toISODate()!,
+        createdBy: currentUserId,
+      })
+    }
+
     await employee.load('department')
     await employee.load('position')
     return employee
   }
 
-  async delete(id: number) {
+  async delete(id: number, currentUserId?: number) {
     const employee = await Employee.findOrFail(id)
+    const oldStatus = employee.status
     employee.status = 'terminated'
     employee.terminationDate = DateTime.now()
     await employee.save()
+
+    await this.historyService.recordStatusChange(
+      employee.id,
+      oldStatus,
+      'terminated',
+      currentUserId
+    ).catch(() => {})
+
     return employee
   }
 }

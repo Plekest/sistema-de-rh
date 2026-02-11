@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import authService from '@/modules/auth/services/auth.service'
-import type { User, LoginCredentials } from '@/modules/auth/types'
+import type { User, LoginCredentials, UserPermissions } from '@/modules/auth/types'
 import router from '@/router'
 
 /**
- * Store de autenticação - gerencia estado do usuário logado
+ * Store de autenticacao - gerencia estado do usuario logado
  */
 export const useAuthStore = defineStore('auth', () => {
   // State
@@ -22,9 +22,32 @@ export const useAuthStore = defineStore('auth', () => {
 
   const userRole = computed(() => user.value?.role || null)
 
+  const employeeId = computed(() => user.value?.employeeId || null)
+
+  const permissions = computed(() => user.value?.permissions || null)
+
+  /**
+   * Verifica se o usuario tem acesso a um modulo especifico
+   */
+  function canAccess(module: string): boolean {
+    if (!permissions.value) return true
+    const key = module as keyof UserPermissions
+    if (key in permissions.value) {
+      return permissions.value[key]
+    }
+    return true
+  }
+
+  /**
+   * Retorna o path da primeira rota acessivel ao usuario
+   */
+  function getDefaultRoute(): string {
+    return '/home'
+  }
+
   // Actions
   /**
-   * Realiza login do usuário
+   * Realiza login do usuario
    */
   async function login(credentials: LoginCredentials): Promise<void> {
     try {
@@ -35,11 +58,12 @@ export const useAuthStore = defineStore('auth', () => {
       token.value = response.token
       localStorage.setItem('auth_token', response.token)
 
-      // Salva dados do usuário
+      // Salva dados do usuario
       user.value = response.user
 
-      // Redireciona para pagina inicial
-      await router.push('/employees')
+      // Redireciona para pagina inicial baseada nas permissoes
+      const defaultRoute = getDefaultRoute()
+      await router.push(defaultRoute)
     } catch (error) {
       // Limpa qualquer estado
       token.value = null
@@ -52,7 +76,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   /**
-   * Realiza logout do usuário
+   * Realiza logout do usuario
    */
   async function logout(): Promise<void> {
     try {
@@ -63,7 +87,7 @@ export const useAuthStore = defineStore('auth', () => {
         await authService.logout()
       }
     } catch (error) {
-      // Ignora erros no logout (pode já estar expirado)
+      // Ignora erros no logout (pode ja estar expirado)
       console.error('Erro ao fazer logout:', error)
     } finally {
       // Sempre limpa o estado local
@@ -78,7 +102,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   /**
-   * Busca dados do usuário autenticado
+   * Busca dados do usuario autenticado
    */
   async function fetchUser(): Promise<void> {
     try {
@@ -86,7 +110,7 @@ export const useAuthStore = defineStore('auth', () => {
       const userData = await authService.me()
       user.value = userData
     } catch (error) {
-      // Se falhar ao buscar usuário, limpa autenticação
+      // Se falhar ao buscar usuario, limpa autenticacao
       token.value = null
       user.value = null
       localStorage.removeItem('auth_token')
@@ -97,7 +121,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   /**
-   * Inicializa o store - verifica se há token salvo
+   * Inicializa o store - verifica se ha token salvo
    */
   async function initialize(): Promise<void> {
     const savedToken = localStorage.getItem('auth_token')
@@ -106,11 +130,11 @@ export const useAuthStore = defineStore('auth', () => {
       token.value = savedToken
 
       try {
-        // Tenta buscar dados do usuário
+        // Tenta buscar dados do usuario
         await fetchUser()
       } catch (error) {
-        // Token inválido ou expirado
-        console.error('Erro ao inicializar autenticação:', error)
+        // Token invalido ou expirado
+        console.error('Erro ao inicializar autenticacao:', error)
         token.value = null
         user.value = null
         localStorage.removeItem('auth_token')
@@ -129,11 +153,15 @@ export const useAuthStore = defineStore('auth', () => {
     isAdmin,
     isManager,
     userRole,
+    employeeId,
+    permissions,
 
     // Actions
     login,
     logout,
     fetchUser,
-    initialize
+    initialize,
+    canAccess,
+    getDefaultRoute
   }
 })

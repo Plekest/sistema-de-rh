@@ -126,4 +126,107 @@ export default class EmployeeHistoryService {
       createdBy: userId,
     })
   }
+
+  async recordBenefitEnrollment(
+    employeeId: number,
+    benefitName: string,
+    planName: string,
+    userId?: number
+  ) {
+    return this.create(employeeId, {
+      type: 'other',
+      title: `Adesao a beneficio: ${benefitName}`,
+      description: `Plano: ${planName}`,
+      newValue: `${benefitName} - ${planName}`,
+      eventDate: DateTime.now().toISODate()!,
+      createdBy: userId,
+    })
+  }
+
+  async recordBenefitCancellation(
+    employeeId: number,
+    benefitName: string,
+    planName: string,
+    userId?: number
+  ) {
+    return this.create(employeeId, {
+      type: 'other',
+      title: `Cancelamento de beneficio: ${benefitName}`,
+      description: `Plano: ${planName}`,
+      oldValue: `${benefitName} - ${planName}`,
+      eventDate: DateTime.now().toISODate()!,
+      createdBy: userId,
+    })
+  }
+
+  async recordLeaveApproval(
+    employeeId: number,
+    leaveType: string,
+    startDate: string,
+    endDate: string,
+    daysCount: number,
+    userId?: number
+  ) {
+    return this.create(employeeId, {
+      type: 'other',
+      title: `Licenca aprovada: ${leaveType}`,
+      description: `Periodo: ${startDate} a ${endDate} (${daysCount} dias)`,
+      newValue: `${daysCount} dias`,
+      eventDate: DateTime.now().toISODate()!,
+      createdBy: userId,
+    })
+  }
+
+  async recordLeaveRejection(
+    employeeId: number,
+    leaveType: string,
+    reason?: string,
+    userId?: number
+  ) {
+    return this.create(employeeId, {
+      type: 'other',
+      title: `Licenca rejeitada: ${leaveType}`,
+      description: reason || undefined,
+      eventDate: DateTime.now().toISODate()!,
+      createdBy: userId,
+    })
+  }
+
+  async recordPayrollComponent(
+    employeeId: number,
+    componentType: string,
+    description: string,
+    amount: number,
+    userId?: number
+  ) {
+    return this.create(employeeId, {
+      type: 'salary_change',
+      title: `Componente salarial adicionado: ${componentType}`,
+      description,
+      newValue: `R$ ${amount.toFixed(2)}`,
+      eventDate: DateTime.now().toISODate()!,
+      createdBy: userId,
+    })
+  }
+
+  async recordStatusChange(
+    employeeId: number,
+    oldStatus: string,
+    newStatus: string,
+    userId?: number
+  ) {
+    const labels: Record<string, string> = {
+      active: 'Ativo',
+      inactive: 'Inativo',
+      terminated: 'Desligado',
+    }
+    return this.create(employeeId, {
+      type: newStatus === 'terminated' ? 'termination' : 'other',
+      title: newStatus === 'terminated' ? 'Desligamento' : 'Alteracao de status',
+      oldValue: labels[oldStatus] || oldStatus,
+      newValue: labels[newStatus] || newStatus,
+      eventDate: DateTime.now().toISODate()!,
+      createdBy: userId,
+    })
+  }
 }

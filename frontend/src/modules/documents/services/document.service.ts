@@ -18,18 +18,18 @@ class DocumentService {
    * Busca documento por ID
    */
   async getById(id: number): Promise<EmployeeDocument> {
-    const response = await api.get<EmployeeDocument>(`/documents/${id}`)
-    return response.data
+    const response = await api.get<{ data: EmployeeDocument }>(`/documents/${id}`)
+    return response.data.data
   }
 
   /**
    * Faz upload de documento para um colaborador
    */
   async upload(employeeId: number, formData: FormData): Promise<EmployeeDocument> {
-    const response = await api.post<EmployeeDocument>(`/employees/${employeeId}/documents`, formData, {
+    const response = await api.post<{ data: EmployeeDocument }>(`/employees/${employeeId}/documents`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
-    return response.data
+    return response.data.data
   }
 
   /**

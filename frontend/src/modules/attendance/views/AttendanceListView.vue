@@ -364,8 +364,8 @@ onMounted(() => {
   transition: all 0.15s ease;
 }
 
-.btn-primary { background-color: #2b6cb0; color: #fff; }
-.btn-primary:hover:not(:disabled) { background-color: #2c5282; }
+.btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; }
+.btn-primary:hover:not(:disabled) { box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35); transform: translateY(-1px); }
 .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 .btn-secondary { background-color: #edf2f7; color: #4a5568; }
 .btn-secondary:hover { background-color: #e2e8f0; }
@@ -388,7 +388,7 @@ onMounted(() => {
 .filter-group input,
 .filter-group select { padding: 0.5rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 5px; font-size: 0.875rem; color: #2d3748; background: #fff; outline: none; }
 .filter-group input:focus,
-.filter-group select:focus { border-color: #2b6cb0; }
+.filter-group select:focus { border-color: #667eea; }
 
 /* Tabela */
 .table-container { background: #fff; border-radius: 8px; border: 1px solid #e2e8f0; overflow-x: auto; }
@@ -400,7 +400,7 @@ onMounted(() => {
 .td-total { font-weight: 600; font-variant-numeric: tabular-nums; }
 
 .badge { display: inline-block; padding: 0.125rem 0.5rem; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
-.badge-regular { background-color: #ebf4ff; color: #2b6cb0; }
+.badge-regular { background-color: #ebf4ff; color: #667eea; }
 .badge-overtime { background-color: #faf5ff; color: #6b46c1; }
 .badge-absence { background-color: #fff5f5; color: #c53030; }
 .badge-holiday { background-color: #f0fff4; color: #276749; }
@@ -431,7 +431,7 @@ onMounted(() => {
 .form-group textarea { padding: 0.5rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 5px; font-size: 0.875rem; color: #2d3748; background: #fff; outline: none; font-family: inherit; }
 .form-group input:focus,
 .form-group select:focus,
-.form-group textarea:focus { border-color: #2b6cb0; }
+.form-group textarea:focus { border-color: #667eea; }
 
 /* Estados e alertas */
 .alert { padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.875rem; margin-bottom: 1rem; }

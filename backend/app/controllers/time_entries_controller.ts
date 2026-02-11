@@ -60,7 +60,10 @@ export default class TimeEntriesController {
   async today({ auth, response }: HttpContext) {
     try {
       const user = auth.getUserOrFail()
-      const employeeId = await this.service.getEmployeeIdFromUser(user.id)
+      const employeeId = await this.service.getEmployeeIdFromUser(user.id).catch(() => null)
+      if (!employeeId) {
+        return response.ok({ data: null })
+      }
       const entry = await this.service.getToday(employeeId)
       return response.ok({ data: entry })
     } catch (error) {
@@ -73,6 +76,10 @@ export default class TimeEntriesController {
   async recent({ auth, response }: HttpContext) {
     try {
       const user = auth.getUserOrFail()
+      const employeeId = await this.service.getEmployeeIdFromUser(user.id).catch(() => null)
+      if (!employeeId) {
+        return response.ok({ data: [] })
+      }
       const entries = await this.service.getRecent(user.id)
       return response.ok({ data: entries })
     } catch (error) {

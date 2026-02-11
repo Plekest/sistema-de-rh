@@ -7,6 +7,9 @@ import Position from '#models/position'
 import Document from '#models/document'
 import TimeEntry from '#models/time_entry'
 import EmployeeHistory from '#models/employee_history'
+import Leave from '#models/leave'
+import LeaveBalance from '#models/leave_balance'
+import EmployeeBenefit from '#models/employee_benefit'
 
 export default class Employee extends BaseModel {
   @column({ isPrimary: true })
@@ -107,4 +110,13 @@ export default class Employee extends BaseModel {
 
   @hasMany(() => EmployeeHistory)
   declare histories: HasMany<typeof EmployeeHistory>
+
+  @hasMany(() => Leave)
+  declare leaves: HasMany<typeof Leave>
+
+  @hasMany(() => LeaveBalance)
+  declare leaveBalances: HasMany<typeof LeaveBalance>
+
+  @hasMany(() => EmployeeBenefit)
+  declare employeeBenefits: HasMany<typeof EmployeeBenefit>
 }

@@ -18,8 +18,8 @@ class HistoryService {
    * Cria novo registro de historico para um colaborador
    */
   async create(employeeId: number, data: Omit<HistoryFormData, 'employeeId'>): Promise<HistoryEntry> {
-    const response = await api.post<HistoryEntry>(`/employees/${employeeId}/history`, data)
-    return response.data
+    const response = await api.post<{ data: HistoryEntry }>(`/employees/${employeeId}/history`, data)
+    return response.data.data
   }
 }
 

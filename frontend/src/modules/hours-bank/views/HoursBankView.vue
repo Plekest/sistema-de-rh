@@ -102,7 +102,11 @@ watch([selectedEmployee, filterYear], () => {
 })
 
 onMounted(() => {
-  loadEmployees()
+  if (isAdmin.value) {
+    loadEmployees()
+  } else if (authStore.employeeId) {
+    selectedEmployee.value = authStore.employeeId
+  }
 })
 </script>
 
@@ -114,7 +118,7 @@ onMounted(() => {
 
     <!-- Filtros -->
     <div class="filters-bar">
-      <div class="filter-group filter-grow">
+      <div v-if="isAdmin" class="filter-group filter-grow">
         <label for="filter-emp">Colaborador</label>
         <select id="filter-emp" v-model="selectedEmployee">
           <option :value="null">Selecione um colaborador...</option>
@@ -269,7 +273,7 @@ onMounted(() => {
 .filter-grow { flex: 1; min-width: 200px; }
 .filter-group label { font-size: 0.75rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.025em; }
 .filter-group select { padding: 0.5rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 5px; font-size: 0.875rem; color: #2d3748; background: #fff; outline: none; }
-.filter-group select:focus { border-color: #2b6cb0; }
+.filter-group select:focus { border-color: #667eea; }
 
 /* Tabela */
 .table-container { background: #fff; border-radius: 8px; border: 1px solid #e2e8f0; overflow-x: auto; }

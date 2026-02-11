@@ -29,3 +29,23 @@ export const registerValidator = vine.compile(
     role: vine.enum(['admin', 'manager', 'employee']).optional(),
   })
 )
+
+/**
+ * Valida os dados de solicitação de recuperação de senha
+ */
+export const forgotPasswordValidator = vine.compile(
+  vine.object({
+    email: vine.string().trim().email().normalizeEmail(),
+  })
+)
+
+/**
+ * Valida os dados de redefinição de senha
+ */
+export const resetPasswordValidator = vine.compile(
+  vine.object({
+    token: vine.string().trim(),
+    password: vine.string().minLength(8),
+    password_confirmation: vine.string().sameAs('password'),
+  })
+)

@@ -24,24 +24,24 @@ class EmployeeService {
    * Busca colaborador por ID
    */
   async getById(id: number): Promise<Employee> {
-    const response = await api.get<Employee>(`/employees/${id}`)
-    return response.data
+    const response = await api.get<{ data: Employee }>(`/employees/${id}`)
+    return response.data.data
   }
 
   /**
    * Cria novo colaborador
    */
   async create(data: EmployeeFormData): Promise<Employee> {
-    const response = await api.post<Employee>('/employees', data)
-    return response.data
+    const response = await api.post<{ data: Employee }>('/employees', data)
+    return response.data.data
   }
 
   /**
    * Atualiza colaborador existente
    */
   async update(id: number, data: Partial<EmployeeFormData>): Promise<Employee> {
-    const response = await api.put<Employee>(`/employees/${id}`, data)
-    return response.data
+    const response = await api.put<{ data: Employee }>(`/employees/${id}`, data)
+    return response.data.data
   }
 
   /**
@@ -55,16 +55,16 @@ class EmployeeService {
    * Lista departamentos
    */
   async getDepartments(): Promise<Department[]> {
-    const response = await api.get<Department[]>('/departments')
-    return response.data
+    const response = await api.get<{ data: Department[] }>('/departments')
+    return response.data.data
   }
 
   /**
    * Lista cargos
    */
   async getPositions(): Promise<Position[]> {
-    const response = await api.get<Position[]>('/positions')
-    return response.data
+    const response = await api.get<{ data: Position[] }>('/positions')
+    return response.data.data
   }
 }
 

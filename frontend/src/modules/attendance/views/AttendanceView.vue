@@ -304,7 +304,7 @@ onUnmounted(() => {
 }
 
 .clock-btn:hover:not(:disabled) {
-  border-color: #2b6cb0;
+  border-color: #667eea;
   background: #ebf8ff;
 }
 
@@ -410,7 +410,7 @@ onUnmounted(() => {
   font-weight: 600;
 }
 
-.badge-regular { background-color: #ebf4ff; color: #2b6cb0; }
+.badge-regular { background-color: #ebf4ff; color: #667eea; }
 .badge-overtime { background-color: #faf5ff; color: #6b46c1; }
 .badge-absence { background-color: #fff5f5; color: #c53030; }
 .badge-holiday { background-color: #f0fff4; color: #276749; }

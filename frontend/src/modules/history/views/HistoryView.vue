@@ -169,7 +169,11 @@ watch([selectedEmployee, filterType], () => {
 })
 
 onMounted(() => {
-  loadEmployees()
+  if (isAdmin.value) {
+    loadEmployees()
+  } else if (authStore.employeeId) {
+    selectedEmployee.value = authStore.employeeId
+  }
 })
 </script>
 
@@ -184,7 +188,7 @@ onMounted(() => {
 
     <!-- Filtros -->
     <div class="filters-bar">
-      <div class="filter-group filter-grow">
+      <div v-if="isAdmin" class="filter-group filter-grow">
         <label for="filter-emp">Colaborador</label>
         <select id="filter-emp" v-model="selectedEmployee">
           <option :value="null">Selecione um colaborador...</option>
@@ -244,7 +248,7 @@ onMounted(() => {
 
       <div v-else class="empty-state">
         <p class="empty-title">Nenhum registro no historico</p>
-        <p class="empty-description">Adicione um novo registro para este colaborador.</p>
+        <p class="empty-description">{{ isAdmin ? 'Adicione um novo registro para este colaborador.' : 'Nenhum registro disponivel.' }}</p>
       </div>
     </template>
 
@@ -345,8 +349,8 @@ onMounted(() => {
   transition: all 0.15s ease;
 }
 
-.btn-primary { background-color: #2b6cb0; color: #fff; }
-.btn-primary:hover:not(:disabled) { background-color: #2c5282; }
+.btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; }
+.btn-primary:hover:not(:disabled) { box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35); transform: translateY(-1px); }
 .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 .btn-secondary { background-color: #edf2f7; color: #4a5568; }
 .btn-secondary:hover { background-color: #e2e8f0; }
@@ -367,7 +371,7 @@ onMounted(() => {
 .filter-grow { flex: 1; min-width: 200px; }
 .filter-group label { font-size: 0.75rem; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.025em; }
 .filter-group select { padding: 0.5rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 5px; font-size: 0.875rem; color: #2d3748; background: #fff; outline: none; }
-.filter-group select:focus { border-color: #2b6cb0; }
+.filter-group select:focus { border-color: #667eea; }
 
 /* Timeline */
 .timeline {
@@ -492,7 +496,7 @@ onMounted(() => {
 .form-group textarea { padding: 0.5rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 5px; font-size: 0.875rem; color: #2d3748; background: #fff; outline: none; font-family: inherit; }
 .form-group input:focus,
 .form-group select:focus,
-.form-group textarea:focus { border-color: #2b6cb0; }
+.form-group textarea:focus { border-color: #667eea; }
 
 /* Estados */
 .alert { padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.875rem; margin-bottom: 1rem; }

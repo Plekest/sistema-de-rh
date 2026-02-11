@@ -1,9 +1,24 @@
+export interface UserPermissions {
+  employees: boolean
+  attendance: boolean
+  hours_bank: boolean
+  documents: boolean
+  history: boolean
+  leave: boolean
+  benefits: boolean
+  payroll: boolean
+  performance: boolean
+  recruitment: boolean
+}
+
 export interface User {
   id: number
   fullName: string
   email: string
   role: 'admin' | 'manager' | 'employee'
   isActive: boolean
+  employeeId: number | null
+  permissions: UserPermissions
 }
 
 export interface LoginCredentials {
@@ -21,4 +36,14 @@ export interface RegisterData {
   email: string
   password: string
   role?: 'admin' | 'manager' | 'employee'
+}
+
+export interface ForgotPasswordData {
+  email: string
+}
+
+export interface ResetPasswordData {
+  token: string
+  password: string
+  password_confirmation: string
 }

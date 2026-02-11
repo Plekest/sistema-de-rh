@@ -21,6 +21,24 @@ services:
     networks:
       - sistema-rh-network
 
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: sistema-rh-pgadmin
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@sistema-rh.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmindata:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - sistema-rh-network
+
   redis:
     image: redis:7-alpine
     container_name: sistema-rh-redis
@@ -40,6 +58,8 @@ services:
 
 volumes:
   pgdata:
+    driver: local
+  pgadmindata:
     driver: local
   redisdata:
     driver: local

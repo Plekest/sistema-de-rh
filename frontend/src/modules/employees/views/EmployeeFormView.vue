@@ -213,8 +213,8 @@ onMounted(() => {
       </div>
     </div>
 
-    <div v-if="error" class="alert alert-error">{{ error }}</div>
-    <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
+    <div v-if="error" class="alert alert-error" role="alert">{{ error }}</div>
+    <div v-if="successMessage" class="alert alert-success" role="alert">{{ successMessage }}</div>
 
     <div v-if="isLoading" class="loading-state">Carregando...</div>
 
@@ -424,7 +424,7 @@ onMounted(() => {
 .btn-back {
   background: none;
   border: none;
-  color: #2b6cb0;
+  color: #667eea;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
@@ -469,8 +469,8 @@ onMounted(() => {
 }
 
 .tab-btn.active {
-  color: #2b6cb0;
-  border-bottom-color: #2b6cb0;
+  color: #667eea;
+  border-bottom-color: #667eea;
 }
 
 /* Tab content */
@@ -518,7 +518,7 @@ onMounted(() => {
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-  border-color: #2b6cb0;
+  border-color: #667eea;
 }
 
 .form-group textarea {
@@ -556,12 +556,13 @@ onMounted(() => {
 }
 
 .btn-primary {
-  background-color: #2b6cb0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: #2c5282;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+  transform: translateY(-1px);
 }
 
 .btn-primary:disabled {

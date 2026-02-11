@@ -1,11 +1,17 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import employeeService from '../services/employee.service'
 import type { Employee, Department, EmployeeListParams } from '../types'
 import { formatDate, formatCurrency } from '@/utils/formatters'
+import { useAuthStore } from '@/stores/auth'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
 
 const router = useRouter()
+const authStore = useAuthStore()
+const { confirm: confirmDialog } = useConfirmDialog()
+
+const isAdmin = computed(() => authStore.isAdmin || authStore.isManager)
 
 // Estado
 const employees = ref<Employee[]>([])
@@ -101,9 +107,14 @@ function goToEdit(id: number) {
  * Exclui colaborador
  */
 async function handleDelete(employee: Employee) {
-  if (!confirm(`Deseja realmente excluir o colaborador "${employee.fullName}"?`)) {
-    return
-  }
+  const result = await confirmDialog({
+    title: 'Excluir Colaborador',
+    message: `Deseja realmente excluir o colaborador "${employee.fullName}"?`,
+    variant: 'danger',
+    confirmLabel: 'Excluir',
+  })
+
+  if (!result) return
 
   try {
     await employeeService.delete(employee.id)
@@ -150,6 +161,11 @@ watch([filterType, filterStatus, filterDepartment], () => {
 })
 
 onMounted(() => {
+  // Se nao for admin/manager e tiver employeeId, redireciona para o detalhe proprio
+  if (!isAdmin.value && authStore.employeeId) {
+    router.replace(`/employees/${authStore.employeeId}`)
+    return
+  }
   loadEmployees()
   loadDepartments()
 })
@@ -211,7 +227,7 @@ onMounted(() => {
     </div>
 
     <!-- Erro -->
-    <div v-if="error" class="alert alert-error">
+    <div v-if="error" class="alert alert-error" role="alert">
       {{ error }}
     </div>
 
@@ -341,12 +357,13 @@ onMounted(() => {
 }
 
 .btn-primary {
-  background-color: #2b6cb0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
 }
 
 .btn-primary:hover {
-  background-color: #2c5282;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+  transform: translateY(-1px);
 }
 
 /* Filtros */
@@ -394,7 +411,7 @@ onMounted(() => {
 
 .filter-group input:focus,
 .filter-group select:focus {
-  border-color: #2b6cb0;
+  border-color: #667eea;
 }
 
 /* Tabela */
@@ -457,7 +474,7 @@ onMounted(() => {
 .link-button {
   background: none;
   border: none;
-  color: #2b6cb0;
+  color: #667eea;
   cursor: pointer;
   font-weight: 500;
   font-size: 0.875rem;
@@ -503,7 +520,7 @@ onMounted(() => {
 
 .badge-clt {
   background-color: #ebf4ff;
-  color: #2b6cb0;
+  color: #667eea;
 }
 
 .badge-pj {

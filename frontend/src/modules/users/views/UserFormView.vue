@@ -269,12 +269,13 @@ onMounted(() => {
 }
 
 .btn-primary {
-  background-color: #2b6cb0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: #2c5282;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+  transform: translateY(-1px);
 }
 
 .btn-primary:disabled {
@@ -335,7 +336,7 @@ onMounted(() => {
 
 .form-group input:focus,
 .form-group select:focus {
-  border-color: #2b6cb0;
+  border-color: #667eea;
 }
 
 .form-hint {

@@ -4,8 +4,10 @@ import { useRouter } from 'vue-router'
 import userService from '../services/user.service'
 import type { SystemUser } from '../types'
 import { formatDate } from '@/utils/formatters'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
 
 const router = useRouter()
+const { confirm: confirmDialog } = useConfirmDialog()
 
 // Estado
 const users = ref<SystemUser[]>([])
@@ -81,7 +83,15 @@ function goToEdit(id: number) {
  */
 async function toggleStatus(user: SystemUser) {
   const action = user.isActive ? 'desativar' : 'ativar'
-  if (!confirm(`Deseja ${action} o usuario "${user.fullName}"?`)) return
+
+  const result = await confirmDialog({
+    title: action === 'desativar' ? 'Desativar Usuario' : 'Ativar Usuario',
+    message: `Deseja ${action} o usuario "${user.fullName}"?`,
+    variant: action === 'desativar' ? 'warning' : 'info',
+    confirmLabel: action === 'desativar' ? 'Desativar' : 'Ativar',
+  })
+
+  if (!result) return
 
   try {
     await userService.update(user.id, { isActive: !user.isActive })
@@ -287,12 +297,13 @@ onMounted(() => {
 }
 
 .btn-primary {
-  background-color: #2b6cb0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
 }
 
 .btn-primary:hover {
-  background-color: #2c5282;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+  transform: translateY(-1px);
 }
 
 /* Filtros */
@@ -340,7 +351,7 @@ onMounted(() => {
 
 .filter-group input:focus,
 .filter-group select:focus {
-  border-color: #2b6cb0;
+  border-color: #667eea;
 }
 
 /* Tabela */
@@ -441,7 +452,7 @@ onMounted(() => {
 
 .badge-role-manager {
   background-color: #ebf4ff;
-  color: #2b6cb0;
+  color: #667eea;
 }
 
 .badge-role-employee {
