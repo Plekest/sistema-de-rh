@@ -16,6 +16,7 @@ import type { Employee } from '@/modules/employees/types'
 import { useAuthStore } from '@/stores/auth'
 import { useConfirmDialog } from '@/composables/useConfirmDialog'
 import { useApiError } from '@/composables/useApiError'
+import { useExport } from '@/composables/useExport'
 
 /**
  * Composable para gerenciar logica de treinamentos
@@ -27,6 +28,7 @@ export function useTraining() {
   const authStore = useAuthStore()
   const { confirm: confirmDialog } = useConfirmDialog()
   const { error, handleError, clearError } = useApiError()
+  const { exporting, exportCSV } = useExport()
 
   // Estado principal
   const trainings = ref<Training[]>([])
@@ -453,6 +455,9 @@ export function useTraining() {
     statusLabels,
     enrollmentStatusLabels,
 
+    // Export
+    exporting,
+
     // Metodos
     fetchTrainings,
     fetchTraining,
@@ -473,5 +478,13 @@ export function useTraining() {
     formatStatus,
     formatType,
     init,
+    handleExport: async () => {
+      try {
+        const timestamp = new Date().toISOString().split('T')[0]
+        await exportCSV('/trainings/export', `treinamentos-${timestamp}.csv`)
+      } catch (err: unknown) {
+        handleError(err, 'Erro ao exportar dados.')
+      }
+    },
   }
 }

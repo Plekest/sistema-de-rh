@@ -7,6 +7,7 @@ import { formatDate, formatCurrency } from '@/utils/formatters'
 import { useAuthStore } from '@/stores/auth'
 import { useConfirmDialog } from '@/composables/useConfirmDialog'
 import { useApiError } from '@/composables/useApiError'
+import { useExport } from '@/composables/useExport'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import type { DataTableColumn } from '@/components/common/types'
@@ -15,6 +16,7 @@ const router = useRouter()
 const authStore = useAuthStore()
 const { confirm: confirmDialog } = useConfirmDialog()
 const { error, handleError, clearError } = useApiError()
+const { exporting, exportCSV } = useExport()
 
 const isAdmin = computed(() => authStore.isAdmin || authStore.isManager)
 
@@ -171,6 +173,18 @@ function statusLabel(status: string): string {
   return map[status] || status
 }
 
+/**
+ * Exporta lista de colaboradores para CSV
+ */
+async function handleExport() {
+  try {
+    const timestamp = new Date().toISOString().split('T')[0]
+    await exportCSV('/employees/export', `colaboradores-${timestamp}.csv`)
+  } catch (err: unknown) {
+    handleError(err, 'Erro ao exportar colaboradores.')
+  }
+}
+
 // Watchers para filtros
 watch([filterType, filterStatus, filterDepartment], () => {
   currentPage.value = 1
@@ -195,9 +209,19 @@ onMounted(() => {
         <h1 class="page-title">Colaboradores</h1>
         <p class="page-subtitle" v-if="total > 0">{{ total }} registro(s) encontrado(s)</p>
       </div>
-      <button class="btn btn-primary" @click="goToCreate">
-        Novo Colaborador
-      </button>
+      <div class="page-header-actions">
+        <button
+          v-if="isAdmin"
+          class="btn btn-outline"
+          :disabled="exporting || isLoading"
+          @click="handleExport"
+        >
+          {{ exporting ? 'Exportando...' : 'Exportar CSV' }}
+        </button>
+        <button class="btn btn-primary" @click="goToCreate">
+          Novo Colaborador
+        </button>
+      </div>
     </div>
 
     <!-- Filtros -->
@@ -318,6 +342,12 @@ onMounted(() => {
   margin-bottom: var(--space-12);
 }
 
+.page-header-actions {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+}
+
 .page-title {
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
@@ -352,6 +382,22 @@ onMounted(() => {
 .btn-primary:hover {
   box-shadow: var(--shadow-primary);
   transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary-dark);
+}
+
+.btn-outline:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* Filtros */
@@ -486,6 +532,15 @@ onMounted(() => {
   .page-header {
     flex-direction: column;
     gap: var(--space-8);
+  }
+
+  .page-header-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .page-header-actions .btn {
+    width: 100%;
   }
 
   .filters-bar {

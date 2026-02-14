@@ -40,6 +40,8 @@ const {
   statusLabels,
   typeOptions,
   statusOptions,
+  // Export
+  exporting,
   // Metodos
   loadLeaves,
   openForm,
@@ -49,6 +51,7 @@ const {
   rejectLeave,
   cancelLeave,
   init,
+  handleExport,
 } = useLeaves()
 
 // Recarrega ao mudar filtros
@@ -65,7 +68,17 @@ onMounted(() => {
   <div class="leave-list-view">
     <div class="page-header">
       <h1 class="page-title">Ferias e Licencas</h1>
-      <button class="btn-primary" @click="openForm">Nova Solicitacao</button>
+      <div class="page-header-actions">
+        <button
+          v-if="isAdmin"
+          class="btn-outline"
+          :disabled="exporting || isLoading"
+          @click="handleExport"
+        >
+          {{ exporting ? 'Exportando...' : 'Exportar CSV' }}
+        </button>
+        <button class="btn-primary" @click="openForm">Nova Solicitacao</button>
+      </div>
     </div>
 
     <!-- Mensagens -->
@@ -132,6 +145,12 @@ onMounted(() => {
   margin-bottom: var(--space-12);
 }
 
+.page-header-actions {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+}
+
 .page-title {
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
@@ -158,6 +177,28 @@ onMounted(() => {
 }
 
 .btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-outline {
+  padding: var(--btn-padding-y) var(--btn-padding-x);
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--btn-border-radius);
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary-dark);
+}
+
+.btn-outline:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -201,6 +242,16 @@ onMounted(() => {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-8);
+  }
+
+  .page-header-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .page-header-actions .btn-primary,
+  .page-header-actions .btn-outline {
+    width: 100%;
   }
 }
 </style>

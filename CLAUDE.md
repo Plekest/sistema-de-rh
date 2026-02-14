@@ -24,11 +24,12 @@ Sistema de Gestao de Recursos Humanos para empresas brasileiras de medio porte. 
 15. **Recruitment** - Processo seletivo completo (vagas, candidatos, entrevistas, pipeline)
 16. **Dashboard** - Visão geral com widgets de métricas e KPIs do RH
 17. **Notifications** - Sistema de notificações em tempo real
+18. **Training** - Gestão de treinamentos e desenvolvimento (cadastro, inscrições, acompanhamento)
+19. **Reports** - Sistema de relatórios e exportação CSV (colaboradores, ponto, folha, férias, treinamentos)
 
-### Modulos planejados (pastas criadas, sem implementacao):
-- **Training** - Gestão de treinamentos e desenvolvimento
+### Status: TODOS OS 19 MÓDULOS IMPLEMENTADOS
 
-### Proximo modulo a implementar: **Training**
+O sistema está completo com todas as funcionalidades principais implementadas.
 
 ## Stack Tecnologica
 
@@ -421,6 +422,74 @@ notifications
 - created_at
 ```
 
+### Tabelas de Treinamentos
+```
+trainings              training_enrollments
+- id                   - id
+- title                - training_id FK
+- description          - employee_id FK
+- type                 - status
+- category             - enrolled_at
+- instructor           - completed_at
+- provider             - grade
+- start_date           - notes
+- end_date             - created_at
+- duration_hours
+- max_participants
+- location
+- status
+- is_mandatory
+- created_by FK
+- notes
+- created_at
+```
+
+## Sistema de Relatorios (CSV Export)
+
+O sistema oferece exportacao de dados em formato CSV para os principais modulos. Todos os relatorios utilizam UTF-8 com BOM e separador ponto-e-virgula (;) para compatibilidade com Excel brasileiro.
+
+### Endpoints Disponiveis (admin/manager apenas)
+
+1. **GET /api/v1/reports/employees/csv**
+   - Exporta lista de colaboradores
+   - Query params: `type`, `status`, `departmentId`
+   - Colunas: Nome, CPF/CNPJ, Email, Telefone, Tipo, Departamento, Cargo, Salario, Status, Data Admissao, Data Desligamento
+
+2. **GET /api/v1/reports/attendance/csv**
+   - Exporta registros de ponto
+   - Query params: `month`, `year`, `employeeId`
+   - Colunas: Colaborador, Data, Entrada, Saida Almoco, Retorno Almoco, Saida, Horas Trabalhadas, Atraso (min), Tipo, Observacoes
+
+3. **GET /api/v1/reports/payroll/csv**
+   - Exporta folha de pagamento
+   - Query params: `periodId` (obrigatorio)
+   - Colunas: Colaborador, CPF/CNPJ, Salario Base, Total Proventos, Total Descontos, INSS, IRRF, FGTS (Patronal), Salario Liquido, Status
+
+4. **GET /api/v1/reports/leave/csv**
+   - Exporta solicitacoes de ferias/licencas
+   - Query params: `type`, `status`, `startDate`, `endDate`
+   - Colunas: Colaborador, Tipo, Data Inicio, Data Fim, Dias, Status, Aprovado Por, Data Aprovacao, Observacoes
+
+5. **GET /api/v1/reports/trainings/csv**
+   - Exporta treinamentos
+   - Query params: `type`, `status`, `category`
+   - Colunas: Titulo, Tipo, Categoria, Instrutor, Data Inicio, Data Fim, Duracao (h), Inscritos, Concluidos, Status, Obrigatorio
+
+### Formatacao dos Relatorios
+
+- **Datas**: DD/MM/YYYY (padrao brasileiro)
+- **Valores monetarios**: Formato brasileiro com 2 casas decimais (ex: 1.234,56)
+- **Horas**: HH:mm (ex: 08:30)
+- **Charset**: UTF-8 com BOM (para acentuacao correta no Excel)
+- **Separador**: Ponto-e-virgula (;)
+- **Escape**: Campos com caracteres especiais sao delimitados por aspas duplas
+
+### Implementacao
+
+- **Service**: `backend/app/services/report_service.ts` - Logica de geracao de CSV
+- **Controller**: `backend/app/controllers/reports_controller.ts` - Endpoints HTTP
+- **Rotas**: `/api/v1/reports/*` - Protegidas por auth + role admin/manager
+
 ## Comandos Uteis
 
 ```bash
@@ -435,7 +504,8 @@ node ace make:model Name         # Gerar model
 node ace make:migration Name     # Gerar migration
 node ace migration:run           # Executar migrations
 node ace migration:rollback      # Reverter ultima migration
-node ace db:seed                 # Executar seeders
+node ace db:seed                 # Executar todos os seeders
+node ace db:seed --files=demo_seeder.ts  # Executar seeder de demonstracao
 node ace test                    # Rodar testes
 
 # --- Frontend ---
@@ -466,3 +536,28 @@ DB_DATABASE=sistema_rh_dev
 ```
 VITE_API_URL=http://localhost:3333/api/v1
 ```
+
+## Dados de Demonstracao
+
+O sistema inclui um seeder completo para popular o banco com dados realistas de demonstracao:
+
+**Arquivo**: `backend/database/seeders/demo_seeder.ts`
+
+**O que cria:**
+- 3 departamentos (TI, RH, Financeiro) com cargos relacionados
+- 10 colaboradores (mix CLT/PJ, varios departamentos)
+- Registros de ponto dos ultimos 30 dias (dias uteis apenas)
+- 2 treinamentos:
+  - Seguranca da Informacao (em andamento, obrigatorio)
+  - TypeScript Avancado (concluido)
+- Inscricoes nos treinamentos
+- 3 solicitacoes de ferias com diferentes status (aprovada, pendente, rejeitada)
+- 5 notificacoes de exemplo
+
+**Para executar:**
+```bash
+cd backend
+node ace db:seed --files=demo_seeder.ts
+```
+
+**Nota**: O seeder usa `updateOrCreate` para evitar duplicacao. Pode ser executado multiplas vezes.

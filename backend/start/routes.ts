@@ -29,6 +29,7 @@ const PerformanceController = () => import('#controllers/performance_controller'
 const RecruitmentController = () => import('#controllers/recruitment_controller')
 const NotificationsController = () => import('#controllers/notifications_controller')
 const TrainingsController = () => import('#controllers/trainings_controller')
+const ReportsController = () => import('#controllers/reports_controller')
 
 router.get('/', async () => {
   return {
@@ -403,6 +404,18 @@ router
       .put('trainings/enrollments/:enrollmentId', [TrainingsController, 'updateEnrollment'])
       .use(middleware.role({ roles: ['admin', 'manager'] }))
     router.get('trainings/employee/:employeeId', [TrainingsController, 'employeeTrainings'])
+
+    // --- Relatorios CSV (admin/manager apenas) ---
+    router
+      .group(() => {
+        router.get('employees/csv', [ReportsController, 'employeesCSV'])
+        router.get('attendance/csv', [ReportsController, 'attendanceCSV'])
+        router.get('payroll/csv', [ReportsController, 'payrollCSV'])
+        router.get('leave/csv', [ReportsController, 'leaveCSV'])
+        router.get('trainings/csv', [ReportsController, 'trainingsCSV'])
+      })
+      .prefix('reports')
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
   })
   .prefix('api/v1')
   .use(middleware.auth({ guards: ['api'] }))

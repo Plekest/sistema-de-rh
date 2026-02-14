@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import dashboardService from '../services/dashboard.service'
 import type { AdminDashboard } from '../types'
+import BarChart from '@/components/common/BarChart.vue'
+import DonutChart from '@/components/common/DonutChart.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -35,6 +37,56 @@ function getAttendancePercentage(): number {
   if (!data.value || data.value.activeEmployees === 0) return 0
   return Math.round((data.value.todayAttendance.present / data.value.activeEmployees) * 100)
 }
+
+const statusDonutData = computed(() => {
+  if (!data.value) return []
+  return [
+    {
+      label: 'Ativos',
+      value: data.value.employeesByStatus.active,
+      color: 'var(--color-success)',
+    },
+    {
+      label: 'Inativos',
+      value: data.value.employeesByStatus.inactive,
+      color: 'var(--color-warning)',
+    },
+    {
+      label: 'Desligados',
+      value: data.value.employeesByStatus.terminated,
+      color: 'var(--color-danger)',
+    },
+  ]
+})
+
+const departmentBarData = computed(() => {
+  if (!data.value) return []
+  return data.value.departmentDistribution.map((dept) => ({
+    label: dept.departmentName,
+    value: dept.count,
+  }))
+})
+
+const attendanceDonutData = computed(() => {
+  if (!data.value) return []
+  return [
+    {
+      label: 'Presentes',
+      value: data.value.todayAttendance.present,
+      color: 'var(--color-success)',
+    },
+    {
+      label: 'Atrasados',
+      value: data.value.todayAttendance.late,
+      color: 'var(--color-warning)',
+    },
+    {
+      label: 'Ausentes',
+      value: data.value.todayAttendance.absent,
+      color: 'var(--color-danger)',
+    },
+  ]
+})
 
 onMounted(async () => {
   try {
@@ -118,31 +170,12 @@ onMounted(async () => {
         <!-- Left Column -->
         <div class="content-column">
           <!-- Department Distribution -->
-          <div class="card" v-if="data.departmentDistribution.length > 0">
+          <div class="card">
             <div class="card-header">
               <h3>Distribuicao por Departamento</h3>
             </div>
             <div class="card-body">
-              <div class="department-list">
-                <div
-                  v-for="dept in data.departmentDistribution"
-                  :key="dept.departmentName"
-                  class="department-item"
-                >
-                  <div class="department-info">
-                    <span class="department-name">{{ dept.departmentName }}</span>
-                    <span class="department-count">{{ dept.count }}</span>
-                  </div>
-                  <div class="department-bar">
-                    <div
-                      class="department-bar-fill"
-                      :style="{
-                        width: `${Math.round((dept.count / data!.activeEmployees) * 100)}%`,
-                      }"
-                    ></div>
-                  </div>
-                </div>
-              </div>
+              <BarChart :data="departmentBarData" />
             </div>
           </div>
 
@@ -152,26 +185,33 @@ onMounted(async () => {
               <h3>Status dos Colaboradores</h3>
             </div>
             <div class="card-body">
-              <div class="status-grid">
-                <div class="status-item status-active">
-                  <span class="status-count">{{ data.employeesByStatus.active }}</span>
-                  <span class="status-label">Ativos</span>
-                </div>
-                <div class="status-item status-inactive">
-                  <span class="status-count">{{ data.employeesByStatus.inactive }}</span>
-                  <span class="status-label">Inativos</span>
-                </div>
-                <div class="status-item status-terminated">
-                  <span class="status-count">{{ data.employeesByStatus.terminated }}</span>
-                  <span class="status-label">Desligados</span>
-                </div>
-              </div>
+              <DonutChart
+                :data="statusDonutData"
+                :size="180"
+                :center-value="data.totalEmployees.toString()"
+                center-label="Total"
+              />
             </div>
           </div>
         </div>
 
         <!-- Right Column -->
         <div class="content-column">
+          <!-- Attendance Today -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Presenca Hoje</h3>
+            </div>
+            <div class="card-body">
+              <DonutChart
+                :data="attendanceDonutData"
+                :size="180"
+                :center-value="getAttendancePercentage().toString() + '%'"
+                center-label="Presentes"
+              />
+            </div>
+          </div>
+
           <!-- Upcoming Leaves -->
           <div class="card">
             <div class="card-header">
@@ -433,86 +473,6 @@ onMounted(async () => {
   font-size: var(--font-size-sm);
 }
 
-/* Department Distribution */
-.department-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-}
-
-.department-item {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.department-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.department-name {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-tertiary);
-  font-weight: var(--font-weight-medium);
-}
-
-.department-count {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-  font-weight: var(--font-weight-semibold);
-}
-
-.department-bar {
-  height: 6px;
-  background: var(--color-bg-muted);
-  border-radius: var(--radius-xs);
-  overflow: hidden;
-}
-
-.department-bar-fill {
-  height: 100%;
-  background: var(--color-primary-gradient);
-  border-radius: var(--radius-xs);
-  min-width: 4px;
-  transition: width var(--transition-slow);
-}
-
-/* Status Grid */
-.status-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-6);
-}
-
-.status-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--space-8);
-  border-radius: var(--radius-lg);
-  gap: var(--space-2);
-}
-
-.status-active { background: var(--color-success-light); }
-.status-inactive { background: var(--color-warning-light); }
-.status-terminated { background: var(--color-danger-light); }
-
-.status-count {
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-}
-
-.status-active .status-count { color: var(--color-success-darker); }
-.status-inactive .status-count { color: var(--color-warning-darker); }
-.status-terminated .status-count { color: var(--color-danger-darker); }
-
-.status-label {
-  font-size: var(--font-size-2xs);
-  color: var(--color-text-muted);
-  font-weight: var(--font-weight-medium);
-}
 
 /* Leave List */
 .leave-list {

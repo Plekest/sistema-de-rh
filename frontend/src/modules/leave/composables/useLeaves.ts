@@ -7,6 +7,7 @@ import type { Employee } from '@/modules/employees/types'
 import { useAuthStore } from '@/stores/auth'
 import { useConfirmDialog } from '@/composables/useConfirmDialog'
 import { useApiError } from '@/composables/useApiError'
+import { useExport } from '@/composables/useExport'
 
 /**
  * Composable para gerenciar logica de ferias e licencas
@@ -18,6 +19,7 @@ export function useLeaves() {
   const authStore = useAuthStore()
   const { confirm: confirmDialog } = useConfirmDialog()
   const { error, handleError, clearError } = useApiError()
+  const { exporting, exportCSV } = useExport()
 
   // Estado principal
   const leaves = ref<Leave[]>([])
@@ -329,6 +331,9 @@ export function useLeaves() {
     typeOptions,
     statusOptions,
 
+    // Export
+    exporting,
+
     // Metodos
     loadLeaves,
     loadEmployees,
@@ -342,5 +347,13 @@ export function useLeaves() {
     canCancel,
     formatDate,
     init,
+    handleExport: async () => {
+      try {
+        const timestamp = new Date().toISOString().split('T')[0]
+        await exportCSV('/leaves/export', `ferias-licencas-${timestamp}.csv`)
+      } catch (err: unknown) {
+        handleError(err, 'Erro ao exportar dados.')
+      }
+    },
   }
 }
