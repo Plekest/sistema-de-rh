@@ -20,9 +20,10 @@ test.group('HoursBankService - calculateMonth', (group) => {
   })
 
   group.each.setup(async () => {
+    const uniqueEmail = `banco.horas.${Date.now()}@empresa.com`
     employee = await Employee.create({
       fullName: 'Funcionario Banco Horas',
-      email: 'banco.horas@empresa.com',
+      email: uniqueEmail,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',
@@ -191,9 +192,10 @@ test.group('HoursBankService - getBalance', (group) => {
   })
 
   group.each.setup(async () => {
+    const uniqueEmail = `balance.${Date.now()}@empresa.com`
     employee = await Employee.create({
       fullName: 'Funcionario Balance',
-      email: 'balance@empresa.com',
+      email: uniqueEmail,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',
@@ -282,9 +284,10 @@ test.group('HoursBankService - getHistory', (group) => {
   })
 
   group.each.setup(async () => {
+    const uniqueEmail = `history.${Date.now()}@empresa.com`
     employee = await Employee.create({
       fullName: 'Funcionario History',
-      email: 'history@empresa.com',
+      email: uniqueEmail,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',
@@ -398,9 +401,10 @@ test.group('HoursBankService - recalculate', (group) => {
   })
 
   group.each.setup(async () => {
+    const uniqueEmail = `recalc.${Date.now()}@empresa.com`
     employee = await Employee.create({
       fullName: 'Funcionario Recalc',
-      email: 'recalc@empresa.com',
+      email: uniqueEmail,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',

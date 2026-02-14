@@ -19,7 +19,7 @@ export const createLeaveValidator = vine.compile(
     ]),
     startDate: vine.string().trim(),
     endDate: vine.string().trim(),
-    daysCount: vine.number().positive(),
+    daysCount: vine.number().positive().min(1),
     isPaid: vine.boolean().optional(),
     sellDays: vine.number().min(0).optional(),
     leaveBalanceId: vine.number().positive().optional().nullable(),
@@ -66,7 +66,7 @@ export const listLeaveValidator = vine.compile(
  */
 export const updateLeaveConfigValidator = vine.compile(
   vine.object({
-    defaultDays: vine.number().positive().optional(),
+    defaultDays: vine.number().positive().min(1).optional(),
     requiresApproval: vine.boolean().optional(),
     requiresDocument: vine.boolean().optional(),
     isPaid: vine.boolean().optional(),

@@ -80,7 +80,7 @@ export const updateEmployeeValidator = vine.compile(
 
 export const listEmployeeValidator = vine.compile(
   vine.object({
-    page: vine.number().positive().optional(),
+    page: vine.number().positive().min(1).optional(),
     limit: vine.number().positive().max(500).optional(),
     search: vine.string().trim().optional(),
     type: vine.enum(['clt', 'pj']).optional(),

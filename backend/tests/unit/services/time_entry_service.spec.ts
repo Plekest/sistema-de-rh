@@ -114,9 +114,10 @@ test.group('TimeEntryService - clockOut', (group) => {
   })
 
   group.each.setup(async () => {
+    const uniqueEmail = `funcionario.teste.${Date.now()}@empresa.com`
     employee = await Employee.create({
       fullName: 'Funcionario Teste',
-      email: 'funcionario.teste2@empresa.com',
+      email: uniqueEmail,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',
@@ -212,9 +213,10 @@ test.group('TimeEntryService - lunchStart', (group) => {
   })
 
   group.each.setup(async () => {
+    const uniqueEmail = `funcionario.teste.${Date.now()}@empresa.com`
     employee = await Employee.create({
       fullName: 'Funcionario Teste',
-      email: 'funcionario.teste3@empresa.com',
+      email: uniqueEmail,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',
@@ -262,9 +264,10 @@ test.group('TimeEntryService - lunchEnd', (group) => {
   })
 
   group.each.setup(async () => {
+    const uniqueEmail = `funcionario.teste.${Date.now()}@empresa.com`
     employee = await Employee.create({
       fullName: 'Funcionario Teste',
-      email: 'funcionario.teste4@empresa.com',
+      email: uniqueEmail,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',
@@ -315,9 +318,10 @@ test.group('TimeEntryService - getToday', (group) => {
   })
 
   group.each.setup(async () => {
+    const uniqueEmail = `funcionario.teste.${Date.now()}@empresa.com`
     employee = await Employee.create({
       fullName: 'Funcionario Teste',
-      email: 'funcionario.teste5@empresa.com',
+      email: uniqueEmail,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',
@@ -355,9 +359,10 @@ test.group('TimeEntryService - getRecent', (group) => {
 
   group.each.setup(async () => {
     // Criar employee com userId vinculado
+    const uniqueEmail = `funcionario.teste.${Date.now()}@empresa.com`
     employee = await Employee.create({
       fullName: 'Funcionario Teste',
-      email: 'funcionario.teste6@empresa.com',
+      email: uniqueEmail,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',

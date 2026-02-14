@@ -2,10 +2,12 @@
 import { ref, computed } from 'vue'
 import { RouterView, RouterLink, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useNotifications } from '@/composables/useNotifications'
 import type { UserPermissions } from '@/modules/auth/types'
 
 const route = useRoute()
 const authStore = useAuthStore()
+const { unreadCount } = useNotifications()
 
 // Estado do menu mobile
 const isMobileMenuOpen = ref(false)
@@ -156,6 +158,13 @@ function getPageTitle(): string {
           <h2 class="header-title">{{ getPageTitle() }}</h2>
         </div>
         <div class="header-right">
+          <RouterLink to="/notifications" class="notification-bell" aria-label="Notificacoes">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span v-if="unreadCount > 0" class="notification-badge">{{ unreadCount > 99 ? '99+' : unreadCount }}</span>
+          </RouterLink>
           <span class="header-user">{{ authStore.user?.fullName }}</span>
         </div>
       </header>
@@ -369,12 +378,51 @@ function getPageTitle(): string {
 .header-right {
   display: flex;
   align-items: center;
+  gap: var(--space-8);
 }
 
 .header-user {
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
   font-weight: var(--font-weight-medium);
+}
+
+/* Badge de notificacoes */
+.notification-bell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.notification-bell:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-hover);
+}
+
+.notification-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background-color: var(--color-error);
+  color: white;
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  padding: 0 4px;
+  line-height: 1;
+  box-shadow: 0 0 0 2px var(--color-bg-card);
 }
 
 /* Hamburger (mobile only) */

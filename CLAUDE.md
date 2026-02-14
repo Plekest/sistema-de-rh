@@ -7,21 +7,28 @@ Sistema de Gestao de Recursos Humanos para empresas brasileiras de medio porte. 
 ## Status Atual do Projeto
 
 ### Modulos implementados e funcionando:
-1. **Auth** - Login/logout com opaque tokens, RBAC (admin/manager/employee)
+1. **Auth** - Login/logout com opaque tokens, RBAC (admin/manager/employee), forgot/reset password
 2. **Employees** - CRUD completo de CLT e PJ, com departamentos e cargos
 3. **Departments + Positions** - Estrutura organizacional
-4. **Attendance** - Clock-in/out, almoco, registros dos ultimos 7 dias
-5. **Hours Bank** - Saldo mensal, saldo acumulado (positivo e negativo)
-6. **Documents** - Upload, visualizacao e download por colaborador
+4. **Attendance** - Clock-in/out, almoco, registros dos ultimos 7 dias, gestao completa
+5. **Hours Bank** - Saldo mensal, saldo acumulado (positivo e negativo), calculo automatico
+6. **Documents** - Upload, visualizacao e download por colaborador, tipos de documento
 7. **Employee History** - Timeline de eventos (admissao, promocao, transferencia, etc.)
 8. **Users Management** - CRUD de usuarios do sistema (admin only)
 9. **Role Permissions** - Admin configura quais telas cada perfil pode ver
 10. **Auto User Creation** - Ao cadastrar colaborador, cria user automaticamente
+11. **Leave** - Gestao de ferias e licencas com aprovacao, saldo e calendário
+12. **Payroll** - Folha de pagamento com rubricas, calculos e impostos
+13. **Benefits** - Gestao de beneficios (VT, VR, plano saúde) com planos e adesões
+14. **Performance** - Avaliações de desempenho e metas (OKRs)
+15. **Recruitment** - Processo seletivo completo (vagas, candidatos, entrevistas, pipeline)
+16. **Dashboard** - Visão geral com widgets de métricas e KPIs do RH
+17. **Notifications** - Sistema de notificações em tempo real
 
 ### Modulos planejados (pastas criadas, sem implementacao):
-- Leave (ferias/licencas), Payroll (folha), Benefits, Performance, Recruitment, Training, Dashboard (apenas card de boas-vindas)
+- **Training** - Gestão de treinamentos e desenvolvimento
 
-### Proximo modulo a implementar: **Ferias e Licencas (Leave)**
+### Proximo modulo a implementar: **Training**
 
 ## Stack Tecnologica
 
@@ -59,7 +66,14 @@ sistema-de-rh/
 │   │   │   ├── hours_bank_controller.ts
 │   │   │   ├── employee_histories_controller.ts
 │   │   │   ├── users_controller.ts
-│   │   │   └── role_permissions_controller.ts
+│   │   │   ├── role_permissions_controller.ts
+│   │   │   ├── leaves_controller.ts
+│   │   │   ├── payroll_controller.ts
+│   │   │   ├── benefits_controller.ts
+│   │   │   ├── performance_controller.ts
+│   │   │   ├── recruitment_controller.ts
+│   │   │   ├── notifications_controller.ts
+│   │   │   └── dashboard_controller.ts
 │   │   ├── models/              # Models Lucid (entidades do banco)
 │   │   │   ├── user.ts
 │   │   │   ├── employee.ts       # Suporta CLT e PJ (campo type)
@@ -69,14 +83,30 @@ sistema-de-rh/
 │   │   │   ├── time_entry.ts
 │   │   │   ├── hours_bank.ts
 │   │   │   ├── employee_history.ts
-│   │   │   └── role_permission.ts
+│   │   │   ├── role_permission.ts
+│   │   │   ├── leave.ts
+│   │   │   ├── leave_balance.ts
+│   │   │   ├── leave_config.ts
+│   │   │   ├── payroll_period.ts
+│   │   │   ├── payroll_entry.ts
+│   │   │   ├── payroll_component.ts
+│   │   │   ├── tax_table.ts
+│   │   │   ├── benefit_plan.ts
+│   │   │   ├── benefit_enrollment.ts
+│   │   │   ├── performance_review.ts
+│   │   │   ├── performance_goal.ts
+│   │   │   ├── job_requisition.ts
+│   │   │   ├── candidate.ts
+│   │   │   ├── interview.ts
+│   │   │   ├── pipeline_stage.ts
+│   │   │   └── notification.ts
 │   │   ├── services/            # Logica de negocio (camada principal)
 │   │   ├── validators/          # Schemas de validacao VineJS
 │   │   ├── middleware/          # Middlewares HTTP (auth, role)
 │   │   └── exceptions/          # Exceptions customizadas
 │   ├── config/                  # Configuracoes do Adonis
 │   ├── database/
-│   │   ├── migrations/          # 11 migrations (users ate role_permissions)
+│   │   ├── migrations/          # 30+ migrations (users, employees, leave, payroll, benefits, etc)
 │   │   └── seeders/             # Seeds para desenvolvimento
 │   ├── start/
 │   │   ├── routes.ts            # Todas as rotas da API
@@ -99,12 +129,13 @@ sistema-de-rh/
 │   │   │   ├── history/         # [IMPLEMENTADO] Timeline
 │   │   │   ├── users/           # [IMPLEMENTADO] CRUD admin
 │   │   │   ├── admin/           # [IMPLEMENTADO] Permissoes
-│   │   │   ├── dashboard/       # [PLACEHOLDER] Apenas welcome card
-│   │   │   ├── leave/           # [PLACEHOLDER] .gitkeep apenas
-│   │   │   ├── payroll/         # [PLACEHOLDER] .gitkeep apenas
-│   │   │   ├── benefits/        # [PLACEHOLDER] .gitkeep apenas
-│   │   │   ├── performance/     # [PLACEHOLDER] .gitkeep apenas
-│   │   │   ├── recruitment/     # [PLACEHOLDER] .gitkeep apenas
+│   │   │   ├── dashboard/       # [IMPLEMENTADO] Widgets e KPIs
+│   │   │   ├── leave/           # [IMPLEMENTADO] Ferias e licencas
+│   │   │   ├── payroll/         # [IMPLEMENTADO] Folha de pagamento
+│   │   │   ├── benefits/        # [IMPLEMENTADO] Gestao de beneficios
+│   │   │   ├── performance/     # [IMPLEMENTADO] Avaliacoes e metas
+│   │   │   ├── recruitment/     # [IMPLEMENTADO] Processo seletivo
+│   │   │   ├── notifications/   # [IMPLEMENTADO] Notificacoes
 │   │   │   └── training/        # [PLACEHOLDER] .gitkeep apenas
 │   │   ├── router/              # Configuracao Vue Router
 │   │   ├── stores/              # Stores Pinia (auth)
@@ -203,6 +234,7 @@ modules/employees/
 
 ## Modelo de Dados Atual (tabelas existentes no banco)
 
+### Tabelas Core
 ```
 users                  employees              departments
 - id                   - id                   - id
@@ -213,27 +245,180 @@ users                  employees              departments
 - is_active            - email / phone        positions
 - created_at           - type (clt/pj)        - id
                        - department_id FK     - title
-time_entries           - position_id FK       - description
-- id                   - hire_date            - department_id FK
-- employee_id FK       - termination_date     - created_at
-- date                 - salary
-- clock_in/out         - status (enum)        documents
-- lunch_start/end      - birth_date           - id
-- total_worked_minutes - address_* (7 cols)   - employee_id FK
-- type (enum)          - notes                - type
-- notes                - created_at           - file_path / file_name
+                       - position_id FK       - description
+                       - hire_date            - department_id FK
+                       - termination_date     - created_at
+                       - salary
+                       - status (enum)        documents
+                       - birth_date           - id
+                       - address_* (7 cols)   - employee_id FK
+                       - notes                - type
+                       - created_at           - file_path / file_name
+                                              - file_size
+                                              - title
                                               - uploaded_at
-hours_bank             employee_histories
-- id                   - id                   role_permissions
-- employee_id FK       - employee_id FK       - id
-- reference_month      - type (enum: hire,    - role (enum)
-- reference_year         promotion, transfer, - module (enum)
-- expected_minutes       salary_change, etc.) - can_access (bool)
-- worked_minutes       - title                - created_at
-- balance_minutes      - description
-- accumulated_balance  - old_value/new_value
-                       - created_by FK
-                       - event_date
+```
+
+### Tabelas de Ponto e Banco de Horas
+```
+time_entries           hours_bank
+- id                   - id
+- employee_id FK       - employee_id FK
+- date                 - reference_month
+- clock_in/out         - reference_year
+- lunch_start/end      - expected_minutes
+- total_worked_minutes - worked_minutes
+- type (enum)          - balance_minutes
+- notes                - accumulated_balance_minutes
+- created_at           - created_at
+```
+
+### Tabelas de Histórico e Permissões
+```
+employee_histories     role_permissions
+- id                   - id
+- employee_id FK       - role (enum)
+- type (enum)          - module (enum)
+- title                - can_access (bool)
+- description          - created_at
+- old_value
+- new_value
+- created_by FK
+- event_date
+- created_at
+```
+
+### Tabelas de Férias e Licenças
+```
+leaves                 leave_balances         leave_configs
+- id                   - id                   - id
+- employee_id FK       - employee_id FK       - leave_type
+- leave_balance_id FK  - accrual_start_date   - label
+- type                 - total_days           - default_days
+- status               - used_days            - max_days
+- start_date           - remaining_days       - requires_approval
+- end_date             - status               - is_paid
+- days_count           - notes                - color
+- return_date          - created_at           - created_at
+- reason
+- approved_by FK
+- approved_at
+- rejected_reason
+- created_at
+```
+
+### Tabelas de Folha de Pagamento
+```
+payroll_periods        payroll_entries        payroll_components
+- id                   - id                   - id
+- period_name          - payroll_period_id FK - payroll_entry_id FK
+- reference_month      - employee_id FK       - type (earning/deduction)
+- reference_year       - gross_salary         - code
+- status               - total_earnings       - description
+- payment_date         - total_deductions     - amount
+- created_by FK        - net_salary           - percentage
+- created_at           - inss                 - base_value
+- closed_at            - fgts                 - is_taxable
+                       - irrf                 - notes
+                       - status               - created_at
+                       - notes
+                       - created_at
+
+tax_tables
+- id
+- tax_type (inss/irrf)
+- year
+- min_value
+- max_value
+- rate
+- deduction
+- created_at
+```
+
+### Tabelas de Benefícios
+```
+benefits_plans         benefit_enrollments    benefit_dependents
+- id                   - id                   - id
+- benefit_id FK        - benefit_plan_id FK   - benefit_enrollment_id FK
+- name                 - employee_id FK       - name
+- description          - status               - relationship
+- provider             - enrollment_date      - birth_date
+- monthly_value        - cancellation_date    - cpf
+- employer_contribution- cancellation_reason  - created_at
+- employee_discount_%  - notes
+- employee_discount_$  - created_at
+- is_active
+- created_at
+
+benefits (base)
+- id
+- name
+- type (health/dental/meal/transport/etc)
+- description
+- created_at
+```
+
+### Tabelas de Performance
+```
+performance_reviews    performance_goals
+- id                   - id
+- employee_id FK       - employee_id FK
+- reviewer_id FK       - performance_review_id FK
+- review_period        - title
+- review_type          - description
+- overall_rating       - type (okr/smart/kpi)
+- strengths            - target_value
+- weaknesses           - current_value
+- achievements         - progress
+- improvement_areas    - status
+- goals_next_period    - deadline
+- status               - created_at
+- scheduled_date
+- completed_date
+- notes
+- created_at
+```
+
+### Tabelas de Recrutamento
+```
+job_requisitions       candidates             interviews
+- id                   - id                   - id
+- title                - job_requisition_id FK- candidate_id FK
+- department_id FK     - name                 - interviewer_id FK
+- positions_count      - email                - pipeline_stage_id FK
+- employment_type      - phone                - type
+- salary_range_min/max - resume_url           - scheduled_date
+- description          - current_stage        - duration_minutes
+- requirements         - source               - location
+- responsibilities     - application_date     - feedback
+- status               - notes                - rating
+- priority             - created_at           - result
+- posted_date                                 - notes
+- deadline                                    - created_at
+- created_by FK
+- created_at
+
+pipeline_stages
+- id
+- job_requisition_id FK
+- name
+- order
+- type (screening/interview/offer/etc)
+- created_at
+```
+
+### Tabela de Notificações
+```
+notifications
+- id
+- user_id FK
+- type
+- title
+- message
+- is_read
+- read_at
+- metadata (json)
+- created_at
 ```
 
 ## Comandos Uteis

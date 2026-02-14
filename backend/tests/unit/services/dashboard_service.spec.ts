@@ -24,13 +24,11 @@ test.group('DashboardService - getAdminDashboard', (group) => {
 
   group.each.setup(async () => {
     department = await Department.create({
-      name: 'TI',
-      description: 'Tecnologia da Informacao',
+      name: `TI-${Date.now()}`,
     })
 
     position = await Position.create({
-      title: 'Desenvolvedor',
-      description: 'Desenvolvedor de Software',
+      title: `Desenvolvedor-${Date.now()}`,
       departmentId: department.id,
     })
   })
@@ -52,7 +50,7 @@ test.group('DashboardService - getAdminDashboard', (group) => {
   test('deve contar total de employees ativos corretamente', async ({ assert }) => {
     await Employee.create({
       fullName: 'Colaborador Ativo 1',
-      email: 'ativo1@empresa.com',
+      email: `ativo1.${Date.now()}@empresa.com`,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',
@@ -63,7 +61,7 @@ test.group('DashboardService - getAdminDashboard', (group) => {
 
     await Employee.create({
       fullName: 'Colaborador Ativo 2',
-      email: 'ativo2@empresa.com',
+      email: `ativo2.${Date.now()}@empresa.com`,
       type: 'pj',
       hireDate: DateTime.now(),
       status: 'active',
@@ -74,7 +72,7 @@ test.group('DashboardService - getAdminDashboard', (group) => {
 
     await Employee.create({
       fullName: 'Colaborador Inativo',
-      email: 'inativo@empresa.com',
+      email: `inativo.${Date.now()}@empresa.com`,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'inactive',
@@ -91,7 +89,7 @@ test.group('DashboardService - getAdminDashboard', (group) => {
   test('deve separar employees por tipo corretamente', async ({ assert }) => {
     await Employee.create({
       fullName: 'CLT Employee',
-      email: 'clt@empresa.com',
+      email: `clt.${Date.now()}@empresa.com`,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',
@@ -101,7 +99,7 @@ test.group('DashboardService - getAdminDashboard', (group) => {
 
     await Employee.create({
       fullName: 'PJ Employee',
-      email: 'pj@empresa.com',
+      email: `pj.${Date.now()}@empresa.com`,
       type: 'pj',
       hireDate: DateTime.now(),
       status: 'active',
@@ -120,7 +118,7 @@ test.group('DashboardService - getAdminDashboard', (group) => {
   test('deve separar employees por status corretamente', async ({ assert }) => {
     await Employee.create({
       fullName: 'Active Employee',
-      email: 'active@empresa.com',
+      email: `active.${Date.now()}@empresa.com`,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',
@@ -130,7 +128,7 @@ test.group('DashboardService - getAdminDashboard', (group) => {
 
     await Employee.create({
       fullName: 'Terminated Employee',
-      email: 'terminated@empresa.com',
+      email: `terminated.${Date.now()}@empresa.com`,
       type: 'clt',
       hireDate: DateTime.now().minus({ years: 1 }),
       terminationDate: DateTime.now(),
@@ -148,13 +146,12 @@ test.group('DashboardService - getAdminDashboard', (group) => {
 
   test('deve retornar distribuicao por departamento', async ({ assert }) => {
     const dept2 = await Department.create({
-      name: 'RH',
-      description: 'Recursos Humanos',
+      name: `RH-${Date.now()}`,
     })
 
     await Employee.create({
       fullName: 'Employee TI',
-      email: 'empti@empresa.com',
+      email: `empti.${Date.now()}@empresa.com`,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',
@@ -164,7 +161,7 @@ test.group('DashboardService - getAdminDashboard', (group) => {
 
     await Employee.create({
       fullName: 'Employee RH',
-      email: 'emprh@empresa.com',
+      email: `emprh.${Date.now()}@empresa.com`,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',
@@ -181,7 +178,7 @@ test.group('DashboardService - getAdminDashboard', (group) => {
   test('deve contar pending leaves corretamente', async ({ assert }) => {
     const employee = await Employee.create({
       fullName: 'Employee Leave',
-      email: 'leave@empresa.com',
+      email: `leave.${Date.now()}@empresa.com`,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',
@@ -207,7 +204,7 @@ test.group('DashboardService - getAdminDashboard', (group) => {
   test('deve listar upcoming leaves nos proximos 30 dias', async ({ assert }) => {
     const employee = await Employee.create({
       fullName: 'Employee Upcoming',
-      email: 'upcoming@empresa.com',
+      email: `upcoming.${Date.now()}@empresa.com`,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',
@@ -233,7 +230,7 @@ test.group('DashboardService - getAdminDashboard', (group) => {
   test('deve listar recent hires', async ({ assert }) => {
     await Employee.create({
       fullName: 'New Hire',
-      email: 'newhire@empresa.com',
+      email: `newhire.${Date.now()}@empresa.com`,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',
@@ -251,7 +248,7 @@ test.group('DashboardService - getAdminDashboard', (group) => {
   test('deve contar attendance hoje', async ({ assert }) => {
     const employee = await Employee.create({
       fullName: 'Employee Today',
-      email: 'today@empresa.com',
+      email: `today.${Date.now()}@empresa.com`,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',
@@ -298,19 +295,17 @@ test.group('DashboardService - getEmployeeDashboard', (group) => {
 
   group.each.setup(async () => {
     department = await Department.create({
-      name: 'Financeiro',
-      description: 'Departamento Financeiro',
+      name: `Financeiro-${Date.now()}`,
     })
 
     position = await Position.create({
-      title: 'Analista',
-      description: 'Analista Financeiro',
+      title: `Analista-${Date.now()}`,
       departmentId: department.id,
     })
 
     employee = await Employee.create({
       fullName: 'Colaborador Dashboard',
-      email: 'dashboard@empresa.com',
+      email: `dashboard.${Date.now()}@empresa.com`,
       type: 'clt',
       hireDate: DateTime.now().minus({ years: 1 }),
       status: 'active',

@@ -213,22 +213,22 @@ onMounted(() => {
 .forgot-password-page {
   min-height: 100vh;
   display: flex;
-  background: #f0f2f5;
+  background: var(--color-bg-page);
 }
 
 /* ========== Painel Esquerdo - Branding ========== */
 .forgot-brand {
   flex: 0 0 45%;
-  background: linear-gradient(135deg, #667eea 0%, #5a55d2 50%, #764ba2 100%);
+  background: var(--color-primary-gradient);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
-  padding: 3rem;
+  padding: var(--space-24);
   opacity: 0;
   transform: translateX(-30px);
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: var(--transition-entrance);
 }
 
 .forgot-brand.animate-in {
@@ -246,7 +246,7 @@ onMounted(() => {
 .brand-icon {
   width: 72px;
   height: 72px;
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-16);
 }
 
 .brand-icon svg {
@@ -255,31 +255,31 @@ onMounted(() => {
 }
 
 .brand-title {
-  font-size: 2.25rem;
-  font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: 0.5rem;
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-extrabold);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--space-4);
   letter-spacing: -0.02em;
 }
 
 .brand-subtitle {
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   opacity: 0.8;
-  margin-bottom: 3rem;
-  font-weight: 400;
+  margin-bottom: var(--space-24);
+  font-weight: var(--font-weight-normal);
 }
 
 .brand-features {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: var(--space-10);
 }
 
 .feature-item {
   display: flex;
   align-items: center;
-  gap: 0.875rem;
-  font-size: 0.95rem;
+  gap: var(--space-6);
+  font-size: var(--font-size-md);
   opacity: 0.9;
 }
 
@@ -287,7 +287,7 @@ onMounted(() => {
   width: 40px;
   height: 40px;
   background: rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
+  border-radius: var(--radius-xl);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -309,7 +309,7 @@ onMounted(() => {
 .deco-circle {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: var(--border-width) solid rgba(255, 255, 255, 0.1);
 }
 
 .deco-1 {
@@ -333,7 +333,7 @@ onMounted(() => {
   height: 120px;
   top: 50%;
   right: 10%;
-  border: 2px solid rgba(255, 255, 255, 0.06);
+  border: var(--border-width-thick) solid rgba(255, 255, 255, 0.06);
 }
 
 /* ========== Painel Direito - Formulário ========== */
@@ -342,7 +342,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: var(--space-16);
 }
 
 .forgot-card {
@@ -350,7 +350,7 @@ onMounted(() => {
   max-width: 440px;
   opacity: 0;
   transform: translateY(20px);
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+  transition: var(--transition-entrance) 0.15s;
 }
 
 .forgot-card.animate-in {
@@ -360,14 +360,14 @@ onMounted(() => {
 
 /* ========== Header ========== */
 .forgot-header {
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-16);
 }
 
 .mobile-logo {
   display: none;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 2rem;
+  gap: var(--space-6);
+  margin-bottom: var(--space-16);
 }
 
 .mobile-logo-icon {
@@ -382,54 +382,54 @@ onMounted(() => {
 }
 
 .mobile-logo-text {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #1a202c;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
 }
 
 .forgot-header h2 {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 0.375rem;
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-3);
   letter-spacing: -0.01em;
 }
 
 .forgot-header p {
-  font-size: 0.95rem;
-  color: #718096;
+  font-size: var(--font-size-md);
+  color: var(--color-text-muted);
 }
 
 /* ========== Form ========== */
 .forgot-form {
   display: flex;
   flex-direction: column;
-  gap: 1.375rem;
+  gap: var(--space-10);
 }
 
 /* Sucesso */
 .success-alert {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-radius: 10px;
-  padding: 0.75rem 1rem;
-  color: #166534;
-  font-size: 0.875rem;
+  gap: var(--space-5);
+  background: var(--color-success-light);
+  border: var(--border-width) solid var(--color-success-lighter);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6) var(--space-8);
+  color: var(--color-success-darker);
+  font-size: var(--font-size-base);
 }
 
 .success-icon {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
-  stroke: #16a34a;
+  stroke: var(--color-success);
 }
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 0.3s ease;
+  transition: var(--transition-slow);
 }
 
 .fade-enter-from {
@@ -446,13 +446,13 @@ onMounted(() => {
 .error-alert {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
-  background: #fff5f5;
-  border: 1px solid #fed7d7;
-  border-radius: 10px;
-  padding: 0.75rem 1rem;
-  color: #c53030;
-  font-size: 0.875rem;
+  gap: var(--space-5);
+  background: var(--color-danger-light);
+  border: var(--border-width) solid var(--color-danger-lighter);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6) var(--space-8);
+  color: var(--color-danger-dark);
+  font-size: var(--font-size-base);
   animation: shake 0.4s ease;
 }
 
@@ -460,7 +460,7 @@ onMounted(() => {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
-  stroke: #e53e3e;
+  stroke: var(--color-danger);
 }
 
 .error-close {
@@ -468,10 +468,10 @@ onMounted(() => {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 4px;
+  padding: var(--space-2);
+  border-radius: var(--radius-xs);
   display: flex;
-  transition: background 0.15s;
+  transition: var(--transition-fast);
 }
 
 .error-close:hover {
@@ -481,7 +481,7 @@ onMounted(() => {
 .error-close svg {
   width: 16px;
   height: 16px;
-  stroke: #c53030;
+  stroke: var(--color-danger-dark);
 }
 
 @keyframes shake {
@@ -496,13 +496,13 @@ onMounted(() => {
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-4);
 }
 
 .field label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #2d3748;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
 }
 
 /* Input wrapper */
@@ -514,45 +514,45 @@ onMounted(() => {
 
 .input-icon {
   position: absolute;
-  left: 0.875rem;
+  left: var(--space-6);
   width: 18px;
   height: 18px;
-  stroke: #a0aec0;
+  stroke: var(--color-text-placeholder);
   pointer-events: none;
-  transition: stroke 0.2s;
+  transition: var(--transition-base);
 }
 
 .input-wrapper:focus-within .input-icon {
-  stroke: #667eea;
+  stroke: var(--color-primary);
 }
 
 .input-wrapper input {
   width: 100%;
-  padding: 0.8125rem 1rem 0.8125rem 2.75rem;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 10px;
-  font-size: 0.9375rem;
-  color: #1a202c;
-  background: white;
+  padding: var(--input-padding-y) var(--space-8) var(--input-padding-y) 2.75rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+  background: var(--color-bg-input);
   outline: none;
-  transition: all 0.2s;
+  transition: var(--transition-base);
 }
 
 .input-wrapper input::placeholder {
-  color: #cbd5e0;
+  color: var(--color-text-disabled);
 }
 
 .input-wrapper input:hover:not(:disabled) {
-  border-color: #cbd5e0;
+  border-color: var(--color-border-hover);
 }
 
 .input-wrapper input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
+  border-color: var(--color-border-focus);
+  box-shadow: var(--input-focus-ring);
 }
 
 .input-wrapper input:disabled {
-  background: #f7fafc;
+  background: var(--color-bg-disabled);
   cursor: not-allowed;
   opacity: 0.7;
 }
@@ -562,18 +562,18 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var(--space-4);
   width: 100%;
-  padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: var(--space-6) var(--space-12);
+  background: var(--color-primary-gradient);
   color: white;
   border: none;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 600;
+  border-radius: var(--radius-xl);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  margin-top: 0.5rem;
+  transition: var(--transition-spring);
+  margin-top: var(--space-4);
   position: relative;
   overflow: hidden;
 }
@@ -584,12 +584,12 @@ onMounted(() => {
   inset: 0;
   background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
   opacity: 0;
-  transition: opacity 0.25s;
+  transition: var(--transition-spring);
 }
 
 .btn-submit:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.35);
+  box-shadow: var(--shadow-primary-lg);
 }
 
 .btn-submit:hover:not(:disabled)::before {
@@ -598,7 +598,7 @@ onMounted(() => {
 
 .btn-submit:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+  box-shadow: var(--shadow-primary);
 }
 
 .btn-submit:disabled {
@@ -621,31 +621,31 @@ onMounted(() => {
 /* ========== Back Link ========== */
 .back-link {
   text-align: center;
-  margin-top: 0.5rem;
+  margin-top: var(--space-4);
 }
 
 .back-link a {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: #667eea;
+  gap: var(--space-4);
+  font-size: var(--font-size-base);
+  color: var(--color-primary);
   text-decoration: none;
-  font-weight: 500;
-  transition: all 0.15s;
-  padding: 0.375rem 0.5rem;
-  border-radius: 6px;
+  font-weight: var(--font-weight-medium);
+  transition: var(--transition-fast);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
 }
 
 .back-link a:hover {
-  color: #5a55d2;
+  color: var(--color-primary-darker);
   background: rgba(102, 126, 234, 0.06);
 }
 
 .back-link svg {
   width: 16px;
   height: 16px;
-  transition: transform 0.15s;
+  transition: var(--transition-fast);
 }
 
 .back-link a:hover svg {
@@ -655,12 +655,12 @@ onMounted(() => {
 /* ========== Footer ========== */
 .forgot-footer {
   text-align: center;
-  margin-top: 2.5rem;
+  margin-top: var(--space-20);
 }
 
 .forgot-footer p {
-  font-size: 0.75rem;
-  color: var(--color-text-muted, #718096);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
 }
 
 /* ========== Transitions ========== */
@@ -669,7 +669,7 @@ onMounted(() => {
 }
 
 .shake-leave-active {
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .shake-leave-to {
@@ -681,7 +681,7 @@ onMounted(() => {
 @media (max-width: 1024px) {
   .forgot-brand {
     flex: 0 0 40%;
-    padding: 2rem;
+    padding: var(--space-16);
   }
 
   .brand-title {
@@ -689,7 +689,7 @@ onMounted(() => {
   }
 
   .brand-subtitle {
-    margin-bottom: 2rem;
+    margin-bottom: var(--space-16);
   }
 }
 
@@ -704,8 +704,8 @@ onMounted(() => {
 
   .forgot-form-panel {
     min-height: 100vh;
-    background: linear-gradient(180deg, #f0f2f5 0%, #e8ecf4 100%);
-    padding: 1.5rem;
+    background: linear-gradient(180deg, var(--color-bg-page) 0%, #e8ecf4 100%);
+    padding: var(--space-12);
   }
 
   .mobile-logo {
@@ -713,40 +713,40 @@ onMounted(() => {
   }
 
   .forgot-card {
-    background: white;
-    border-radius: 16px;
-    padding: 2rem;
+    background: var(--color-bg-card);
+    border-radius: var(--radius-3xl);
+    padding: var(--space-16);
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
     max-width: 420px;
   }
 
   .forgot-header h2 {
-    font-size: 1.5rem;
+    font-size: var(--font-size-3xl);
   }
 
   .forgot-footer {
-    margin-top: 2rem;
+    margin-top: var(--space-16);
   }
 }
 
 @media (max-width: 480px) {
   .forgot-form-panel {
-    padding: 1rem;
+    padding: var(--space-8);
     align-items: flex-start;
-    padding-top: 2rem;
+    padding-top: var(--space-16);
   }
 
   .forgot-card {
-    padding: 1.5rem;
+    padding: var(--space-12);
   }
 
   .forgot-header h2 {
-    font-size: 1.375rem;
+    font-size: var(--font-size-2xl);
   }
 
   .btn-submit {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.9375rem;
+    padding: var(--space-6) var(--space-10);
+    font-size: var(--font-size-md);
   }
 }
 </style>
