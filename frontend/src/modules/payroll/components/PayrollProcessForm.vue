@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CreatePeriodData } from '../types'
 
-defineProps<{
+const { formData } = defineProps<{
   formData: CreatePeriodData
   loading: boolean
   error: string
@@ -22,14 +22,6 @@ function updateMonth(value: number) {
 function updateYear(value: number) {
   emit('update:formData', { ...formData, referenceYear: value })
 }
-
-const { formData } = defineProps<{
-  formData: CreatePeriodData
-  loading: boolean
-  error: string
-  monthOptions: Array<{ value: number; label: string }>
-  yearOptions: number[]
-}>()
 </script>
 
 <template>
