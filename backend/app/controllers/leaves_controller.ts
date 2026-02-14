@@ -6,6 +6,8 @@ import {
   listLeaveValidator,
   updateLeaveConfigValidator,
 } from '#validators/leave_validator'
+import { resolveEmployeeId, canAccessEmployee } from '#helpers/rbac_helper'
+import Employee from '#models/employee'
 
 export default class LeavesController {
   private service: LeaveService
@@ -17,10 +19,28 @@ export default class LeavesController {
   /**
    * Lista solicitacoes de ferias/licencas
    * GET /api/v1/leaves
+   * Employee: so ve as proprias. Admin/Manager: ve todas.
    */
-  async index({ request, response }: HttpContext) {
+  async index(ctx: HttpContext) {
+    const { auth, request, response } = ctx
     try {
-      const filters = await request.validateUsing(listLeaveValidator)
+      const user = auth.getUserOrFail()
+      let filters = await request.validateUsing(listLeaveValidator)
+
+      // Employee: filtra apenas suas proprias solicitacoes
+      if (user.role === 'employee') {
+        const employee = await Employee.query()
+          .where('userId', user.id)
+          .where('status', 'active')
+          .first()
+
+        if (!employee) {
+          return response.ok({ data: [], meta: { total: 0, page: 1, lastPage: 1 } })
+        }
+
+        filters = { ...filters, employeeId: employee.id }
+      }
+
       const result = await this.service.list(filters)
       return response.ok({
         data: result.all(),
@@ -38,12 +58,22 @@ export default class LeavesController {
    * Detalhe de uma solicitacao
    * GET /api/v1/leaves/:id
    */
-  async show({ params, response }: HttpContext) {
+  async show(ctx: HttpContext) {
+    const { params, response } = ctx
     try {
       const leave = await this.service.findById(params.id)
+      const canAccess = await canAccessEmployee(ctx, leave.employeeId)
+      if (!canAccess) {
+        return response.forbidden({
+          message: 'Voce nao tem permissao para acessar esta solicitacao',
+        })
+      }
       return response.ok({ data: leave })
-    } catch {
-      return response.notFound({ message: 'Solicitacao nao encontrada' })
+    } catch (error) {
+      if (error.code === 'E_ROW_NOT_FOUND') {
+        return response.notFound({ message: 'Solicitacao nao encontrada' })
+      }
+      return response.badRequest({ message: error.message || 'Erro ao buscar solicitacao' })
     }
   }
 
@@ -132,12 +162,17 @@ export default class LeavesController {
    * Lista saldo de ferias de um colaborador
    * GET /api/v1/employees/:employeeId/leave-balance
    */
-  async balances({ params, response }: HttpContext) {
+  async balances(ctx: HttpContext) {
+    const { params, response } = ctx
     try {
-      const balances = await this.service.getBalances(params.employeeId)
+      const employeeId = await resolveEmployeeId(ctx, params.employeeId)
+      const balances = await this.service.getBalances(employeeId)
       return response.ok({ data: balances })
-    } catch {
-      return response.badRequest({ message: 'Erro ao buscar saldos de ferias' })
+    } catch (error) {
+      if (error.message?.includes('permissao')) {
+        return response.forbidden({ message: error.message })
+      }
+      return response.badRequest({ message: error.message || 'Erro ao buscar saldos de ferias' })
     }
   }
 

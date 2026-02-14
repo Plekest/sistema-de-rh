@@ -263,56 +263,56 @@ onUnmounted(() => {
 
 <style scoped>
 .attendance-view {
-  max-width: 900px;
+  max-width: var(--max-width-lg, 900px);
   margin: 0 auto;
 }
 
 .page-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-12, 1.5rem);
 }
 
 .page-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1a202c;
+  font-size: var(--font-size-3xl, 1.5rem);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-text-primary, #1a202c);
   margin: 0;
 }
 
 /* Relogio */
 .clock-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 2rem;
+  background: var(--color-bg-card, #fff);
+  border: var(--border-width, 1px) solid var(--color-border, #e2e8f0);
+  border-radius: var(--radius-lg, 8px);
+  padding: var(--space-16, 2rem);
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-16, 2rem);
 }
 
 .clock-display {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-12, 1.5rem);
 }
 
 .clock-time {
   display: block;
   font-size: 3rem;
-  font-weight: 700;
-  color: #1a202c;
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-text-primary, #1a202c);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.05em;
 }
 
 .clock-date {
   display: block;
-  font-size: 0.875rem;
-  color: #718096;
-  margin-top: 0.25rem;
+  font-size: var(--font-size-base, 0.875rem);
+  color: var(--color-text-muted, #718096);
+  margin-top: var(--space-2, 0.25rem);
   text-transform: capitalize;
 }
 
 .clock-actions {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 0.75rem;
+  gap: var(--space-6, 0.75rem);
   max-width: 700px;
   margin: 0 auto;
 }
@@ -321,18 +321,19 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.375rem;
-  padding: 1rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  background: #fff;
+  gap: var(--space-3, 0.375rem);
+  padding: var(--space-8, 1rem);
+  min-height: 44px;
+  border: var(--border-width-thick, 2px) solid var(--color-border, #e2e8f0);
+  border-radius: var(--radius-lg, 8px);
+  background: var(--color-bg-card, #fff);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all var(--transition-fast, 0.15s);
 }
 
 .clock-btn:hover:not(:disabled) {
-  border-color: #667eea;
-  background: #ebf8ff;
+  border-color: var(--color-primary, #667eea);
+  background: var(--color-primary-light, #ebf4ff);
 }
 
 .clock-btn:disabled {
@@ -341,8 +342,8 @@ onUnmounted(() => {
 }
 
 .clock-btn-done {
-  border-color: #38a169;
-  background: #f0fff4;
+  border-color: var(--color-success, #38a169);
+  background: var(--color-success-light, #f0fff4);
 }
 
 .clock-btn-done:disabled {
@@ -350,53 +351,66 @@ onUnmounted(() => {
 }
 
 .clock-btn-loading {
-  border-color: #d69e2e;
-  background: #fffff0;
+  border-color: var(--color-warning, #ed8936);
+  background: var(--color-warning-light, #fffff0);
 }
 
 .clock-btn-label {
-  font-size: 0.813rem;
-  font-weight: 600;
-  color: #4a5568;
+  font-size: var(--font-size-sm, 0.813rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-tertiary, #4a5568);
 }
 
 .clock-btn-time {
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: #38a169;
+  font-size: var(--font-size-base, 0.875rem);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-success, #38a169);
 }
 
 .clock-btn-loading .clock-btn-time {
-  color: #d69e2e;
+  color: var(--color-warning, #ed8936);
 }
 
 /* Alertas */
-.alert { padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.875rem; margin-bottom: 1rem; }
-.alert-error { background: #fff5f5; border: 1px solid #fed7d7; color: #c53030; }
-.alert-small { margin-bottom: 1rem; }
+.alert {
+  padding: var(--alert-padding-y, 0.75rem) var(--alert-padding-x, 1rem);
+  border-radius: var(--alert-border-radius, 6px);
+  font-size: var(--alert-font-size, 0.875rem);
+  margin-bottom: var(--space-8, 1rem);
+}
+
+.alert-error {
+  background: var(--color-danger-light, #fff5f5);
+  border: var(--border-width, 1px) solid var(--color-danger-lighter, #fed7d7);
+  color: var(--color-danger-dark, #c53030);
+}
+
+.alert-small {
+  margin-bottom: var(--space-8, 1rem);
+}
 
 /* Secao recentes */
 .recent-section {
-  margin-top: 1rem;
+  margin-top: var(--space-8, 1rem);
 }
 
 .section-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #2d3748;
-  margin: 0 0 1rem;
+  font-size: var(--font-size-lg, 1rem);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-text-secondary, #2d3748);
+  margin: 0 0 var(--space-8, 1rem);
 }
 
 /* Total */
 .td-total {
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold, 600);
   font-variant-numeric: tabular-nums;
 }
 
 /* Sem atraso */
 .no-late {
-  color: #a0aec0;
-  font-size: 0.813rem;
+  color: var(--color-text-muted, #718096);
+  font-size: var(--font-size-sm, 0.813rem);
 }
 
 /* Responsivo */
@@ -406,11 +420,11 @@ onUnmounted(() => {
   }
 
   .clock-time {
-    font-size: 2.25rem;
+    font-size: var(--font-size-5xl, 2.25rem);
   }
 
   .clock-card {
-    padding: 1.5rem 1rem;
+    padding: var(--space-12, 1.5rem) var(--space-8, 1rem);
   }
 }
 </style>

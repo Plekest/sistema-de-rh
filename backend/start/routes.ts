@@ -27,6 +27,7 @@ const PayrollController = () => import('#controllers/payroll_controller')
 const DashboardController = () => import('#controllers/dashboard_controller')
 const PerformanceController = () => import('#controllers/performance_controller')
 const RecruitmentController = () => import('#controllers/recruitment_controller')
+const NotificationsController = () => import('#controllers/notifications_controller')
 
 router.get('/', async () => {
   return {
@@ -371,6 +372,12 @@ router
       .use(middleware.role({ roles: ['admin', 'manager'] }))
 
     router.get('recruitment/dashboard', [RecruitmentController, 'dashboard'])
+
+    // --- Notificacoes ---
+    router.get('notifications', [NotificationsController, 'index'])
+    router.get('notifications/unread-count', [NotificationsController, 'unreadCount'])
+    router.patch('notifications/:id/read', [NotificationsController, 'markAsRead'])
+    router.patch('notifications/read-all', [NotificationsController, 'markAllAsRead'])
   })
   .prefix('api/v1')
   .use(middleware.auth({ guards: ['api'] }))

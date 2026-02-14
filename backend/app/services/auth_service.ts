@@ -17,6 +17,7 @@ interface PermissionsMap {
   benefits: boolean
   payroll: boolean
   performance: boolean
+  recruitment: boolean
 }
 
 interface UserWithExtras {
@@ -40,6 +41,7 @@ const DEFAULT_PERMISSIONS: Record<string, PermissionsMap> = {
     benefits: true,
     payroll: true,
     performance: true,
+    recruitment: true,
   },
   manager: {
     employees: true,
@@ -51,6 +53,7 @@ const DEFAULT_PERMISSIONS: Record<string, PermissionsMap> = {
     benefits: true,
     payroll: true,
     performance: true,
+    recruitment: true,
   },
   employee: {
     employees: false,
@@ -62,6 +65,7 @@ const DEFAULT_PERMISSIONS: Record<string, PermissionsMap> = {
     benefits: true,
     payroll: true,
     performance: true,
+    recruitment: false,
   },
 }
 

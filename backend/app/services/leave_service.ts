@@ -3,6 +3,7 @@ import LeaveBalance from '#models/leave_balance'
 import LeaveConfig from '#models/leave_config'
 import Employee from '#models/employee'
 import EmployeeHistoryService from '#services/employee_history_service'
+import NotificationService from '#services/notification_service'
 import { DateTime } from 'luxon'
 
 interface ListFilters {
@@ -39,6 +40,7 @@ const LEAVE_TYPE_LABELS: Record<string, string> = {
 
 export default class LeaveService {
   private historyService = new EmployeeHistoryService()
+  private notificationService = new NotificationService()
 
   /**
    * Lista solicitacoes de ferias/licencas com filtros e paginacao
@@ -148,6 +150,23 @@ export default class LeaveService {
       approverUserId
     ).catch(() => {})
 
+    // Envia notificacao para o colaborador (se tiver usuario vinculado)
+    if (leave.employee.userId) {
+      await this.notificationService
+        .create(leave.employee.userId, {
+          type: 'leave_approved',
+          title: 'Solicitação Aprovada',
+          message: `Sua solicitação de ${typeLabel} de ${leave.startDate.toFormat('dd/MM/yyyy')} a ${leave.endDate.toFormat('dd/MM/yyyy')} foi aprovada.`,
+          metadata: {
+            leaveId: leave.id,
+            leaveType: leave.type,
+            startDate: leave.startDate.toISODate(),
+            endDate: leave.endDate.toISODate(),
+          },
+        })
+        .catch(() => {})
+    }
+
     return leave
   }
 
@@ -178,6 +197,22 @@ export default class LeaveService {
       reason || undefined,
       approverUserId
     ).catch(() => {})
+
+    // Envia notificacao para o colaborador (se tiver usuario vinculado)
+    if (leave.employee.userId) {
+      await this.notificationService
+        .create(leave.employee.userId, {
+          type: 'leave_rejected',
+          title: 'Solicitação Rejeitada',
+          message: `Sua solicitação de ${typeLabel} foi rejeitada. ${reason ? `Motivo: ${reason}` : ''}`,
+          metadata: {
+            leaveId: leave.id,
+            leaveType: leave.type,
+            rejectionReason: reason,
+          },
+        })
+        .catch(() => {})
+    }
 
     return leave
   }

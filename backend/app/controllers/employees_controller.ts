@@ -5,6 +5,8 @@ import {
   updateEmployeeValidator,
   listEmployeeValidator,
 } from '#validators/employee_validator'
+import { canAccessEmployee } from '#helpers/rbac_helper'
+import Employee from '#models/employee'
 
 export default class EmployeesController {
   private service: EmployeeService
@@ -13,8 +15,32 @@ export default class EmployeesController {
     this.service = new EmployeeService()
   }
 
-  async index({ request, response }: HttpContext) {
+  async index(ctx: HttpContext) {
+    const { auth, request, response } = ctx
     try {
+      const user = auth.getUserOrFail()
+
+      // Employee nao pode listar todos os colaboradores, apenas ver o proprio perfil
+      if (user.role === 'employee') {
+        const employee = await Employee.query()
+          .where('userId', user.id)
+          .where('status', 'active')
+          .preload('user')
+          .preload('department')
+          .preload('position')
+          .first()
+
+        if (!employee) {
+          return response.ok({ data: [], meta: { total: 0, page: 1, lastPage: 1 } })
+        }
+
+        return response.ok({
+          data: [employee],
+          meta: { total: 1, page: 1, lastPage: 1 },
+        })
+      }
+
+      // Admin/Manager podem listar todos
       const filters = await request.validateUsing(listEmployeeValidator)
       const result = await this.service.list(filters)
       return response.ok({
@@ -29,12 +55,22 @@ export default class EmployeesController {
     }
   }
 
-  async show({ params, response }: HttpContext) {
+  async show(ctx: HttpContext) {
+    const { params, response } = ctx
     try {
       const employee = await this.service.findById(params.id)
+      const canAccess = await canAccessEmployee(ctx, employee.id)
+      if (!canAccess) {
+        return response.forbidden({
+          message: 'Voce nao tem permissao para acessar este colaborador',
+        })
+      }
       return response.ok({ data: employee })
-    } catch {
-      return response.notFound({ message: 'Colaborador nao encontrado' })
+    } catch (error) {
+      if (error.code === 'E_ROW_NOT_FOUND') {
+        return response.notFound({ message: 'Colaborador nao encontrado' })
+      }
+      return response.badRequest({ message: error.message || 'Erro ao buscar colaborador' })
     }
   }
 

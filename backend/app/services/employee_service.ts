@@ -3,6 +3,7 @@ import User from '#models/user'
 import Department from '#models/department'
 import PayrollComponent from '#models/payroll_component'
 import EmployeeHistoryService from '#services/employee_history_service'
+import NotificationService from '#services/notification_service'
 import { generateRandomPassword } from '#utils/password_generator'
 import { DateTime } from 'luxon'
 
@@ -44,9 +45,11 @@ interface CreateEmployeeData {
 
 export default class EmployeeService {
   private historyService: EmployeeHistoryService
+  private notificationService: NotificationService
 
   constructor() {
     this.historyService = new EmployeeHistoryService()
+    this.notificationService = new NotificationService()
   }
 
   async list(filters: ListFilters = {}) {
@@ -187,6 +190,32 @@ export default class EmployeeService {
       // Atualiza componente base_salary (B1.10)
       if (data.salary && data.salary > 0) {
         await this.ensureBaseSalaryComponent(employee.id, data.salary)
+      }
+
+      // Envia notificacao para o colaborador (se tiver usuario vinculado)
+      if (employee.userId && data.salary) {
+        const oldSalaryFormatted = oldSalary
+          ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
+              oldSalary
+            )
+          : 'N/A'
+        const newSalaryFormatted = new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+        }).format(data.salary)
+
+        await this.notificationService
+          .create(employee.userId, {
+            type: 'salary_changed',
+            title: 'Alteração Salarial',
+            message: `Seu salário foi alterado de ${oldSalaryFormatted} para ${newSalaryFormatted}.`,
+            metadata: {
+              employeeId: employee.id,
+              oldSalary: oldSalary,
+              newSalary: data.salary,
+            },
+          })
+          .catch(() => {})
       }
     }
 

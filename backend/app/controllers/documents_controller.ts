@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import DocumentService from '#services/document_service'
 import { createDocumentValidator, listDocumentValidator } from '#validators/document_validator'
+import { resolveEmployeeId, canAccessEmployee } from '#helpers/rbac_helper'
 
 export default class DocumentsController {
   private service: DocumentService
@@ -9,10 +10,12 @@ export default class DocumentsController {
     this.service = new DocumentService()
   }
 
-  async index({ params, request, response }: HttpContext) {
+  async index(ctx: HttpContext) {
+    const { params, request, response } = ctx
     try {
+      const employeeId = await resolveEmployeeId(ctx, params.employeeId)
       const filters = await request.validateUsing(listDocumentValidator)
-      const result = await this.service.list(params.employeeId, filters)
+      const result = await this.service.list(employeeId, filters)
       return response.ok({
         data: result.all(),
         meta: result.getMeta(),
@@ -21,6 +24,9 @@ export default class DocumentsController {
       if (error.code === 'E_ROW_NOT_FOUND') {
         return response.notFound({ message: 'Colaborador nao encontrado' })
       }
+      if (error.message?.includes('permissao')) {
+        return response.forbidden({ message: error.message })
+      }
       if (error.messages) {
         return response.unprocessableEntity({ message: 'Dados invalidos', errors: error.messages })
       }
@@ -28,8 +34,10 @@ export default class DocumentsController {
     }
   }
 
-  async store({ params, request, auth, response }: HttpContext) {
+  async store(ctx: HttpContext) {
+    const { params, request, auth, response } = ctx
     try {
+      const employeeId = await resolveEmployeeId(ctx, params.employeeId)
       const data = await request.validateUsing(createDocumentValidator)
 
       const file = request.file('file', {
@@ -49,11 +57,14 @@ export default class DocumentsController {
       }
 
       const currentUserId = auth.user?.id
-      const document = await this.service.upload(params.employeeId, file, data, currentUserId)
+      const document = await this.service.upload(employeeId, file, data, currentUserId)
       return response.created({ data: document })
     } catch (error) {
       if (error.code === 'E_ROW_NOT_FOUND') {
         return response.notFound({ message: 'Colaborador nao encontrado' })
+      }
+      if (error.message?.includes('permissao')) {
+        return response.forbidden({ message: error.message })
       }
       if (error.messages) {
         return response.unprocessableEntity({ message: 'Dados invalidos', errors: error.messages })
@@ -64,17 +75,35 @@ export default class DocumentsController {
     }
   }
 
-  async show({ params, response }: HttpContext) {
+  async show(ctx: HttpContext) {
+    const { params, response } = ctx
     try {
       const document = await this.service.findById(params.id)
+      const canAccess = await canAccessEmployee(ctx, document.employeeId)
+      if (!canAccess) {
+        return response.forbidden({
+          message: 'Voce nao tem permissao para acessar este documento',
+        })
+      }
       return response.ok({ data: document })
-    } catch {
-      return response.notFound({ message: 'Documento nao encontrado' })
+    } catch (error) {
+      if (error.code === 'E_ROW_NOT_FOUND') {
+        return response.notFound({ message: 'Documento nao encontrado' })
+      }
+      return response.badRequest({ message: error.message || 'Erro ao buscar documento' })
     }
   }
 
-  async download({ params, response }: HttpContext) {
+  async download(ctx: HttpContext) {
+    const { params, response } = ctx
     try {
+      const document = await this.service.findById(params.id)
+      const canAccess = await canAccessEmployee(ctx, document.employeeId)
+      if (!canAccess) {
+        return response.forbidden({
+          message: 'Voce nao tem permissao para acessar este documento',
+        })
+      }
       const fileInfo = await this.service.download(params.id)
       response.header('Content-Disposition', `attachment; filename="${fileInfo.fileName}"`)
       if (fileInfo.mimeType) {
@@ -89,8 +118,16 @@ export default class DocumentsController {
     }
   }
 
-  async view({ params, response }: HttpContext) {
+  async view(ctx: HttpContext) {
+    const { params, response } = ctx
     try {
+      const document = await this.service.findById(params.id)
+      const canAccess = await canAccessEmployee(ctx, document.employeeId)
+      if (!canAccess) {
+        return response.forbidden({
+          message: 'Voce nao tem permissao para acessar este documento',
+        })
+      }
       const fileInfo = await this.service.download(params.id)
       response.header('Content-Disposition', `inline; filename="${fileInfo.fileName}"`)
       if (fileInfo.mimeType) {

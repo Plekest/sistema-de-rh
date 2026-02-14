@@ -371,7 +371,7 @@ onUnmounted(() => {
 
 <style scoped>
 .employee-home {
-  max-width: 900px;
+  max-width: var(--max-width-lg);
   margin: 0 auto;
 }
 
@@ -379,48 +379,48 @@ onUnmounted(() => {
 .loading-state,
 .error-state {
   text-align: center;
-  padding: 3rem;
-  color: #718096;
+  padding: var(--space-24);
+  color: var(--color-text-muted);
 }
 
 .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid #e2e8f0;
-  border-top-color: #667eea;
-  border-radius: 50%;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: var(--radius-full);
   animation: spin 0.6s linear infinite;
-  margin: 0 auto 1rem;
+  margin: 0 auto var(--space-8);
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-.error-state { color: #e53e3e; }
+.error-state { color: var(--color-danger); }
 
 /* Profile Card */
 .profile-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 12px;
-  padding: 2rem;
+  background: var(--color-primary-gradient);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-16);
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
+  gap: var(--space-12);
+  margin-bottom: var(--space-12);
   color: white;
 }
 
 .profile-avatar {
   width: 64px;
   height: 64px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background: rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.75rem;
-  font-weight: 700;
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
   flex-shrink: 0;
 }
 
@@ -429,33 +429,33 @@ onUnmounted(() => {
 }
 
 .profile-name {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0 0 0.25rem 0;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  margin: 0 0 var(--space-2) 0;
 }
 
 .profile-details {
-  font-size: 0.875rem;
-  margin: 0 0 0.5rem 0;
+  font-size: var(--font-size-base);
+  margin: 0 0 var(--space-4) 0;
   opacity: 0.9;
 }
 
 .profile-meta {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-6);
 }
 
 .profile-type {
-  font-size: 0.688rem;
-  font-weight: 700;
-  padding: 0.125rem 0.5rem;
-  border-radius: 8px;
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-bold);
+  padding: var(--space-1) var(--space-4);
+  border-radius: var(--radius-lg);
   background: rgba(255, 255, 255, 0.2);
 }
 
 .profile-since {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   opacity: 0.8;
 }
 

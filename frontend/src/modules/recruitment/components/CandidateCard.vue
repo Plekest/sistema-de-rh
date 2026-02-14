@@ -1,0 +1,195 @@
+<script setup lang="ts">
+import type { Candidate } from '../types'
+
+interface Props {
+  candidate: Candidate
+  isAdmin: boolean
+  actionLoading: string | null
+  candidateSourceLabels: Record<string, string>
+  candidateStatusLabels: Record<string, string>
+  statusBadgeClass: (status: string) => string
+}
+
+defineProps<Props>()
+
+const emit = defineEmits<{
+  move: [id: number]
+  interview: [id: number]
+  hire: [id: number]
+  reject: [id: number]
+}>()
+</script>
+
+<template>
+  <div class="candidate-card">
+    <div class="candidate-header">
+      <div class="candidate-info">
+        <h3 class="candidate-name">{{ candidate.name }}</h3>
+        <span class="candidate-meta">
+          {{ candidate.email }} | {{ candidateSourceLabels[candidate.source] }}
+        </span>
+        <span v-if="candidate.jobRequisition" class="candidate-job">
+          Vaga: {{ candidate.jobRequisition.title }}
+        </span>
+      </div>
+      <div class="candidate-status-info">
+        <span class="badge" :class="statusBadgeClass(candidate.status)">
+          {{ candidateStatusLabels[candidate.status] }}
+        </span>
+        <span v-if="candidate.currentStage" class="candidate-stage">
+          Etapa: {{ candidate.currentStage.name }}
+        </span>
+      </div>
+    </div>
+
+    <div v-if="candidate.status === 'active' && isAdmin" class="candidate-actions">
+      <button
+        class="btn-action btn-approve"
+        :disabled="actionLoading !== null"
+        @click="emit('move', candidate.id)"
+      >
+        Mover Etapa
+      </button>
+      <button
+        class="btn-action btn-approve"
+        :disabled="actionLoading !== null"
+        @click="emit('interview', candidate.id)"
+      >
+        Agendar Entrevista
+      </button>
+      <button
+        class="btn-action btn-approve"
+        :disabled="actionLoading !== null"
+        @click="emit('hire', candidate.id)"
+      >
+        {{ actionLoading === 'hireCandidate' ? 'Contratando...' : 'Contratar' }}
+      </button>
+      <button
+        class="btn-action btn-cancel"
+        :disabled="actionLoading !== null"
+        @click="emit('reject', candidate.id)"
+      >
+        {{ actionLoading === 'rejectCandidate' ? 'Rejeitando...' : 'Rejeitar' }}
+      </button>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.candidate-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+}
+
+.candidate-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.candidate-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.candidate-name {
+  font-size: 0.938rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0;
+}
+
+.candidate-meta,
+.candidate-job {
+  font-size: 0.813rem;
+  color: #718096;
+}
+
+.candidate-status-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.candidate-stage {
+  font-size: 0.75rem;
+  color: #718096;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.candidate-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  padding: 0.25rem 0.625rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin: 0 0.125rem;
+}
+
+.btn-action:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-approve {
+  background: #c6f6d5;
+  color: #276749;
+}
+
+.btn-approve:hover:not(:disabled) {
+  background: #9ae6b4;
+}
+
+.btn-cancel {
+  background: #e2e8f0;
+  color: #4a5568;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: #cbd5e0;
+}
+
+@media (max-width: 768px) {
+  .candidate-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .candidate-status-info {
+    align-items: flex-start;
+  }
+
+  .candidate-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .candidate-card {
+    padding: 0.75rem;
+  }
+}
+</style>

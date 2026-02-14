@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import TimeEntryService from '#services/time_entry_service'
 import { manualTimeEntryValidator, listTimeEntryValidator } from '#validators/time_entry_validator'
+import { resolveEmployeeId } from '#helpers/rbac_helper'
 
 export default class TimeEntriesController {
   private service: TimeEntryService
@@ -89,10 +90,12 @@ export default class TimeEntriesController {
     }
   }
 
-  async index({ params, request, response }: HttpContext) {
+  async index(ctx: HttpContext) {
+    const { params, request, response } = ctx
     try {
+      const employeeId = await resolveEmployeeId(ctx, params.employeeId)
       const filters = await request.validateUsing(listTimeEntryValidator)
-      const result = await this.service.list(params.employeeId, filters)
+      const result = await this.service.list(employeeId, filters)
       return response.ok({
         data: result.all(),
         meta: result.getMeta(),
@@ -100,6 +103,9 @@ export default class TimeEntriesController {
     } catch (error) {
       if (error.code === 'E_ROW_NOT_FOUND') {
         return response.notFound({ message: 'Colaborador nao encontrado' })
+      }
+      if (error.message?.includes('permissao')) {
+        return response.forbidden({ message: error.message })
       }
       if (error.messages) {
         return response.unprocessableEntity({ message: 'Dados invalidos', errors: error.messages })
