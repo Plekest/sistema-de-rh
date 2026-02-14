@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import userService from '../services/user.service'
 import type { UserFormData } from '../types'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -154,7 +155,9 @@ onMounted(() => {
 
     <div v-if="error" class="alert alert-error">{{ error }}</div>
 
-    <div v-if="isLoading" class="loading-state">Carregando...</div>
+    <div v-if="isLoading" class="loading-state">
+      <LoadingSpinner text="Carregando dados do usuario..." />
+    </div>
 
     <form v-else @submit.prevent="handleSubmit" class="form-card">
       <div v-if="formError" class="alert alert-error">{{ formError }}</div>

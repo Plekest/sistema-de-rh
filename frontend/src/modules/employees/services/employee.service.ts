@@ -6,6 +6,7 @@ import type {
   Department,
   Position,
   PaginatedResponse,
+  CreateEmployeeResponse,
 } from '../types'
 
 /**
@@ -30,10 +31,11 @@ class EmployeeService {
 
   /**
    * Cria novo colaborador
+   * Retorna o colaborador criado e, opcionalmente, a senha temporaria gerada
    */
-  async create(data: EmployeeFormData): Promise<Employee> {
-    const response = await api.post<{ data: Employee }>('/employees', data)
-    return response.data.data
+  async create(data: EmployeeFormData): Promise<CreateEmployeeResponse> {
+    const response = await api.post<CreateEmployeeResponse>('/employees', data)
+    return response.data
   }
 
   /**

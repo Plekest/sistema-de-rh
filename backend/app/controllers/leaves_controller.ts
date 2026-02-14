@@ -106,14 +106,19 @@ export default class LeavesController {
   /**
    * Cancela uma solicitacao
    * PATCH /api/v1/leaves/:id/cancel
+   * Employee: apenas as proprias. Admin/Manager: qualquer.
    */
-  async cancel({ params, response }: HttpContext) {
+  async cancel({ params, auth, response }: HttpContext) {
     try {
-      const leave = await this.service.cancel(params.id)
+      const user = auth.getUserOrFail()
+      const leave = await this.service.cancel(params.id, user.id, user.role)
       return response.ok({ data: leave })
     } catch (error) {
       if (error.code === 'E_ROW_NOT_FOUND') {
         return response.notFound({ message: 'Solicitacao nao encontrada' })
+      }
+      if (error.message?.includes('permissao')) {
+        return response.forbidden({ message: error.message })
       }
       return response.badRequest({ message: error.message || 'Erro ao cancelar solicitacao' })
     }

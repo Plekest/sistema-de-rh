@@ -31,6 +31,12 @@ export default class TimeEntry extends BaseModel {
   declare totalWorkedMinutes: number
 
   @column()
+  declare isLate: boolean
+
+  @column()
+  declare lateMinutes: number
+
+  @column()
   declare type: 'regular' | 'overtime' | 'absence' | 'holiday'
 
   @column()

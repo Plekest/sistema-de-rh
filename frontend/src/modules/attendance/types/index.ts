@@ -9,6 +9,8 @@ export interface TimeEntry {
   lunchEnd?: string
   totalWorkedMinutes: number
   type: 'regular' | 'overtime' | 'absence' | 'holiday'
+  isLate?: boolean
+  lateMinutes?: number
   notes?: string
   createdAt?: string
   updatedAt?: string

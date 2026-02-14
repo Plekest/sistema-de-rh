@@ -7,6 +7,7 @@ import EmployeeBenefit from '#models/employee_benefit'
 import EmployeeHistory from '#models/employee_history'
 import TimeEntry from '#models/time_entry'
 import Database from '@adonisjs/lucid/services/db'
+import { toNumber } from '#utils/number_helper'
 
 export default class DashboardService {
   async getAdminDashboard() {
@@ -15,7 +16,7 @@ export default class DashboardService {
 
     // Total active employees
     const totalEmployees = await Employee.query().where('status', 'active').count('* as total')
-    const totalEmployeesCount = Number(totalEmployees[0].$extras.total)
+    const totalEmployeesCount = toNumber(totalEmployees[0].$extras.total)
 
     // Employees by type
     const employeesByTypeData = await Employee.query()
@@ -29,7 +30,7 @@ export default class DashboardService {
       pj: 0,
     }
     employeesByTypeData.forEach((row) => {
-      employeesByType[row.type as 'clt' | 'pj'] = Number(row.$extras.count)
+      employeesByType[row.type as 'clt' | 'pj'] = toNumber(row.$extras.count)
     })
 
     // Employees by status
@@ -44,7 +45,7 @@ export default class DashboardService {
       terminated: 0,
     }
     employeesByStatusData.forEach((row) => {
-      employeesByStatus[row.status as 'active' | 'inactive' | 'terminated'] = Number(
+      employeesByStatus[row.status as 'active' | 'inactive' | 'terminated'] = toNumber(
         row.$extras.count
       )
     })
@@ -60,12 +61,12 @@ export default class DashboardService {
 
     const departmentDistribution = departmentDistributionData.map((row) => ({
       departmentName: row.departmentName,
-      count: Number(row.count),
+      count: toNumber(row.count),
     }))
 
     // Pending leaves count
     const pendingLeavesData = await Leave.query().where('status', 'pending').count('* as total')
-    const pendingLeaves = Number(pendingLeavesData[0].$extras.total)
+    const pendingLeaves = toNumber(pendingLeavesData[0].$extras.total)
 
     // Upcoming leaves (approved leaves starting in the next 30 days)
     const upcomingLeavesData = await Leave.query()
@@ -116,7 +117,7 @@ export default class DashboardService {
         .where('payroll_period_id', lastClosedPeriod.id)
         .sum('net_salary as total')
 
-      totalPayroll = Number(payrollSum[0].$extras.total) || 0
+      totalPayroll = toNumber(payrollSum[0].$extras.total)
     }
 
     // Attendance today
@@ -126,7 +127,7 @@ export default class DashboardService {
       .whereNotNull('clock_in')
       .countDistinct('employee_id as total')
 
-    const attendanceToday = Number(attendanceTodayData[0].$extras.total)
+    const attendanceToday = toNumber(attendanceTodayData[0].$extras.total)
 
     return {
       totalEmployees: totalEmployeesCount,
@@ -167,7 +168,7 @@ export default class DashboardService {
     }
 
     myLeavesData.forEach((row) => {
-      const count = Number(row.$extras.count)
+      const count = toNumber(row.$extras.count)
       if (row.status === 'pending') {
         myLeaves.pending = count
       } else if (row.status === 'approved' || row.status === 'in_progress') {
@@ -198,7 +199,7 @@ export default class DashboardService {
       .where('status', 'active')
       .count('* as total')
 
-    const myBenefits = Number(myBenefitsData[0].$extras.total)
+    const myBenefits = toNumber(myBenefitsData[0].$extras.total)
 
     // Last pay slip
     let lastPaySlip = null

@@ -42,8 +42,14 @@ export default class EmployeesController {
     try {
       const data = await request.validateUsing(createEmployeeValidator)
       const currentUserId = auth.user?.id
-      const employee = await this.service.create(data, currentUserId)
-      return response.created({ data: employee })
+      const { employee, temporaryPassword } = await this.service.create(data, currentUserId)
+
+      const responseData: Record<string, unknown> = { data: employee }
+      if (temporaryPassword) {
+        responseData.temporaryPassword = temporaryPassword
+      }
+
+      return response.created(responseData)
     } catch (error) {
       if (error.messages) {
         return response.unprocessableEntity({ message: 'Dados invalidos', errors: error.messages })
@@ -69,9 +75,10 @@ export default class EmployeesController {
     }
   }
 
-  async destroy({ params, response }: HttpContext) {
+  async destroy({ params, auth, response }: HttpContext) {
     try {
-      await this.service.delete(params.id)
+      const currentUserId = auth.user?.id
+      await this.service.delete(params.id, currentUserId)
       return response.noContent()
     } catch (error) {
       if (error.code === 'E_ROW_NOT_FOUND') {

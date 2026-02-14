@@ -6,10 +6,15 @@ import type { Employee, Department, EmployeeListParams } from '../types'
 import { formatDate, formatCurrency } from '@/utils/formatters'
 import { useAuthStore } from '@/stores/auth'
 import { useConfirmDialog } from '@/composables/useConfirmDialog'
+import { useApiError } from '@/composables/useApiError'
+import DataTable from '@/components/common/DataTable.vue'
+import StatusBadge from '@/components/common/StatusBadge.vue'
+import type { DataTableColumn } from '@/components/common/types'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const { confirm: confirmDialog } = useConfirmDialog()
+const { error, handleError, clearError } = useApiError()
 
 const isAdmin = computed(() => authStore.isAdmin || authStore.isManager)
 
@@ -17,7 +22,7 @@ const isAdmin = computed(() => authStore.isAdmin || authStore.isManager)
 const employees = ref<Employee[]>([])
 const departments = ref<Department[]>([])
 const isLoading = ref(false)
-const error = ref('')
+const successMessage = ref('')
 const totalPages = ref(1)
 const currentPage = ref(1)
 const total = ref(0)
@@ -31,12 +36,26 @@ const filterDepartment = ref<number | undefined>(undefined)
 let searchTimeout: ReturnType<typeof setTimeout> | null = null
 
 /**
+ * Colunas da DataTable
+ */
+const columns: DataTableColumn[] = [
+  { key: 'fullName', label: 'Nome' },
+  { key: 'type', label: 'Tipo' },
+  { key: 'department.name', label: 'Departamento' },
+  { key: 'position.title', label: 'Cargo' },
+  { key: 'hireDate', label: 'Admissao' },
+  { key: 'salary', label: 'Salario', align: 'right' },
+  { key: 'status', label: 'Status' },
+  { key: 'actions', label: 'Acoes', align: 'right' },
+]
+
+/**
  * Carrega lista de colaboradores
  */
 async function loadEmployees() {
   try {
     isLoading.value = true
-    error.value = ''
+    clearError()
 
     const params: EmployeeListParams = {
       page: currentPage.value,
@@ -53,8 +72,7 @@ async function loadEmployees() {
     totalPages.value = response.meta.lastPage
     total.value = response.meta.total
   } catch (err: unknown) {
-    error.value = 'Erro ao carregar colaboradores. Tente novamente.'
-    console.error('Erro ao carregar colaboradores:', err)
+    handleError(err, 'Erro ao carregar colaboradores. Tente novamente.')
   } finally {
     isLoading.value = false
   }
@@ -118,21 +136,20 @@ async function handleDelete(employee: Employee) {
 
   try {
     await employeeService.delete(employee.id)
+    successMessage.value = 'Colaborador excluido com sucesso.'
+    setTimeout(() => { successMessage.value = '' }, 5000)
     await loadEmployees()
   } catch (err: unknown) {
-    error.value = 'Erro ao excluir colaborador.'
-    console.error('Erro ao excluir:', err)
+    handleError(err, 'Erro ao excluir colaborador.')
   }
 }
 
 /**
- * Navega para pagina
+ * Muda de pagina
  */
-function goToPage(page: number) {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page
-    loadEmployees()
-  }
+function onPageChange(page: number) {
+  currentPage.value = page
+  loadEmployees()
 }
 
 /**
@@ -226,94 +243,65 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Erro -->
-    <div v-if="error" class="alert alert-error" role="alert">
-      {{ error }}
-    </div>
+    <!-- Mensagens -->
+    <Transition name="fade">
+      <div v-if="successMessage" class="alert alert-success" role="status" aria-live="polite">{{ successMessage }}</div>
+    </Transition>
+    <div v-if="error" class="alert alert-error" role="alert">{{ error }}</div>
 
-    <!-- Loading -->
-    <div v-if="isLoading" class="loading-state">
-      Carregando...
-    </div>
+    <!-- Tabela com DataTable reutilizavel -->
+    <DataTable
+      :columns="columns"
+      :data="(employees as unknown as Record<string, unknown>[])"
+      :loading="isLoading"
+      :currentPage="currentPage"
+      :totalPages="totalPages"
+      emptyMessage="Nenhum colaborador encontrado"
+      emptyDescription="Cadastre o primeiro colaborador ou ajuste os filtros de busca."
+      @page-change="onPageChange"
+    >
+      <!-- Coluna: Nome (link clicavel) -->
+      <template #cell-fullName="{ row }">
+        <button class="link-button" @click="goToDetail((row as any).id)">
+          {{ (row as any).fullName }}
+        </button>
+      </template>
 
-    <!-- Tabela -->
-    <div v-else-if="employees.length > 0" class="table-container">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Tipo</th>
-            <th>Departamento</th>
-            <th>Cargo</th>
-            <th>Admissao</th>
-            <th>Salario</th>
-            <th>Status</th>
-            <th class="th-actions">Acoes</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="emp in employees" :key="emp.id">
-            <td class="td-name">
-              <button class="link-button" @click="goToDetail(emp.id)">
-                {{ emp.fullName }}
-              </button>
-            </td>
-            <td>
-              <span class="badge" :class="'badge-' + emp.type">
-                {{ typeLabel(emp.type) }}
-              </span>
-            </td>
-            <td>{{ emp.department?.name || '-' }}</td>
-            <td>{{ emp.position?.title || '-' }}</td>
-            <td>{{ formatDate(emp.hireDate) }}</td>
-            <td>{{ emp.salary ? formatCurrency(emp.salary) : '-' }}</td>
-            <td>
-              <span class="badge" :class="'badge-' + emp.status">
-                {{ statusLabel(emp.status) }}
-              </span>
-            </td>
-            <td class="td-actions">
-              <button class="btn-action" @click="goToDetail(emp.id)" title="Ver detalhes">
-                Ver
-              </button>
-              <button class="btn-action" @click="goToEdit(emp.id)" title="Editar">
-                Editar
-              </button>
-              <button class="btn-action btn-action-danger" @click="handleDelete(emp)" title="Excluir">
-                Excluir
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <!-- Coluna: Tipo (badge) -->
+      <template #cell-type="{ row }">
+        <StatusBadge :status="typeLabel((row as any).type)" :variant="(row as any).type === 'clt' ? 'info' : 'neutral'" />
+      </template>
 
-    <!-- Estado vazio -->
-    <div v-else class="empty-state">
-      <p class="empty-title">Nenhum colaborador encontrado</p>
-      <p class="empty-description">Cadastre o primeiro colaborador ou ajuste os filtros de busca.</p>
-    </div>
+      <!-- Coluna: Admissao (formatada) -->
+      <template #cell-hireDate="{ row }">
+        {{ formatDate((row as any).hireDate) }}
+      </template>
 
-    <!-- Paginacao -->
-    <div v-if="totalPages > 1" class="pagination">
-      <button
-        class="pagination-btn"
-        :disabled="currentPage <= 1"
-        @click="goToPage(currentPage - 1)"
-      >
-        Anterior
-      </button>
-      <span class="pagination-info">
-        Pagina {{ currentPage }} de {{ totalPages }}
-      </span>
-      <button
-        class="pagination-btn"
-        :disabled="currentPage >= totalPages"
-        @click="goToPage(currentPage + 1)"
-      >
-        Proxima
-      </button>
-    </div>
+      <!-- Coluna: Salario (formatado) -->
+      <template #cell-salary="{ row }">
+        {{ (row as any).salary ? formatCurrency((row as any).salary) : '-' }}
+      </template>
+
+      <!-- Coluna: Status (badge com mapeamento automatico) -->
+      <template #cell-status="{ row }">
+        <StatusBadge :status="statusLabel((row as any).status)" />
+      </template>
+
+      <!-- Coluna: Acoes -->
+      <template #cell-actions="{ row }">
+        <div class="td-actions">
+          <button class="btn-action" @click="goToDetail((row as any).id)" title="Ver detalhes">
+            Ver
+          </button>
+          <button class="btn-action" @click="goToEdit((row as any).id)" title="Editar">
+            Editar
+          </button>
+          <button class="btn-action btn-action-danger" @click="handleDelete(row as unknown as Employee)" title="Excluir">
+            Excluir
+          </button>
+        </div>
+      </template>
+    </DataTable>
   </div>
 </template>
 
@@ -414,63 +402,7 @@ onMounted(() => {
   border-color: #667eea;
 }
 
-/* Tabela */
-.table-container {
-  background: #fff;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  overflow-x: auto;
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.data-table th {
-  text-align: left;
-  padding: 0.75rem 1rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #4a5568;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-  border-bottom: 2px solid #e2e8f0;
-  white-space: nowrap;
-}
-
-.data-table td {
-  padding: 0.75rem 1rem;
-  font-size: 0.875rem;
-  color: #2d3748;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.data-table tbody tr:hover {
-  background-color: #f7fafc;
-}
-
-.data-table tbody tr:nth-child(even) {
-  background-color: #fafbfc;
-}
-
-.data-table tbody tr:nth-child(even):hover {
-  background-color: #f0f4f8;
-}
-
-.th-actions {
-  text-align: right;
-}
-
-.td-actions {
-  text-align: right;
-  white-space: nowrap;
-}
-
-.td-name {
-  font-weight: 500;
-}
-
+/* Link button */
 .link-button {
   background: none;
   border: none;
@@ -484,6 +416,12 @@ onMounted(() => {
 
 .link-button:hover {
   text-decoration: underline;
+}
+
+/* Acoes */
+.td-actions {
+  text-align: right;
+  white-space: nowrap;
 }
 
 .btn-action {
@@ -509,103 +447,7 @@ onMounted(() => {
   color: #c53030;
 }
 
-/* Badges */
-.badge {
-  display: inline-block;
-  padding: 0.125rem 0.5rem;
-  border-radius: 10px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.badge-clt {
-  background-color: #ebf4ff;
-  color: #667eea;
-}
-
-.badge-pj {
-  background-color: #faf5ff;
-  color: #6b46c1;
-}
-
-.badge-active {
-  background-color: #f0fff4;
-  color: #276749;
-}
-
-.badge-inactive {
-  background-color: #fffff0;
-  color: #975a16;
-}
-
-.badge-terminated {
-  background-color: #fff5f5;
-  color: #c53030;
-}
-
-/* Paginacao */
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-
-.pagination-btn {
-  padding: 0.5rem 1rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 5px;
-  background: #fff;
-  color: #4a5568;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  background-color: #edf2f7;
-}
-
-.pagination-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.pagination-info {
-  font-size: 0.875rem;
-  color: #718096;
-}
-
-/* Estados */
-.loading-state {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: #718096;
-  font-size: 0.875rem;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 3rem 1rem;
-  background: #fff;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
-
-.empty-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #4a5568;
-  margin: 0 0 0.5rem;
-}
-
-.empty-description {
-  font-size: 0.875rem;
-  color: #a0aec0;
-  margin: 0;
-}
-
+/* Alertas */
 .alert {
   padding: 0.75rem 1rem;
   border-radius: 6px;
@@ -617,6 +459,26 @@ onMounted(() => {
   background: #fff5f5;
   border: 1px solid #fed7d7;
   color: #c53030;
+}
+
+.alert-success {
+  background: #f0fff4;
+  border: 1px solid #c6f6d5;
+  color: #276749;
+}
+
+/* Animacao fade */
+.fade-enter-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 /* Responsivo */
@@ -634,10 +496,13 @@ onMounted(() => {
     width: 100%;
   }
 
-  .data-table th,
-  .data-table td {
-    padding: 0.5rem 0.625rem;
-    font-size: 0.75rem;
+  /* Touch targets - minimo 44px para mobile */
+  .btn-action {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.813rem;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
   }
 }
 </style>

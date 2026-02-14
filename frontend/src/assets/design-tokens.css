@@ -1,0 +1,275 @@
+/**
+ * Design Tokens - Sistema de RH
+ *
+ * Arquivo centralizado de variaveis CSS para manter consistencia visual
+ * em todo o sistema. Todas as cores, espacamentos, tipografia e sombras
+ * devem ser referenciados a partir destes tokens.
+ *
+ * Baseado nas cores e padroes ja existentes no codebase.
+ */
+
+:root {
+  /* ==========================================================================
+   * CORES - Paleta Principal
+   * ========================================================================== */
+
+  /* Primaria (azul-roxo - gradiente do projeto) */
+  --color-primary: #667eea;
+  --color-primary-dark: #5a67d8;
+  --color-primary-darker: #5a55d2;
+  --color-primary-light: #ebf4ff;
+  --color-primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --color-primary-gradient-hover-shadow: rgba(102, 126, 234, 0.35);
+
+  /* Secundaria (roxo) */
+  --color-secondary: #764ba2;
+  --color-secondary-dark: #6b46c1;
+  --color-secondary-light: #faf5ff;
+
+  /* Sucesso (verde) */
+  --color-success: #38a169;
+  --color-success-dark: #276749;
+  --color-success-darker: #22543d;
+  --color-success-light: #f0fff4;
+  --color-success-lighter: #c6f6d5;
+  --color-success-bg: #d1fae5;
+
+  /* Perigo / Erro (vermelho) */
+  --color-danger: #e53e3e;
+  --color-danger-dark: #c53030;
+  --color-danger-darker: #991b1b;
+  --color-danger-light: #fff5f5;
+  --color-danger-lighter: #fed7d7;
+  --color-danger-bg: #fee2e2;
+
+  /* Alerta / Warning (laranja/amarelo) */
+  --color-warning: #ed8936;
+  --color-warning-dark: #dd6b20;
+  --color-warning-darker: #92400e;
+  --color-warning-light: #fffff0;
+  --color-warning-lighter: #fef3c7;
+  --color-warning-bg: #fefcbf;
+
+  /* Informativo (azul) */
+  --color-info: #4299e1;
+  --color-info-dark: #1e40af;
+  --color-info-light: #ebf8ff;
+  --color-info-lighter: #bee3f8;
+  --color-info-bg: #dbeafe;
+
+  /* ==========================================================================
+   * CORES - Neutros e Texto
+   * ========================================================================== */
+
+  /* Texto */
+  --color-text-primary: #1a202c;
+  --color-text-secondary: #2d3748;
+  --color-text-tertiary: #4a5568;
+  --color-text-muted: #718096;
+  --color-text-placeholder: #a0aec0;
+  --color-text-disabled: #cbd5e0;
+
+  /* Backgrounds */
+  --color-bg-page: #f8f9fa;
+  --color-bg-card: #ffffff;
+  --color-bg-input: #ffffff;
+  --color-bg-hover: #f7fafc;
+  --color-bg-subtle: #fafbfc;
+  --color-bg-muted: #edf2f7;
+  --color-bg-disabled: #f7fafc;
+
+  /* Bordas */
+  --color-border: #e2e8f0;
+  --color-border-light: #f0f0f0;
+  --color-border-hover: #cbd5e0;
+  --color-border-focus: #667eea;
+
+  /* Sidebar */
+  --color-sidebar-bg: #1a1a2e;
+  --color-sidebar-text: #8e8ea0;
+  --color-sidebar-text-hover: #d4d4e0;
+  --color-sidebar-text-active: #ffffff;
+  --color-sidebar-accent: #5a7fca;
+  --color-sidebar-border: rgba(255, 255, 255, 0.06);
+
+  /* ==========================================================================
+   * TIPOGRAFIA
+   * ========================================================================== */
+
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+
+  /* Tamanhos de fonte */
+  --font-size-2xs: 0.688rem;   /* 11px - badges, meta info */
+  --font-size-xs: 0.75rem;     /* 12px - labels, captions */
+  --font-size-sm: 0.813rem;    /* 13px - textos menores */
+  --font-size-base: 0.875rem;  /* 14px - texto padrao */
+  --font-size-md: 0.938rem;    /* 15px - texto medio */
+  --font-size-lg: 1rem;        /* 16px - subtitulos */
+  --font-size-xl: 1.125rem;    /* 18px - titulos de secao */
+  --font-size-2xl: 1.25rem;    /* 20px - titulos modais */
+  --font-size-3xl: 1.5rem;     /* 24px - titulos de pagina */
+  --font-size-4xl: 1.75rem;    /* 28px - titulos de login */
+  --font-size-5xl: 2.25rem;    /* 36px - branding */
+
+  /* Pesos de fonte */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Altura de linha */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+
+  /* ==========================================================================
+   * ESPACAMENTOS
+   * ========================================================================== */
+
+  --space-0: 0;
+  --space-1: 0.125rem;   /* 2px */
+  --space-2: 0.25rem;    /* 4px */
+  --space-3: 0.375rem;   /* 6px */
+  --space-4: 0.5rem;     /* 8px */
+  --space-5: 0.625rem;   /* 10px */
+  --space-6: 0.75rem;    /* 12px */
+  --space-8: 1rem;       /* 16px */
+  --space-10: 1.25rem;   /* 20px */
+  --space-12: 1.5rem;    /* 24px */
+  --space-16: 2rem;      /* 32px */
+  --space-20: 2.5rem;    /* 40px */
+  --space-24: 3rem;      /* 48px */
+
+  /* ==========================================================================
+   * BORDAS
+   * ========================================================================== */
+
+  /* Border radius */
+  --radius-xs: 4px;
+  --radius-sm: 5px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 12px;
+  --radius-3xl: 16px;
+  --radius-full: 9999px;
+
+  /* Border width */
+  --border-width: 1px;
+  --border-width-thick: 2px;
+
+  /* ==========================================================================
+   * SOMBRAS
+   * ========================================================================== */
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 10px 25px rgba(0, 0, 0, 0.15);
+  --shadow-primary: 0 4px 12px rgba(102, 126, 234, 0.35);
+  --shadow-primary-lg: 0 8px 25px rgba(102, 126, 234, 0.35);
+
+  /* ==========================================================================
+   * TRANSICOES
+   * ========================================================================== */
+
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s ease;
+  --transition-spring: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-entrance: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ==========================================================================
+   * LAYOUT
+   * ========================================================================== */
+
+  /* Larguras maximas de conteudo */
+  --max-width-sm: 550px;
+  --max-width-md: 800px;
+  --max-width-lg: 900px;
+  --max-width-xl: 1000px;
+  --max-width-2xl: 1200px;
+
+  /* Sidebar */
+  --sidebar-width: 240px;
+
+  /* Header */
+  --header-height: 56px;
+
+  /* Z-index scale */
+  --z-dropdown: 10;
+  --z-sticky: 50;
+  --z-sidebar: 100;
+  --z-sidebar-overlay: 99;
+  --z-modal: 200;
+  --z-dialog: 9999;
+
+  /* ==========================================================================
+   * BREAKPOINTS (referencia - CSS nao suporta var() em media queries)
+   *
+   * @media (max-width: 1024px)  - tablet landscape / desktop pequeno
+   * @media (max-width: 768px)   - tablet portrait / mobile grande
+   * @media (max-width: 480px)   - mobile
+   * ========================================================================== */
+
+  /* ==========================================================================
+   * COMPONENTES - Tokens especificos
+   * ========================================================================== */
+
+  /* Inputs e formularios */
+  --input-height: 2.5rem;
+  --input-padding-x: 0.75rem;
+  --input-padding-y: 0.5rem;
+  --input-border-radius: var(--radius-sm);
+  --input-border-color: var(--color-border);
+  --input-focus-ring: 0 0 0 3px rgba(102, 126, 234, 0.12);
+
+  /* Botoes */
+  --btn-padding-x: 1.25rem;
+  --btn-padding-y: 0.625rem;
+  --btn-border-radius: var(--radius-md);
+  --btn-font-size: var(--font-size-base);
+  --btn-font-weight: var(--font-weight-semibold);
+
+  /* Badges */
+  --badge-padding-x: 0.5rem;
+  --badge-padding-y: 0.125rem;
+  --badge-border-radius: var(--radius-xl);
+  --badge-font-size: var(--font-size-xs);
+  --badge-font-weight: var(--font-weight-semibold);
+
+  /* Cards */
+  --card-border-radius: var(--radius-lg);
+  --card-border-color: var(--color-border);
+  --card-shadow: var(--shadow-sm);
+  --card-padding: var(--space-10);
+
+  /* Tabelas */
+  --table-header-bg: transparent;
+  --table-header-color: var(--color-text-tertiary);
+  --table-header-font-size: var(--font-size-xs);
+  --table-header-font-weight: var(--font-weight-semibold);
+  --table-cell-padding-x: 1rem;
+  --table-cell-padding-y: 0.75rem;
+  --table-border-color: var(--color-border);
+  --table-row-border-color: var(--color-border-light);
+  --table-row-hover-bg: var(--color-bg-hover);
+
+  /* Alertas */
+  --alert-padding-x: 1rem;
+  --alert-padding-y: 0.75rem;
+  --alert-border-radius: var(--radius-md);
+  --alert-font-size: var(--font-size-base);
+
+  /* Paginacao */
+  --pagination-btn-padding-x: 1rem;
+  --pagination-btn-padding-y: 0.5rem;
+
+  /* Filtros */
+  --filter-bar-padding: 1rem 1.25rem;
+  --filter-bar-border-radius: var(--radius-lg);
+  --filter-label-font-size: var(--font-size-xs);
+}

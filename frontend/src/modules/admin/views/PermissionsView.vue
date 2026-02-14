@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import permissionsService from '../services/permissions.service'
 import { useAuthStore } from '@/stores/auth'
 import type { RolePermission } from '../types'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const authStore = useAuthStore()
 
@@ -114,6 +115,7 @@ async function handleSave() {
     // Atualiza as permissoes no auth store para refletir no menu imediatamente
     await authStore.fetchUser()
     success.value = 'Permissoes salvas com sucesso.'
+    setTimeout(() => { success.value = '' }, 5000)
   } catch (err: unknown) {
     const axiosErr = err as { response?: { data?: { message?: string } } }
     error.value = axiosErr.response?.data?.message || 'Erro ao salvar permissoes.'
@@ -136,10 +138,14 @@ onMounted(() => {
       </div>
     </div>
 
-    <div v-if="error" class="alert alert-error">{{ error }}</div>
-    <div v-if="success" class="alert alert-success">{{ success }}</div>
+    <div v-if="error" class="alert alert-error" role="alert">{{ error }}</div>
+    <Transition name="fade">
+      <div v-if="success" class="alert alert-success" role="status" aria-live="polite">{{ success }}</div>
+    </Transition>
 
-    <div v-if="isLoading" class="loading-state">Carregando...</div>
+    <div v-if="isLoading" class="loading-state">
+      <LoadingSpinner text="Carregando permissoes..." />
+    </div>
 
     <template v-else>
       <div class="table-container">
@@ -188,32 +194,32 @@ onMounted(() => {
 
 <style scoped>
 .permissions-view {
-  max-width: 800px;
+  max-width: var(--max-width-md, 800px);
   margin: 0 auto;
 }
 
 .page-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-12, 1.5rem);
 }
 
 .page-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1a202c;
+  font-size: var(--font-size-3xl, 1.5rem);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-text-primary, #1a202c);
   margin: 0;
 }
 
 .page-subtitle {
-  font-size: 0.875rem;
-  color: #718096;
-  margin: 0.25rem 0 0;
+  font-size: var(--font-size-base, 0.875rem);
+  color: var(--color-text-muted, #718096);
+  margin: var(--space-2, 0.25rem) 0 0;
 }
 
 /* Tabela */
 .table-container {
-  background: #fff;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-card, #fff);
+  border-radius: var(--card-border-radius, 8px);
+  border: var(--border-width, 1px) solid var(--color-border, #e2e8f0);
   overflow-x: auto;
 }
 
@@ -224,25 +230,25 @@ onMounted(() => {
 
 .data-table th {
   text-align: left;
-  padding: 0.75rem 1rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #4a5568;
+  padding: var(--table-cell-padding-y, 0.75rem) var(--table-cell-padding-x, 1rem);
+  font-size: var(--table-header-font-size, 0.75rem);
+  font-weight: var(--table-header-font-weight, 600);
+  color: var(--table-header-color, #4a5568);
   text-transform: uppercase;
   letter-spacing: 0.025em;
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: var(--border-width-thick, 2px) solid var(--color-border, #e2e8f0);
   white-space: nowrap;
 }
 
 .data-table td {
-  padding: 0.75rem 1rem;
-  font-size: 0.875rem;
-  color: #2d3748;
-  border-bottom: 1px solid #f0f0f0;
+  padding: var(--table-cell-padding-y, 0.75rem) var(--table-cell-padding-x, 1rem);
+  font-size: var(--font-size-base, 0.875rem);
+  color: var(--color-text-secondary, #2d3748);
+  border-bottom: var(--border-width, 1px) solid var(--color-border-light, #f0f0f0);
 }
 
 .data-table tbody tr:hover {
-  background-color: #f7fafc;
+  background-color: var(--table-row-hover-bg, #f7fafc);
 }
 
 .th-module {
@@ -255,7 +261,7 @@ onMounted(() => {
 }
 
 .td-module {
-  font-weight: 500;
+  font-weight: var(--font-weight-medium, 500);
 }
 
 .td-toggle {
@@ -277,26 +283,26 @@ onMounted(() => {
   align-items: center;
   width: 40px;
   height: 22px;
-  background-color: #cbd5e0;
+  background-color: var(--color-text-disabled, #cbd5e0);
   border-radius: 11px;
   position: relative;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--transition-base, 0.2s ease);
 }
 
 .toggle-on .toggle-track {
-  background-color: #667eea;
+  background-color: var(--color-primary, #667eea);
 }
 
 .toggle-thumb {
   display: block;
   width: 18px;
   height: 18px;
-  background-color: #fff;
-  border-radius: 50%;
+  background-color: var(--color-bg-card, #fff);
+  border-radius: var(--radius-full, 50%);
   position: absolute;
   left: 2px;
-  transition: transform 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: transform var(--transition-base, 0.2s ease);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.15));
 }
 
 .toggle-on .toggle-thumb {
@@ -307,29 +313,29 @@ onMounted(() => {
 .actions-bar {
   display: flex;
   justify-content: flex-end;
-  margin-top: 1.5rem;
+  margin-top: var(--space-12, 1.5rem);
 }
 
 /* Botao */
 .btn {
   display: inline-flex;
   align-items: center;
-  padding: 0.625rem 1.25rem;
+  padding: var(--btn-padding-y, 0.625rem) var(--btn-padding-x, 1.25rem);
   border: none;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 600;
+  border-radius: var(--btn-border-radius, 6px);
+  font-size: var(--btn-font-size, 0.875rem);
+  font-weight: var(--btn-font-weight, 600);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast, 0.15s ease);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  background: var(--color-primary-gradient);
+  color: var(--color-bg-card, #fff);
 }
 
 .btn-primary:hover:not(:disabled) {
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+  box-shadow: var(--shadow-primary, 0 4px 12px rgba(102, 126, 234, 0.35));
   transform: translateY(-1px);
 }
 
@@ -340,34 +346,48 @@ onMounted(() => {
 
 /* Estados */
 .alert {
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
+  padding: var(--alert-padding-y, 0.75rem) var(--alert-padding-x, 1rem);
+  border-radius: var(--alert-border-radius, 6px);
+  font-size: var(--alert-font-size, 0.875rem);
+  margin-bottom: var(--space-8, 1rem);
 }
 
 .alert-error {
-  background: #fff5f5;
-  border: 1px solid #fed7d7;
-  color: #c53030;
+  background: var(--color-danger-light, #fff5f5);
+  border: var(--border-width, 1px) solid var(--color-danger-lighter, #fed7d7);
+  color: var(--color-danger-dark, #c53030);
 }
 
 .alert-success {
-  background: #f0fff4;
-  border: 1px solid #c6f6d5;
-  color: #276749;
+  background: var(--color-success-light, #f0fff4);
+  border: var(--border-width, 1px) solid var(--color-success-lighter, #c6f6d5);
+  color: var(--color-success-dark, #276749);
 }
 
 .loading-state {
   text-align: center;
-  padding: 3rem 1rem;
-  color: #718096;
-  font-size: 0.875rem;
+  padding: var(--space-24, 3rem) var(--space-8, 1rem);
+  color: var(--color-text-muted, #718096);
+  font-size: var(--font-size-base, 0.875rem);
+}
+
+/* Fade transition */
+.fade-enter-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 @media (max-width: 768px) {
   .th-role {
-    font-size: 0.688rem;
+    font-size: var(--font-size-2xs, 0.688rem);
   }
 }
 </style>

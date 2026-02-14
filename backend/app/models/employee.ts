@@ -58,6 +58,9 @@ export default class Employee extends BaseModel {
   declare salary: number | null
 
   @column()
+  declare irrfDependents: number
+
+  @column()
   declare status: 'active' | 'inactive' | 'terminated'
 
   @column.date()

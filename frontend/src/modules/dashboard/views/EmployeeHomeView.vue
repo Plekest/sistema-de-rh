@@ -6,6 +6,7 @@ import dashboardService from '../services/dashboard.service'
 import attendanceService from '@/modules/attendance/services/attendance.service'
 import type { EmployeeDashboard } from '../types'
 import type { TimeEntry } from '@/modules/attendance/types'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -151,8 +152,7 @@ onUnmounted(() => {
 <template>
   <div class="employee-home">
     <div v-if="isLoading" class="loading-state">
-      <div class="spinner"></div>
-      <p>Carregando...</p>
+      <LoadingSpinner text="Carregando painel..." />
     </div>
 
     <div v-else-if="error" class="error-state">

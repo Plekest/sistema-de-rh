@@ -8,6 +8,7 @@ import attendanceService from '@/modules/attendance/services/attendance.service'
 import hoursBankService from '@/modules/hours-bank/services/hours-bank.service'
 import historyService from '@/modules/history/services/history.service'
 import type { Employee } from '../types'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import type { EmployeeBenefit } from '@/modules/benefits/types'
 import type { EmployeeDocument } from '@/modules/documents/types'
 import type { TimeEntry } from '@/modules/attendance/types'
@@ -257,7 +258,9 @@ onMounted(() => {
     </div>
 
     <div v-if="error" class="alert alert-error">{{ error }}</div>
-    <div v-if="isLoading" class="loading-state">Carregando...</div>
+    <div v-if="isLoading" class="loading-state">
+      <LoadingSpinner text="Carregando dados do colaborador..." />
+    </div>
 
     <template v-else-if="employee">
       <!-- Info resumo -->
@@ -391,7 +394,7 @@ onMounted(() => {
 
         <!-- Beneficios -->
         <div v-show="activeTab === 'benefits'" class="tab-content">
-          <div v-if="benefitsLoading" class="loading-state">Carregando...</div>
+          <div v-if="benefitsLoading" class="loading-state"><LoadingSpinner text="Carregando beneficios..." /></div>
 
           <div v-else-if="employeeBenefits.length > 0" class="benefits-list">
             <div
@@ -470,7 +473,7 @@ onMounted(() => {
 
         <!-- Documentos -->
         <div v-show="activeTab === 'documents'" class="tab-content">
-          <div v-if="documentsLoading" class="loading-state">Carregando...</div>
+          <div v-if="documentsLoading" class="loading-state"><LoadingSpinner text="Carregando documentos..." /></div>
 
           <template v-else-if="documentsLoaded">
             <div v-if="documents.length > 0" class="preview-list">
@@ -507,7 +510,7 @@ onMounted(() => {
 
         <!-- Ponto -->
         <div v-show="activeTab === 'attendance'" class="tab-content">
-          <div v-if="attendanceLoading" class="loading-state">Carregando...</div>
+          <div v-if="attendanceLoading" class="loading-state"><LoadingSpinner text="Carregando registros de ponto..." /></div>
 
           <template v-else-if="attendanceLoaded">
             <div v-if="attendanceRecords.length > 0" class="preview-list">
@@ -561,7 +564,7 @@ onMounted(() => {
 
         <!-- Banco de Horas -->
         <div v-show="activeTab === 'hours'" class="tab-content">
-          <div v-if="hoursBankLoading" class="loading-state">Carregando...</div>
+          <div v-if="hoursBankLoading" class="loading-state"><LoadingSpinner text="Carregando banco de horas..." /></div>
 
           <template v-else-if="hoursBankLoaded">
             <div v-if="hoursBankBalance" class="hours-balance-cards">
@@ -648,7 +651,7 @@ onMounted(() => {
 
         <!-- Historico -->
         <div v-show="activeTab === 'history'" class="tab-content">
-          <div v-if="historyLoading" class="loading-state">Carregando...</div>
+          <div v-if="historyLoading" class="loading-state"><LoadingSpinner text="Carregando historico..." /></div>
 
           <template v-else-if="historyLoaded">
             <div v-if="historyEntries.length > 0" class="preview-list">

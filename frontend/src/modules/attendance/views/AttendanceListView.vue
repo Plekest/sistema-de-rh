@@ -5,6 +5,7 @@ import employeeService from '@/modules/employees/services/employee.service'
 import type { TimeEntry } from '../types'
 import type { Employee } from '@/modules/employees/types'
 import { formatDate, formatTime, formatMinutesToHours } from '@/utils/formatters'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 // Estado
 const entries = ref<TimeEntry[]>([])
@@ -215,7 +216,9 @@ onMounted(() => {
 
     <div v-else-if="error" class="alert alert-error">{{ error }}</div>
 
-    <div v-else-if="isLoading" class="loading-state">Carregando...</div>
+    <div v-else-if="isLoading" class="loading-state">
+      <LoadingSpinner text="Carregando registros de ponto..." />
+    </div>
 
     <div v-else-if="entries.length > 0" class="table-container">
       <table class="data-table">
@@ -437,10 +440,10 @@ onMounted(() => {
 .alert { padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.875rem; margin-bottom: 1rem; }
 .alert-error { background: #fff5f5; border: 1px solid #fed7d7; color: #c53030; }
 .loading-state { text-align: center; padding: 2rem; color: #718096; font-size: 0.875rem; }
-.empty-state { text-align: center; padding: 3rem 1rem; color: #a0aec0; font-size: 0.875rem; background: #fff; border-radius: 8px; border: 1px solid #e2e8f0; }
+.empty-state { text-align: center; padding: 3rem 1rem; color: var(--color-text-muted, #718096); font-size: 0.875rem; background: #fff; border-radius: 8px; border: 1px solid #e2e8f0; }
 .empty-state p { margin: 0; }
 .empty-title { font-size: 1rem; font-weight: 600; color: #4a5568; margin: 0 0 0.5rem !important; }
-.empty-description { font-size: 0.875rem; color: #a0aec0; margin: 0 !important; }
+.empty-description { font-size: 0.875rem; color: var(--color-text-muted, #718096); margin: 0 !important; }
 
 @media (max-width: 768px) {
   .page-header { flex-direction: column; gap: 1rem; }

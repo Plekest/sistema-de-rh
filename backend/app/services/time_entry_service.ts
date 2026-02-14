@@ -1,6 +1,11 @@
 import TimeEntry from '#models/time_entry'
 import Employee from '#models/employee'
+import HoursBankService from '#services/hours_bank_service'
 import { DateTime } from 'luxon'
+
+const STANDARD_CLOCK_IN_HOUR = 8
+const STANDARD_CLOCK_IN_MINUTE = 0
+const LATE_TOLERANCE_MINUTES = 10
 
 interface ListFilters {
   page?: number
@@ -36,7 +41,8 @@ export default class TimeEntryService {
   async clockIn(employeeId: number) {
     await Employee.findOrFail(employeeId)
 
-    const today = DateTime.now().toISODate()!
+    const now = DateTime.now()
+    const today = now.toISODate()!
     let entry = await TimeEntry.query()
       .where('employeeId', employeeId)
       .where('date', today)
@@ -46,16 +52,26 @@ export default class TimeEntryService {
       throw new Error('Entrada ja registrada para hoje')
     }
 
+    // Deteccao de atraso: compara com horario padrao (8:00) + tolerancia de 10 min
+    const standardTime = now.set({ hour: STANDARD_CLOCK_IN_HOUR, minute: STANDARD_CLOCK_IN_MINUTE, second: 0, millisecond: 0 })
+    const diffMinutes = now.diff(standardTime, 'minutes').minutes
+    const isLate = diffMinutes > LATE_TOLERANCE_MINUTES
+    const lateMinutes = isLate ? Math.round(diffMinutes) : 0
+
     if (!entry) {
       entry = await TimeEntry.create({
         employeeId,
         date: DateTime.fromISO(today),
-        clockIn: DateTime.now(),
+        clockIn: now,
         type: 'regular',
         totalWorkedMinutes: 0,
+        isLate,
+        lateMinutes,
       })
     } else {
-      entry.clockIn = DateTime.now()
+      entry.clockIn = now
+      entry.isLate = isLate
+      entry.lateMinutes = lateMinutes
       await entry.save()
     }
 
@@ -65,7 +81,8 @@ export default class TimeEntryService {
   async clockOut(employeeId: number) {
     await Employee.findOrFail(employeeId)
 
-    const today = DateTime.now().toISODate()!
+    const now = DateTime.now()
+    const today = now.toISODate()!
     const entry = await TimeEntry.query()
       .where('employeeId', employeeId)
       .where('date', today)
@@ -79,9 +96,17 @@ export default class TimeEntryService {
       throw new Error('Saida ja registrada para hoje')
     }
 
-    entry.clockOut = DateTime.now()
+    entry.clockOut = now
     entry.totalWorkedMinutes = this.calculateWorkedMinutes(entry)
     await entry.save()
+
+    // Auto-calculo do banco de horas para o mes corrente (B1.1)
+    try {
+      const hoursBankService = new HoursBankService()
+      await hoursBankService.calculateMonth(employeeId, now.month, now.year)
+    } catch (_error) {
+      // Nao impede o clock-out se o calculo falhar
+    }
 
     return entry
   }

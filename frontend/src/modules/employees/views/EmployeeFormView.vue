@@ -3,6 +3,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import employeeService from '../services/employee.service'
 import type { EmployeeFormData, Department, Position } from '../types'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import AppModal from '@/components/common/AppModal.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -51,6 +53,11 @@ const form = ref<EmployeeFormData>({
 // Erros de validacao
 const errors = ref<Record<string, string>>({})
 
+// F1.4: Modal de senha temporaria
+const showPasswordModal = ref(false)
+const temporaryPassword = ref('')
+const passwordCopied = ref(false)
+
 /**
  * Valida o formulario
  */
@@ -83,6 +90,36 @@ function validate(): boolean {
 }
 
 /**
+ * Copia a senha temporaria para a area de transferencia
+ */
+async function copyPassword() {
+  try {
+    await navigator.clipboard.writeText(temporaryPassword.value)
+    passwordCopied.value = true
+    setTimeout(() => { passwordCopied.value = false }, 3000)
+  } catch {
+    // Fallback para navegadores que nao suportam clipboard API
+    const textArea = document.createElement('textarea')
+    textArea.value = temporaryPassword.value
+    document.body.appendChild(textArea)
+    textArea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textArea)
+    passwordCopied.value = true
+    setTimeout(() => { passwordCopied.value = false }, 3000)
+  }
+}
+
+/**
+ * Fecha modal de senha e redireciona para lista
+ */
+function closePasswordModal() {
+  showPasswordModal.value = false
+  temporaryPassword.value = ''
+  router.push('/employees')
+}
+
+/**
  * Salva o colaborador (cria ou atualiza)
  */
 async function handleSubmit() {
@@ -96,14 +133,26 @@ async function handleSubmit() {
     if (isEditing.value) {
       await employeeService.update(employeeId.value, form.value)
       successMessage.value = 'Colaborador atualizado com sucesso.'
+      setTimeout(() => { successMessage.value = '' }, 5000)
+      setTimeout(() => {
+        router.push('/employees')
+      }, 1000)
     } else {
-      await employeeService.create(form.value)
-      successMessage.value = 'Colaborador cadastrado com sucesso.'
-    }
+      const result = await employeeService.create(form.value)
 
-    setTimeout(() => {
-      router.push('/employees')
-    }, 1000)
+      // F1.4: Se a API retornou senha temporaria, exibe modal
+      if (result.temporaryPassword) {
+        temporaryPassword.value = result.temporaryPassword
+        showPasswordModal.value = true
+        passwordCopied.value = false
+      } else {
+        successMessage.value = 'Colaborador cadastrado com sucesso.'
+        setTimeout(() => { successMessage.value = '' }, 5000)
+        setTimeout(() => {
+          router.push('/employees')
+        }, 1000)
+      }
+    }
   } catch (err: unknown) {
     const axiosErr = err as { response?: { data?: { message?: string; errors?: Record<string, string[]> } } }
     if (axiosErr.response?.data?.errors) {
@@ -214,9 +263,13 @@ onMounted(() => {
     </div>
 
     <div v-if="error" class="alert alert-error" role="alert">{{ error }}</div>
-    <div v-if="successMessage" class="alert alert-success" role="alert">{{ successMessage }}</div>
+    <Transition name="fade">
+      <div v-if="successMessage" class="alert alert-success" role="status" aria-live="polite">{{ successMessage }}</div>
+    </Transition>
 
-    <div v-if="isLoading" class="loading-state">Carregando...</div>
+    <div v-if="isLoading" class="loading-state">
+      <LoadingSpinner text="Carregando dados do colaborador..." />
+    </div>
 
     <form v-else @submit.prevent="handleSubmit" class="form-card">
       <!-- Abas -->
@@ -401,32 +454,70 @@ onMounted(() => {
         </button>
       </div>
     </form>
+
+    <!-- F1.4: Modal de senha temporaria -->
+    <AppModal
+      :show="showPasswordModal"
+      title="Colaborador Cadastrado com Sucesso"
+      size="sm"
+      @close="closePasswordModal"
+    >
+      <div class="password-modal-content">
+        <p class="password-info">
+          Um usuario foi criado automaticamente para este colaborador.
+          A senha temporaria gerada e:
+        </p>
+
+        <div class="password-display">
+          <code class="password-value">{{ temporaryPassword }}</code>
+          <button
+            type="button"
+            class="btn-copy"
+            :class="{ 'btn-copied': passwordCopied }"
+            @click="copyPassword"
+          >
+            {{ passwordCopied ? 'Copiado!' : 'Copiar' }}
+          </button>
+        </div>
+
+        <div class="password-warning">
+          <strong>Atencao:</strong> Anote esta senha. Ela nao sera exibida novamente.
+          O colaborador devera alterar a senha no primeiro acesso.
+        </div>
+      </div>
+
+      <template #footer>
+        <button type="button" class="btn btn-primary" @click="closePasswordModal">
+          Entendi, fechar
+        </button>
+      </template>
+    </AppModal>
   </div>
 </template>
 
 <style scoped>
 .employee-form {
-  max-width: 900px;
+  max-width: var(--max-width-lg, 900px);
   margin: 0 auto;
 }
 
 .page-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-12, 1.5rem);
 }
 
 .page-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1a202c;
+  font-size: var(--font-size-3xl, 1.5rem);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-text-primary, #1a202c);
   margin: 0.5rem 0 0;
 }
 
 .btn-back {
   background: none;
   border: none;
-  color: #667eea;
-  font-size: 0.875rem;
-  font-weight: 500;
+  color: var(--color-primary, #667eea);
+  font-size: var(--font-size-base, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
   cursor: pointer;
   padding: 0;
 }
@@ -437,15 +528,15 @@ onMounted(() => {
 
 /* Form Card */
 .form-card {
-  background: #fff;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-card, #fff);
+  border-radius: var(--card-border-radius, 8px);
+  border: var(--border-width, 1px) solid var(--color-border, #e2e8f0);
 }
 
 /* Tabs */
 .tabs {
   display: flex;
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: var(--border-width-thick, 2px) solid var(--color-border, #e2e8f0);
   padding: 0 1.25rem;
   overflow-x: auto;
 }
@@ -454,23 +545,23 @@ onMounted(() => {
   padding: 0.875rem 1.25rem;
   background: none;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-bottom: var(--border-width-thick, 2px) solid transparent;
   margin-bottom: -2px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #718096;
+  font-size: var(--font-size-base, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text-muted, #718096);
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.15s;
+  transition: all var(--transition-fast, 0.15s ease);
 }
 
 .tab-btn:hover {
-  color: #2d3748;
+  color: var(--color-text-secondary, #2d3748);
 }
 
 .tab-btn.active {
-  color: #667eea;
-  border-bottom-color: #667eea;
+  color: var(--color-primary, #667eea);
+  border-bottom-color: var(--color-primary, #667eea);
 }
 
 /* Tab content */
@@ -482,7 +573,7 @@ onMounted(() => {
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: var(--space-8, 1rem);
 }
 
 .col-full {
@@ -492,33 +583,33 @@ onMounted(() => {
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-2, 0.25rem);
 }
 
 .form-group label {
-  font-size: 0.813rem;
-  font-weight: 600;
-  color: #4a5568;
+  font-size: var(--font-size-sm, 0.813rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-tertiary, #4a5568);
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 5px;
-  font-size: 0.875rem;
-  color: #2d3748;
-  background: #fff;
+  padding: var(--input-padding-y, 0.5rem) var(--input-padding-x, 0.75rem);
+  border: var(--border-width, 1px) solid var(--input-border-color, #e2e8f0);
+  border-radius: var(--input-border-radius, 5px);
+  font-size: var(--font-size-base, 0.875rem);
+  color: var(--color-text-secondary, #2d3748);
+  background: var(--color-bg-input, #fff);
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color var(--transition-fast, 0.15s ease);
   font-family: inherit;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-  border-color: #667eea;
+  border-color: var(--color-border-focus, #667eea);
 }
 
 .form-group textarea {
@@ -526,42 +617,42 @@ onMounted(() => {
 }
 
 .input-error {
-  border-color: #e53e3e !important;
+  border-color: var(--color-danger, #e53e3e) !important;
 }
 
 .field-error {
-  font-size: 0.75rem;
-  color: #e53e3e;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-danger, #e53e3e);
 }
 
 /* Botoes */
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 0.75rem;
+  gap: var(--space-6, 0.75rem);
   padding: 1.25rem;
-  border-top: 1px solid #e2e8f0;
+  border-top: var(--border-width, 1px) solid var(--color-border, #e2e8f0);
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
-  padding: 0.625rem 1.25rem;
+  padding: var(--btn-padding-y, 0.625rem) var(--btn-padding-x, 1.25rem);
   border: none;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 600;
+  border-radius: var(--btn-border-radius, 6px);
+  font-size: var(--btn-font-size, 0.875rem);
+  font-weight: var(--btn-font-weight, 600);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast, 0.15s ease);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--color-primary-gradient);
   color: #fff;
 }
 
 .btn-primary:hover:not(:disabled) {
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+  box-shadow: var(--shadow-primary, 0 4px 12px rgba(102, 126, 234, 0.35));
   transform: translateY(-1px);
 }
 
@@ -571,39 +662,121 @@ onMounted(() => {
 }
 
 .btn-secondary {
-  background-color: #edf2f7;
-  color: #4a5568;
+  background-color: var(--color-bg-muted, #edf2f7);
+  color: var(--color-text-tertiary, #4a5568);
 }
 
 .btn-secondary:hover {
-  background-color: #e2e8f0;
+  background-color: var(--color-border, #e2e8f0);
 }
 
 /* Alertas */
 .alert {
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
+  padding: var(--alert-padding-y, 0.75rem) var(--alert-padding-x, 1rem);
+  border-radius: var(--alert-border-radius, 6px);
+  font-size: var(--alert-font-size, 0.875rem);
+  margin-bottom: var(--space-8, 1rem);
 }
 
 .alert-error {
-  background: #fff5f5;
-  border: 1px solid #fed7d7;
-  color: #c53030;
+  background: var(--color-danger-light, #fff5f5);
+  border: var(--border-width, 1px) solid var(--color-danger-lighter, #fed7d7);
+  color: var(--color-danger-dark, #c53030);
 }
 
 .alert-success {
-  background: #f0fff4;
-  border: 1px solid #c6f6d5;
-  color: #276749;
+  background: var(--color-success-light, #f0fff4);
+  border: var(--border-width, 1px) solid var(--color-success-lighter, #c6f6d5);
+  color: var(--color-success-dark, #276749);
 }
 
 .loading-state {
   text-align: center;
-  padding: 3rem 1rem;
-  color: #718096;
-  font-size: 0.875rem;
+  padding: var(--space-24, 3rem) var(--space-8, 1rem);
+  color: var(--color-text-muted, #718096);
+  font-size: var(--font-size-base, 0.875rem);
+}
+
+/* F1.4: Modal de senha temporaria */
+.password-modal-content {
+  text-align: center;
+}
+
+.password-info {
+  font-size: var(--font-size-base, 0.875rem);
+  color: var(--color-text-secondary, #2d3748);
+  margin: 0 0 1.25rem;
+  line-height: 1.5;
+}
+
+.password-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6, 0.75rem);
+  padding: var(--space-8, 1rem);
+  background: var(--color-bg-muted, #edf2f7);
+  border-radius: var(--card-border-radius, 8px);
+  margin-bottom: 1.25rem;
+}
+
+.password-value {
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-text-primary, #1a202c);
+  letter-spacing: 0.05em;
+  font-family: 'Courier New', Courier, monospace;
+  user-select: all;
+}
+
+.btn-copy {
+  padding: 0.375rem 0.875rem;
+  background: var(--color-primary, #667eea);
+  color: #fff;
+  border: none;
+  border-radius: var(--btn-border-radius, 6px);
+  font-size: var(--font-size-sm, 0.813rem);
+  font-weight: var(--font-weight-semibold, 600);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s ease);
+  white-space: nowrap;
+}
+
+.btn-copy:hover {
+  background: var(--color-primary-dark, #5a67d8);
+}
+
+.btn-copied {
+  background: var(--color-success, #38a169);
+}
+
+.btn-copied:hover {
+  background: var(--color-success-dark, #276749);
+}
+
+.password-warning {
+  padding: var(--space-6, 0.75rem) var(--space-8, 1rem);
+  background: #fffbeb;
+  border: var(--border-width, 1px) solid #fef3c7;
+  border-radius: var(--alert-border-radius, 6px);
+  font-size: var(--font-size-sm, 0.813rem);
+  color: #92400e;
+  line-height: 1.5;
+  text-align: left;
+}
+
+/* Fade transition */
+.fade-enter-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 /* Responsivo */

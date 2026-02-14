@@ -6,6 +6,8 @@ import type { HoursBankEntry } from '../types'
 import type { Employee } from '@/modules/employees/types'
 import { formatMinutesToHours, getMonthName } from '@/utils/formatters'
 import { useAuthStore } from '@/stores/auth'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
 
 const authStore = useAuthStore()
 
@@ -139,10 +141,10 @@ onMounted(() => {
     </div>
 
     <template v-if="!selectedEmployee">
-      <div class="empty-state">
-        <p class="empty-title">Selecione um colaborador</p>
-        <p class="empty-description">Escolha um colaborador no filtro acima para visualizar o banco de horas.</p>
-      </div>
+      <EmptyState
+        title="Selecione um colaborador"
+        description="Escolha um colaborador no filtro acima para visualizar o banco de horas."
+      />
     </template>
 
     <template v-else>
@@ -154,7 +156,9 @@ onMounted(() => {
       </div>
 
       <div v-if="error" class="alert alert-error">{{ error }}</div>
-      <div v-if="isLoading" class="loading-state">Carregando...</div>
+      <div v-if="isLoading" class="loading-state">
+        <LoadingSpinner text="Carregando banco de horas..." />
+      </div>
 
       <div v-else-if="entries.length > 0" class="table-container">
         <table class="data-table">
@@ -183,9 +187,11 @@ onMounted(() => {
         </table>
       </div>
 
-      <div v-else class="empty-state">
-        <p>Nenhum registro de banco de horas encontrado para o periodo selecionado.</p>
-      </div>
+      <EmptyState
+        v-else
+        title="Nenhum registro encontrado"
+        description="Nenhum registro de banco de horas para o periodo selecionado."
+      />
     </template>
   </div>
 </template>
@@ -254,7 +260,7 @@ onMounted(() => {
 
 .balance-unit {
   font-size: 0.75rem;
-  color: #a0aec0;
+  color: var(--color-text-muted, #718096);
 }
 
 /* Filtros */
@@ -295,10 +301,10 @@ onMounted(() => {
 .alert { padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.875rem; margin-bottom: 1rem; }
 .alert-error { background: #fff5f5; border: 1px solid #fed7d7; color: #c53030; }
 .loading-state { text-align: center; padding: 2rem; color: #718096; font-size: 0.875rem; }
-.empty-state { text-align: center; padding: 3rem 1rem; color: #a0aec0; font-size: 0.875rem; background: #fff; border-radius: 8px; border: 1px solid #e2e8f0; }
+.empty-state { text-align: center; padding: 3rem 1rem; color: var(--color-text-muted, #718096); font-size: 0.875rem; background: #fff; border-radius: 8px; border: 1px solid #e2e8f0; }
 .empty-state p { margin: 0; }
 .empty-title { font-size: 1rem; font-weight: 600; color: #4a5568; margin: 0 0 0.5rem !important; }
-.empty-description { font-size: 0.875rem; color: #a0aec0; margin: 0 !important; }
+.empty-description { font-size: 0.875rem; color: var(--color-text-muted, #718096); margin: 0 !important; }
 
 @media (max-width: 768px) {
   .filters-bar { flex-direction: column; }

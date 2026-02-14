@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import PayrollService from '#services/payroll_service'
+import Employee from '#models/employee'
 import {
   createPayrollPeriodValidator,
   listPayrollPeriodsValidator,
@@ -14,6 +15,18 @@ export default class PayrollController {
 
   constructor() {
     this.service = new PayrollService()
+  }
+
+  /**
+   * Retorna o employeeId vinculado ao usuario logado (para role employee).
+   * Retorna null se nao encontrar.
+   */
+  private async getEmployeeIdForUser(userId: number): Promise<number | null> {
+    const employee = await Employee.query()
+      .where('userId', userId)
+      .where('status', 'active')
+      .first()
+    return employee?.id || null
   }
 
   // ==========================================
@@ -81,9 +94,19 @@ export default class PayrollController {
   /**
    * Lista componentes salariais de um colaborador
    * GET /api/v1/employees/:employeeId/payroll-components
+   * Admin/Manager: qualquer employee. Employee: apenas os proprios.
    */
-  async components({ params, response }: HttpContext) {
+  async components({ params, auth, response }: HttpContext) {
     try {
+      const user = auth.getUserOrFail()
+
+      if (user.role === 'employee') {
+        const employeeId = await this.getEmployeeIdForUser(user.id)
+        if (!employeeId || Number(params.employeeId) !== employeeId) {
+          return response.forbidden({ message: 'Acesso negado a estes dados salariais' })
+        }
+      }
+
       const components = await this.service.getComponents(params.employeeId)
       return response.ok({ data: components })
     } catch {
@@ -183,9 +206,21 @@ export default class PayrollController {
   /**
    * Lista contracheques de um periodo
    * GET /api/v1/payroll/periods/:periodId/slips
+   * Admin/Manager: veem todos. Employee: ve apenas o proprio.
    */
-  async slips({ params, response }: HttpContext) {
+  async slips({ params, auth, response }: HttpContext) {
     try {
+      const user = auth.getUserOrFail()
+
+      if (user.role === 'employee') {
+        const employeeId = await this.getEmployeeIdForUser(user.id)
+        if (!employeeId) {
+          return response.ok({ data: [] })
+        }
+        const slips = await this.service.getPaySlips(params.periodId, employeeId)
+        return response.ok({ data: slips })
+      }
+
       const slips = await this.service.getPaySlips(params.periodId)
       return response.ok({ data: slips })
     } catch {
@@ -195,11 +230,22 @@ export default class PayrollController {
 
   /**
    * Lista contracheques de um colaborador
-   * GET /api/v1/employees/:employeeId/pay-slips
+   * GET /api/v1/payroll/slips
+   * Admin/Manager: podem filtrar por qualquer employeeId. Employee: apenas os proprios.
    */
-  async employeeSlips({ request, response }: HttpContext) {
+  async employeeSlips({ request, auth, response }: HttpContext) {
     try {
+      const user = auth.getUserOrFail()
       const filters = await request.validateUsing(listPaySlipsValidator)
+
+      if (user.role === 'employee') {
+        const employeeId = await this.getEmployeeIdForUser(user.id)
+        if (!employeeId) {
+          return response.ok({ data: [], meta: { total: 0, page: 1, lastPage: 1 } })
+        }
+        filters.employeeId = employeeId
+      }
+
       const result = await this.service.getEmployeePaySlips(filters)
       return response.ok({
         data: result.all(),
@@ -216,10 +262,20 @@ export default class PayrollController {
   /**
    * Retorna detalhes de um contracheque
    * GET /api/v1/payroll/slips/:id
+   * Admin/Manager: qualquer contracheque. Employee: apenas o proprio.
    */
-  async slipDetail({ params, response }: HttpContext) {
+  async slipDetail({ params, auth, response }: HttpContext) {
     try {
+      const user = auth.getUserOrFail()
       const detail = await this.service.getPaySlipDetail(params.id)
+
+      if (user.role === 'employee') {
+        const employeeId = await this.getEmployeeIdForUser(user.id)
+        if (!employeeId || detail.slip.employeeId !== employeeId) {
+          return response.forbidden({ message: 'Acesso negado a este contracheque' })
+        }
+      }
+
       return response.ok({ data: detail })
     } catch (error) {
       if (error.code === 'E_ROW_NOT_FOUND') {

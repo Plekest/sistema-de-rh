@@ -85,3 +85,8 @@ export interface PaginatedResponse<T> {
     limit: number
   }
 }
+
+export interface CreateEmployeeResponse {
+  data: Employee
+  temporaryPassword?: string
+}

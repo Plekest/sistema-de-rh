@@ -1,6 +1,7 @@
 import HoursBank from '#models/hours_bank'
 import TimeEntry from '#models/time_entry'
 import Employee from '#models/employee'
+import { toDecimal } from '#utils/number_helper'
 import { DateTime } from 'luxon'
 
 interface ListFilters {
@@ -21,7 +22,7 @@ export default class HoursBankService {
       .where('date', '>=', startDate.toISODate()!)
       .where('date', '<=', endDate.toISODate()!)
 
-    const workedMinutes = entries.reduce((sum, entry) => sum + entry.totalWorkedMinutes, 0)
+    const workedMinutes = entries.reduce((sum, entry) => sum + toDecimal(entry.totalWorkedMinutes), 0)
 
     const expectedMinutes = this.calculateExpectedMinutes(startDate, endDate, employee.type)
 
@@ -40,7 +41,7 @@ export default class HoursBankService {
       .orderBy('referenceMonth', 'desc')
       .first()
 
-    const previousAccumulated = previousBank?.accumulatedBalanceMinutes || 0
+    const previousAccumulated = toDecimal(previousBank?.accumulatedBalanceMinutes)
     const accumulatedBalanceMinutes = previousAccumulated + balanceMinutes
 
     const hoursBank = await HoursBank.updateOrCreate(
@@ -70,7 +71,7 @@ export default class HoursBankService {
       .first()
 
     return {
-      accumulatedBalanceMinutes: latestBank?.accumulatedBalanceMinutes || 0,
+      accumulatedBalanceMinutes: toDecimal(latestBank?.accumulatedBalanceMinutes),
       lastMonth: latestBank
         ? { month: latestBank.referenceMonth, year: latestBank.referenceYear }
         : null,

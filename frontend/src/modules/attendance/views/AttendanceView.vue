@@ -3,10 +3,15 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import attendanceService from '../services/attendance.service'
 import type { TimeEntry } from '../types'
 import { formatDate, formatTime, formatMinutesToHours } from '@/utils/formatters'
+import { useApiError } from '@/composables/useApiError'
+import DataTable from '@/components/common/DataTable.vue'
+import StatusBadge from '@/components/common/StatusBadge.vue'
+import type { DataTableColumn } from '@/components/common/types'
+
+const { error, handleError, clearError } = useApiError()
 
 // Estado
 const isLoading = ref(false)
-const error = ref('')
 const clockError = ref('')
 const currentTime = ref('')
 const currentDate = ref('')
@@ -15,6 +20,20 @@ const recentEntries = ref<TimeEntry[]>([])
 const clockingAction = ref('')
 
 let clockInterval: ReturnType<typeof setInterval> | null = null
+
+/**
+ * Colunas da tabela de registros recentes
+ */
+const recentColumns: DataTableColumn[] = [
+  { key: 'date', label: 'Data' },
+  { key: 'clockIn', label: 'Entrada' },
+  { key: 'lunchStart', label: 'Saida Almoco' },
+  { key: 'lunchEnd', label: 'Volta Almoco' },
+  { key: 'clockOut', label: 'Saida' },
+  { key: 'totalWorkedMinutes', label: 'Total', align: 'right' },
+  { key: 'type', label: 'Tipo' },
+  { key: 'lateStatus', label: 'Atraso' },
+]
 
 /**
  * Atualiza relogio digital
@@ -40,7 +59,7 @@ function updateClock() {
 async function loadData() {
   try {
     isLoading.value = true
-    error.value = ''
+    clearError()
     const [today, recent] = await Promise.all([
       attendanceService.getToday(),
       attendanceService.getRecent(),
@@ -48,8 +67,7 @@ async function loadData() {
     todayEntry.value = today
     recentEntries.value = recent
   } catch (err: unknown) {
-    error.value = 'Erro ao carregar registros de ponto.'
-    console.error(err)
+    handleError(err, 'Erro ao carregar registros de ponto.')
   } finally {
     isLoading.value = false
   }
@@ -194,42 +212,51 @@ onUnmounted(() => {
     <div class="recent-section">
       <h2 class="section-title">Ultimos 7 dias</h2>
 
-      <div v-if="isLoading" class="loading-state">Carregando...</div>
+      <DataTable
+        :columns="recentColumns"
+        :data="(recentEntries as unknown as Record<string, unknown>[])"
+        :loading="isLoading"
+        emptyMessage="Nenhum registro encontrado"
+        emptyDescription="Nenhum registro de ponto nos ultimos 7 dias."
+      >
+        <template #cell-date="{ row }">
+          {{ formatDate((row as any).date) }}
+        </template>
 
-      <div v-else-if="recentEntries.length > 0" class="table-container">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Entrada</th>
-              <th>Saida Almoco</th>
-              <th>Volta Almoco</th>
-              <th>Saida</th>
-              <th>Total</th>
-              <th>Tipo</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="entry in recentEntries" :key="entry.id">
-              <td>{{ formatDate(entry.date) }}</td>
-              <td>{{ formatTime(entry.clockIn) }}</td>
-              <td>{{ formatTime(entry.lunchStart) }}</td>
-              <td>{{ formatTime(entry.lunchEnd) }}</td>
-              <td>{{ formatTime(entry.clockOut) }}</td>
-              <td class="td-total">{{ formatMinutesToHours(entry.totalWorkedMinutes) }}</td>
-              <td>
-                <span class="badge" :class="'badge-' + entry.type">
-                  {{ typeLabel(entry.type) }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <template #cell-clockIn="{ row }">
+          {{ formatTime((row as any).clockIn) }}
+        </template>
 
-      <div v-else class="empty-state">
-        <p>Nenhum registro encontrado nos ultimos 7 dias.</p>
-      </div>
+        <template #cell-lunchStart="{ row }">
+          {{ formatTime((row as any).lunchStart) }}
+        </template>
+
+        <template #cell-lunchEnd="{ row }">
+          {{ formatTime((row as any).lunchEnd) }}
+        </template>
+
+        <template #cell-clockOut="{ row }">
+          {{ formatTime((row as any).clockOut) }}
+        </template>
+
+        <template #cell-totalWorkedMinutes="{ row }">
+          <span class="td-total">{{ formatMinutesToHours((row as any).totalWorkedMinutes) }}</span>
+        </template>
+
+        <template #cell-type="{ row }">
+          <StatusBadge :status="typeLabel((row as any).type)" />
+        </template>
+
+        <!-- F1.2: Indicador visual de atraso -->
+        <template #cell-lateStatus="{ row }">
+          <StatusBadge
+            v-if="(row as any).isLate"
+            :status="`Atrasado ${(row as any).lateMinutes}min`"
+            variant="danger"
+          />
+          <span v-else class="no-late">-</span>
+        </template>
+      </DataTable>
     </div>
   </div>
 </template>
@@ -360,65 +387,17 @@ onUnmounted(() => {
   margin: 0 0 1rem;
 }
 
-/* Tabela */
-.table-container {
-  background: #fff;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  overflow-x: auto;
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.data-table th {
-  text-align: left;
-  padding: 0.75rem 1rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #4a5568;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-  border-bottom: 2px solid #e2e8f0;
-  white-space: nowrap;
-}
-
-.data-table td {
-  padding: 0.75rem 1rem;
-  font-size: 0.875rem;
-  color: #2d3748;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.data-table tbody tr:hover {
-  background-color: #f7fafc;
-}
-
+/* Total */
 .td-total {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
-/* Badges */
-.badge {
-  display: inline-block;
-  padding: 0.125rem 0.5rem;
-  border-radius: 10px;
-  font-size: 0.75rem;
-  font-weight: 600;
+/* Sem atraso */
+.no-late {
+  color: #a0aec0;
+  font-size: 0.813rem;
 }
-
-.badge-regular { background-color: #ebf4ff; color: #667eea; }
-.badge-overtime { background-color: #faf5ff; color: #6b46c1; }
-.badge-absence { background-color: #fff5f5; color: #c53030; }
-.badge-holiday { background-color: #f0fff4; color: #276749; }
-
-/* Estados */
-.loading-state { text-align: center; padding: 2rem; color: #718096; font-size: 0.875rem; }
-.empty-state { text-align: center; padding: 2rem; color: #a0aec0; font-size: 0.875rem; background: #fff; border-radius: 8px; border: 1px solid #e2e8f0; }
-.empty-state p { margin: 0; }
 
 /* Responsivo */
 @media (max-width: 768px) {

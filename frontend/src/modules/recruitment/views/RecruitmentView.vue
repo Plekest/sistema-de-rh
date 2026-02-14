@@ -23,6 +23,8 @@ import {
 import type { Department, Position, Employee } from '@/modules/employees/types'
 import { useAuthStore } from '@/stores/auth'
 import { useConfirmDialog } from '@/composables/useConfirmDialog'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
 
 const authStore = useAuthStore()
 const { confirm: confirmDialog } = useConfirmDialog()
@@ -281,7 +283,7 @@ async function submitRequisitionForm() {
 
     await recruitmentService.createRequisition(requisitionFormData.value)
     successMessage.value = 'Vaga criada com sucesso!'
-    setTimeout(() => { successMessage.value = '' }, 3000)
+    setTimeout(() => { successMessage.value = '' }, 5000)
     closeRequisitionForm()
     loadRequisitions()
   } catch (err: any) {
@@ -305,7 +307,7 @@ async function approveRequisition(id: number) {
   await handleAction('approveRequisition', async () => {
     await recruitmentService.approveRequisition(id)
     successMessage.value = 'Vaga aprovada com sucesso!'
-    setTimeout(() => { successMessage.value = '' }, 3000)
+    setTimeout(() => { successMessage.value = '' }, 5000)
     loadRequisitions()
   })
 }
@@ -323,7 +325,7 @@ async function cancelRequisition(id: number) {
   await handleAction('cancelRequisition', async () => {
     await recruitmentService.cancelRequisition(id)
     successMessage.value = 'Vaga cancelada com sucesso!'
-    setTimeout(() => { successMessage.value = '' }, 3000)
+    setTimeout(() => { successMessage.value = '' }, 5000)
     loadRequisitions()
   })
 }
@@ -372,7 +374,7 @@ async function submitCandidateForm() {
 
     await recruitmentService.createCandidate(candidateFormData.value)
     successMessage.value = 'Candidato criado com sucesso!'
-    setTimeout(() => { successMessage.value = '' }, 3000)
+    setTimeout(() => { successMessage.value = '' }, 5000)
     closeCandidateForm()
     loadCandidates()
   } catch (err: any) {
@@ -411,7 +413,7 @@ async function submitMoveForm() {
 
     await recruitmentService.moveCandidate(selectedCandidateId.value!, moveFormData.value)
     successMessage.value = 'Candidato movido com sucesso!'
-    setTimeout(() => { successMessage.value = '' }, 3000)
+    setTimeout(() => { successMessage.value = '' }, 5000)
     closeMoveForm()
     loadCandidates()
   } catch (err: any) {
@@ -435,7 +437,7 @@ async function hireCandidate(id: number) {
   await handleAction('hireCandidate', async () => {
     await recruitmentService.hireCandidate(id)
     successMessage.value = 'Candidato contratado com sucesso!'
-    setTimeout(() => { successMessage.value = '' }, 3000)
+    setTimeout(() => { successMessage.value = '' }, 5000)
     loadCandidates()
   })
 }
@@ -457,7 +459,7 @@ async function rejectCandidate(id: number) {
     const feedback = result !== true ? (result as string) : undefined
     await recruitmentService.rejectCandidate(id, { feedback })
     successMessage.value = 'Candidato rejeitado!'
-    setTimeout(() => { successMessage.value = '' }, 3000)
+    setTimeout(() => { successMessage.value = '' }, 5000)
     loadCandidates()
   })
 }
@@ -465,6 +467,7 @@ async function rejectCandidate(id: number) {
 // --- Entrevistas ---
 
 function openInterviewForm(candidateId?: number) {
+  activeTab.value = 'interviews'
   showInterviewForm.value = true
   interviewFormError.value = ''
   const now = new Date()
@@ -503,7 +506,7 @@ async function submitInterviewForm() {
 
     await recruitmentService.createInterview(interviewFormData.value)
     successMessage.value = 'Entrevista agendada com sucesso!'
-    setTimeout(() => { successMessage.value = '' }, 3000)
+    setTimeout(() => { successMessage.value = '' }, 5000)
     closeInterviewForm()
     await loadCandidates()
     await loadInterviews()
@@ -542,7 +545,7 @@ async function submitCompleteForm() {
 
     await recruitmentService.completeInterview(selectedInterviewId.value!, completeFormData.value)
     successMessage.value = 'Entrevista completada com sucesso!'
-    setTimeout(() => { successMessage.value = '' }, 3000)
+    setTimeout(() => { successMessage.value = '' }, 5000)
     closeCompleteForm()
     await loadCandidates()
     await loadInterviews()
@@ -567,7 +570,7 @@ async function cancelInterview(id: number) {
   await handleAction('cancelInterview', async () => {
     await recruitmentService.cancelInterview(id)
     successMessage.value = 'Entrevista cancelada!'
-    setTimeout(() => { successMessage.value = '' }, 3000)
+    setTimeout(() => { successMessage.value = '' }, 5000)
     await loadCandidates()
     await loadInterviews()
   })
@@ -672,7 +675,9 @@ onMounted(async () => {
     </div>
 
     <!-- Mensagens -->
-    <div v-if="successMessage" class="alert alert-success" role="alert">{{ successMessage }}</div>
+    <Transition name="fade">
+      <div v-if="successMessage" class="alert alert-success" role="alert">{{ successMessage }}</div>
+    </Transition>
     <div v-if="error" class="alert alert-error" role="alert">{{ error }}</div>
 
     <!-- Tabs -->
@@ -832,7 +837,7 @@ onMounted(async () => {
       </div>
 
       <!-- Lista de vagas -->
-      <div v-if="isLoading" class="loading-state">Carregando...</div>
+      <div v-if="isLoading" class="loading-state"><LoadingSpinner text="Carregando vagas..." /></div>
 
       <div v-else-if="requisitions.length > 0" class="requisitions-list">
         <div v-for="req in requisitions" :key="req.id" class="requisition-card">
@@ -911,10 +916,11 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div v-else class="empty-state">
-        <p class="empty-title">Nenhuma vaga encontrada</p>
-        <p class="empty-description">Nao ha vagas cadastradas no sistema.</p>
-      </div>
+      <EmptyState
+        v-else
+        title="Nenhuma vaga encontrada"
+        description="Nao ha vagas cadastradas no sistema."
+      />
     </template>
 
     <!-- === TAB: CANDIDATOS === -->
@@ -1033,53 +1039,12 @@ onMounted(async () => {
         </form>
       </div>
 
-      <!-- Formulario mover candidato -->
-      <div v-if="showMoveForm" class="form-card">
-        <div class="form-header">
-          <h2 class="form-title">Mover Candidato de Etapa</h2>
-          <button class="btn-close" @click="closeMoveForm">Fechar</button>
-        </div>
-
-        <div v-if="moveFormError" class="alert alert-error" role="alert">{{ moveFormError }}</div>
-
-        <form @submit.prevent="submitMoveForm" class="form-grid">
-          <div class="form-group">
-            <label for="move-stage">Etapa de Destino *</label>
-            <select id="move-stage" v-model="moveFormData.stageId" required>
-              <option :value="0">Selecione...</option>
-              <option v-for="stage in stages" :key="stage.id" :value="stage.id">
-                {{ stage.name }}
-              </option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="move-score">Nota (0-100)</label>
-            <input id="move-score" type="number" min="0" max="100" v-model="moveFormData.score" />
-          </div>
-
-          <div class="form-group form-col-full">
-            <label for="move-feedback">Feedback</label>
-            <textarea id="move-feedback" v-model="moveFormData.feedback" rows="3"></textarea>
-          </div>
-
-          <div class="form-actions">
-            <button type="button" class="btn-secondary" @click="closeMoveForm" :disabled="moveFormLoading">
-              Cancelar
-            </button>
-            <button type="submit" class="btn-primary" :disabled="moveFormLoading">
-              {{ moveFormLoading ? 'Movendo...' : 'Mover' }}
-            </button>
-          </div>
-        </form>
-      </div>
-
       <!-- Lista de candidatos -->
       <div v-if="!showCandidateForm && !showMoveForm" class="candidates-actions-bar">
         <button v-if="isAdmin" class="btn-primary" @click="openCandidateForm()">Novo Candidato</button>
       </div>
 
-      <div v-if="isLoading" class="loading-state">Carregando...</div>
+      <div v-if="isLoading" class="loading-state"><LoadingSpinner text="Carregando candidatos..." /></div>
 
       <div v-else-if="candidates.length > 0" class="candidates-list">
         <div v-for="cand in candidates" :key="cand.id" class="candidate-card">
@@ -1120,15 +1085,16 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div v-else class="empty-state">
-        <p class="empty-title">Nenhum candidato encontrado</p>
-        <p class="empty-description">Nao ha candidatos cadastrados.</p>
-      </div>
+      <EmptyState
+        v-else
+        title="Nenhum candidato encontrado"
+        description="Nao ha candidatos cadastrados."
+      />
     </template>
 
     <!-- === TAB: PIPELINE === -->
     <template v-if="activeTab === 'pipeline'">
-      <div v-if="isLoading" class="loading-state">Carregando...</div>
+      <div v-if="isLoading" class="loading-state"><LoadingSpinner text="Carregando pipeline..." /></div>
 
       <div v-else class="pipeline-view">
         <div v-for="stage in stages" :key="stage.id" class="pipeline-stage">
@@ -1244,8 +1210,8 @@ onMounted(async () => {
 
         <form @submit.prevent="submitCompleteForm" class="form-grid">
           <div class="form-group">
-            <label for="comp-score">Nota (0-100) *</label>
-            <input id="comp-score" type="number" min="0" max="100" v-model="completeFormData.score" required />
+            <label for="comp-score">Nota (1-5) *</label>
+            <input id="comp-score" type="number" min="1" max="5" v-model="completeFormData.score" required />
           </div>
 
           <div class="form-group form-col-full">
@@ -1269,7 +1235,7 @@ onMounted(async () => {
         <button v-if="isAdmin" class="btn-primary" @click="openInterviewForm()">Agendar Entrevista</button>
       </div>
 
-      <div v-if="isLoading" class="loading-state">Carregando...</div>
+      <div v-if="isLoading" class="loading-state"><LoadingSpinner text="Carregando entrevistas..." /></div>
 
       <div v-else-if="interviews.length > 0" class="interviews-list">
         <div v-for="interview in interviews" :key="interview.id" class="interview-card">
@@ -1311,11 +1277,55 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div v-else class="empty-state">
-        <p class="empty-title">Nenhuma entrevista encontrada</p>
-        <p class="empty-description">Nao ha entrevistas agendadas.</p>
-      </div>
+      <EmptyState
+        v-else
+        title="Nenhuma entrevista encontrada"
+        description="Nao ha entrevistas agendadas."
+      />
     </template>
+
+    <!-- === FORMULARIO MOVER CANDIDATO (fora das abas, overlay global) === -->
+    <div v-if="showMoveForm" class="form-overlay" @click.self="closeMoveForm">
+      <div class="form-card form-modal">
+        <div class="form-header">
+          <h2 class="form-title">Mover Candidato de Etapa</h2>
+          <button class="btn-close" @click="closeMoveForm">Fechar</button>
+        </div>
+
+        <div v-if="moveFormError" class="alert alert-error" role="alert">{{ moveFormError }}</div>
+
+        <form @submit.prevent="submitMoveForm" class="form-grid">
+          <div class="form-group">
+            <label for="move-stage">Etapa de Destino *</label>
+            <select id="move-stage" v-model="moveFormData.stageId" required>
+              <option :value="0">Selecione...</option>
+              <option v-for="stage in stages" :key="stage.id" :value="stage.id">
+                {{ stage.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="move-score">Nota (1-5)</label>
+            <input id="move-score" type="number" min="1" max="5" v-model="moveFormData.score" />
+          </div>
+
+          <div class="form-group form-col-full">
+            <label for="move-feedback">Feedback</label>
+            <textarea id="move-feedback" v-model="moveFormData.feedback" rows="3"></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" @click="closeMoveForm" :disabled="moveFormLoading">
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primary" :disabled="moveFormLoading">
+              {{ moveFormLoading ? 'Movendo...' : 'Mover' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -2009,6 +2019,20 @@ onMounted(async () => {
   margin: 0 !important;
 }
 
+/* Fade transition */
+.fade-enter-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
 @media (max-width: 768px) {
   .page-header {
     flex-direction: column;
@@ -2089,5 +2113,28 @@ onMounted(async () => {
   .pipeline-cards {
     padding: 0.5rem;
   }
+}
+
+/* Overlay para formularios modais */
+.form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.form-modal {
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 </style>

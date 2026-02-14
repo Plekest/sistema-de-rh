@@ -7,6 +7,7 @@ import { BENEFIT_TYPE_LABELS, ENROLLMENT_STATUS_LABELS, RELATIONSHIP_LABELS } fr
 import type { Employee } from '@/modules/employees/types'
 import { useAuthStore } from '@/stores/auth'
 import { useConfirmDialog } from '@/composables/useConfirmDialog'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const authStore = useAuthStore()
 const { confirm: confirmDialog } = useConfirmDialog()
@@ -577,7 +578,7 @@ onMounted(() => {
       </div>
 
       <!-- Lista de benefícios -->
-      <div v-if="isLoading" class="loading-state">Carregando...</div>
+      <div v-if="isLoading" class="loading-state"><LoadingSpinner text="Carregando..." /></div>
 
       <div v-else-if="benefits.length > 0" class="benefits-list">
         <div v-for="benefit in benefits" :key="benefit.id" class="benefit-card">
@@ -692,7 +693,7 @@ onMounted(() => {
         </form>
       </div>
 
-      <div v-if="isLoading" class="loading-state">Carregando...</div>
+      <div v-if="isLoading" class="loading-state"><LoadingSpinner text="Carregando..." /></div>
 
       <div v-else-if="employeeBenefits.length > 0" class="my-benefits-list">
         <div v-for="enrollment in employeeBenefits" :key="enrollment.id" class="enrollment-card">

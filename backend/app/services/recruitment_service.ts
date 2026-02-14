@@ -5,6 +5,7 @@ import CandidateStageHistory from '#models/candidate_stage_history'
 import Interview from '#models/interview'
 import { DateTime } from 'luxon'
 import db from '@adonisjs/lucid/services/db'
+import { toNumber } from '#utils/number_helper'
 
 interface ListRequisitionsFilters {
   page?: number
@@ -143,7 +144,7 @@ export default class RecruitmentService {
    */
   async createRequisition(data: CreateRequisitionData, userId: number) {
     if (data.salaryRangeMin && data.salaryRangeMax &&
-        Number(data.salaryRangeMin) > Number(data.salaryRangeMax)) {
+        toNumber(data.salaryRangeMin) > toNumber(data.salaryRangeMax)) {
       throw new Error('Salario minimo nao pode ser maior que o maximo')
     }
 
@@ -180,7 +181,7 @@ export default class RecruitmentService {
     }
 
     if (data.salaryRangeMin && data.salaryRangeMax &&
-        Number(data.salaryRangeMin) > Number(data.salaryRangeMax)) {
+        toNumber(data.salaryRangeMin) > toNumber(data.salaryRangeMax)) {
       throw new Error('Salario minimo nao pode ser maior que o maximo')
     }
 
@@ -258,7 +259,7 @@ export default class RecruitmentService {
         return {
           stageId: stage.id,
           stageName: stage.name,
-          count: Number(count[0].$extras.total),
+          count: toNumber(count[0].$extras.total),
         }
       })
     )
@@ -279,9 +280,9 @@ export default class RecruitmentService {
 
     return {
       stages: stats,
-      totalCandidates: Number(totalCandidates[0].$extras.total),
-      activeCandidates: Number(activeCandidates[0].$extras.total),
-      hiredCandidates: Number(hiredCandidates[0].$extras.total),
+      totalCandidates: toNumber(totalCandidates[0].$extras.total),
+      activeCandidates: toNumber(activeCandidates[0].$extras.total),
+      hiredCandidates: toNumber(hiredCandidates[0].$extras.total),
     }
   }
 
@@ -719,10 +720,10 @@ export default class RecruitmentService {
       .count('* as total')
 
     return {
-      openRequisitions: Number(openRequisitions[0].$extras.total),
-      activeCandidates: Number(activeCandidates[0].$extras.total),
-      scheduledInterviews: Number(scheduledInterviews[0].$extras.total),
-      hiredThisMonth: Number(hiredThisMonth[0].$extras.total),
+      openRequisitions: toNumber(openRequisitions[0].$extras.total),
+      activeCandidates: toNumber(activeCandidates[0].$extras.total),
+      scheduledInterviews: toNumber(scheduledInterviews[0].$extras.total),
+      hiredThisMonth: toNumber(hiredThisMonth[0].$extras.total),
     }
   }
 }

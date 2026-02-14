@@ -1,6 +1,7 @@
 import Employee from '#models/employee'
 import User from '#models/user'
 import Department from '#models/department'
+import PayrollComponent from '#models/payroll_component'
 import EmployeeHistoryService from '#services/employee_history_service'
 import { generateRandomPassword } from '#utils/password_generator'
 import { DateTime } from 'luxon'
@@ -94,8 +95,13 @@ export default class EmployeeService {
   }
 
   async create(data: CreateEmployeeData, currentUserId?: number) {
+    // Valida unicidade de CPF e CNPJ
+    await this.validateUniqueCpfCnpj(data.cpf, data.cnpj)
+
     // Se nao foi informado um userId, cria automaticamente um usuario para o colaborador
     let userId = data.userId || null
+    let temporaryPassword: string | null = null
+
     if (!userId) {
       const existingUser = await User.findBy('email', data.email)
       if (existingUser) {
@@ -110,6 +116,7 @@ export default class EmployeeService {
           isActive: true,
         })
         userId = newUser.id
+        temporaryPassword = randomPassword
       }
     }
 
@@ -126,6 +133,11 @@ export default class EmployeeService {
     await employee.load('department')
     await employee.load('position')
 
+    // Auto-gerar componente base_salary (B1.10)
+    if (data.salary && data.salary > 0) {
+      await this.ensureBaseSalaryComponent(employee.id, data.salary, data.hireDate)
+    }
+
     await this.historyService.recordHire(
       employee.id,
       employee.fullName,
@@ -133,11 +145,14 @@ export default class EmployeeService {
       currentUserId
     )
 
-    return employee
+    return { employee, temporaryPassword }
   }
 
   async update(id: number, data: Partial<CreateEmployeeData>, currentUserId?: number) {
     const employee = await Employee.findOrFail(id)
+
+    // Valida unicidade de CPF e CNPJ (excluindo o registro atual)
+    await this.validateUniqueCpfCnpj(data.cpf, data.cnpj, id)
 
     const oldSalary = employee.salary
     const oldDepartmentId = employee.departmentId
@@ -168,6 +183,11 @@ export default class EmployeeService {
         data.salary ?? null,
         currentUserId
       )
+
+      // Atualiza componente base_salary (B1.10)
+      if (data.salary && data.salary > 0) {
+        await this.ensureBaseSalaryComponent(employee.id, data.salary)
+      }
     }
 
     if (data.departmentId !== undefined && data.departmentId !== oldDepartmentId) {
@@ -199,6 +219,15 @@ export default class EmployeeService {
         data.status,
         currentUserId
       )
+
+      // Desativa User associado ao mudar para 'terminated'
+      if (data.status === 'terminated' && employee.userId) {
+        const user = await User.find(employee.userId)
+        if (user) {
+          user.isActive = false
+          await user.save()
+        }
+      }
     }
 
     // Registra mudanca de cargo
@@ -232,12 +261,89 @@ export default class EmployeeService {
     return employee
   }
 
+  /**
+   * Cria ou atualiza o componente base_salary do colaborador.
+   * Ao criar employee com salary, auto-gera o componente.
+   * Ao atualizar salary, atualiza o componente existente.
+   */
+  private async ensureBaseSalaryComponent(employeeId: number, salary: number, effectiveFrom?: string) {
+    const existing = await PayrollComponent.query()
+      .where('employeeId', employeeId)
+      .where('type', 'base_salary')
+      .where('isActive', true)
+      .first()
+
+    if (existing) {
+      existing.amount = salary
+      await existing.save()
+    } else {
+      await PayrollComponent.create({
+        employeeId,
+        type: 'base_salary',
+        description: 'Salario Base',
+        amount: salary,
+        isActive: true,
+        effectiveFrom: effectiveFrom
+          ? DateTime.fromISO(effectiveFrom)
+          : DateTime.now(),
+        effectiveUntil: null,
+      })
+    }
+  }
+
+  /**
+   * Valida que CPF e CNPJ sao unicos na tabela de colaboradores.
+   * Ignora valores nulos/vazios e exclui o proprio registro em caso de update.
+   */
+  private async validateUniqueCpfCnpj(
+    cpf?: string | null,
+    cnpj?: string | null,
+    excludeId?: number
+  ) {
+    if (cpf) {
+      const normalizedCpf = cpf.replace(/\D/g, '')
+      const existingByCpf = await Employee.query()
+        .where((query) => {
+          query.where('cpf', cpf).orWhere('cpf', normalizedCpf)
+        })
+        .if(excludeId, (query) => query.whereNot('id', excludeId!))
+        .first()
+
+      if (existingByCpf) {
+        throw new Error('Ja existe um colaborador cadastrado com este CPF')
+      }
+    }
+
+    if (cnpj) {
+      const normalizedCnpj = cnpj.replace(/\D/g, '')
+      const existingByCnpj = await Employee.query()
+        .where((query) => {
+          query.where('cnpj', cnpj).orWhere('cnpj', normalizedCnpj)
+        })
+        .if(excludeId, (query) => query.whereNot('id', excludeId!))
+        .first()
+
+      if (existingByCnpj) {
+        throw new Error('Ja existe um colaborador cadastrado com este CNPJ')
+      }
+    }
+  }
+
   async delete(id: number, currentUserId?: number) {
     const employee = await Employee.findOrFail(id)
     const oldStatus = employee.status
     employee.status = 'terminated'
     employee.terminationDate = DateTime.now()
     await employee.save()
+
+    // Desativa o User associado para impedir login de ex-colaboradores
+    if (employee.userId) {
+      const user = await User.find(employee.userId)
+      if (user) {
+        user.isActive = false
+        await user.save()
+      }
+    }
 
     await this.historyService.recordStatusChange(
       employee.id,

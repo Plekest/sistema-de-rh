@@ -1,4 +1,4 @@
-/* Reset CSS básico */
+/* Reset CSS basico */
 *,
 *::before,
 *::after {
@@ -7,24 +7,66 @@
   padding: 0;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 body {
   min-height: 100vh;
   line-height: 1.6;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-    sans-serif;
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
   font-size: 16px;
+  color: var(--color-text-secondary, #2d3748);
+  background-color: var(--color-bg-page, #f8f9fa);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+#app {
+  min-height: 100vh;
+}
+
+/* Scrollbar customizada */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-text-disabled, #cbd5e0);
+  border-radius: var(--radius-xs, 4px);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted, #718096);
+}
+
 /* Acessibilidade: Focus ring global */
 :focus-visible {
-  outline: 2px solid #667eea;
+  outline: 2px solid var(--color-primary, #667eea);
   outline-offset: 2px;
 }
 
 button:focus:not(:focus-visible),
 a:focus:not(:focus-visible) {
   outline: none;
+}
+
+/* Classe utilitaria para conteudo acessivel apenas a screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }

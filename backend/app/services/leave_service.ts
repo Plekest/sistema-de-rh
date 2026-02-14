@@ -183,13 +183,24 @@ export default class LeaveService {
   }
 
   /**
-   * Cancela uma solicitacao (pelo proprio colaborador ou admin)
+   * Cancela uma solicitacao (pelo proprio colaborador ou admin/manager)
+   * Verifica propriedade: employee so pode cancelar suas proprias solicitacoes
    */
-  async cancel(id: number) {
-    const leave = await Leave.findOrFail(id)
+  async cancel(id: number, userId: number, userRole: string) {
+    const leave = await Leave.query()
+      .where('id', id)
+      .preload('employee')
+      .firstOrFail()
 
     if (!['pending', 'approved'].includes(leave.status)) {
       throw new Error('Apenas solicitacoes pendentes ou aprovadas podem ser canceladas')
+    }
+
+    // Verifica propriedade: employee so pode cancelar as proprias
+    if (userRole === 'employee') {
+      if (!leave.employee || leave.employee.userId !== userId) {
+        throw new Error('Voce nao tem permissao para cancelar esta solicitacao')
+      }
     }
 
     // Se estava aprovada e tinha afetado o saldo, reverte
@@ -200,7 +211,6 @@ export default class LeaveService {
     leave.status = 'cancelled'
     await leave.save()
 
-    await leave.load('employee')
     return leave
   }
 

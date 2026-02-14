@@ -17,7 +17,7 @@ export default class PayrollEntry extends BaseModel {
   declare employeeId: number
 
   @column()
-  declare componentType: 'earning' | 'deduction'
+  declare componentType: 'earning' | 'deduction' | 'employer_charge'
 
   @column()
   declare code:

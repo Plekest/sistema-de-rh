@@ -7,6 +7,8 @@ import { PERIOD_STATUS_LABELS, MONTH_LABELS, COMPONENT_TYPE_LABELS, ENTRY_CODE_L
 import type { Employee } from '@/modules/employees/types'
 import { useAuthStore } from '@/stores/auth'
 import { useConfirmDialog } from '@/composables/useConfirmDialog'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
 
 const authStore = useAuthStore()
 const { confirm: confirmDialog } = useConfirmDialog()
@@ -193,7 +195,7 @@ async function submitPeriodForm() {
     periodFormError.value = ''
     await payrollService.createPeriod(periodFormData.value)
     successMessage.value = 'Periodo criado com sucesso!'
-    setTimeout(() => { successMessage.value = '' }, 3000)
+    setTimeout(() => { successMessage.value = '' }, 5000)
     closePeriodForm()
     loadPeriods()
   } catch (err: any) {
@@ -219,7 +221,7 @@ async function calculatePayroll(periodId: number) {
     error.value = ''
     await payrollService.calculatePayroll(periodId)
     successMessage.value = 'Folha calculada com sucesso!'
-    setTimeout(() => { successMessage.value = '' }, 3000)
+    setTimeout(() => { successMessage.value = '' }, 5000)
     loadSlips(periodId)
   } catch (err: any) {
     error.value = err.response?.data?.message || 'Erro ao calcular folha'
@@ -242,7 +244,7 @@ async function closePeriod(periodId: number) {
   try {
     await payrollService.closePeriod(periodId)
     successMessage.value = 'Periodo fechado com sucesso!'
-    setTimeout(() => { successMessage.value = '' }, 3000)
+    setTimeout(() => { successMessage.value = '' }, 5000)
     loadPeriods()
     if (selectedPeriodId.value === periodId) {
       backToPeriods()
@@ -292,7 +294,7 @@ async function submitComponentForm() {
 
     await payrollService.createComponent(componentFormData.value)
     successMessage.value = 'Componente salarial criado com sucesso!'
-    setTimeout(() => { successMessage.value = '' }, 3000)
+    setTimeout(() => { successMessage.value = '' }, 5000)
     closeComponentForm()
     if (componentEmployeeId.value) {
       loadComponents(componentEmployeeId.value)
@@ -359,7 +361,9 @@ onMounted(() => {
     </div>
 
     <!-- Mensagens -->
-    <div v-if="successMessage" class="alert alert-success" role="alert">{{ successMessage }}</div>
+    <Transition name="fade">
+      <div v-if="successMessage" class="alert alert-success" role="status" aria-live="polite">{{ successMessage }}</div>
+    </Transition>
     <div v-if="error" class="alert alert-error" role="alert">{{ error }}</div>
 
     <!-- Tabs -->
@@ -455,7 +459,7 @@ onMounted(() => {
           </div>
         </div>
 
-        <div v-if="isLoading" class="loading-state">Carregando...</div>
+        <div v-if="isLoading" class="loading-state"><LoadingSpinner text="Carregando..." /></div>
 
         <div v-else-if="paySlips.length > 0" class="table-container">
           <table class="data-table">
@@ -490,15 +494,16 @@ onMounted(() => {
           </table>
         </div>
 
-        <div v-else class="empty-state">
-          <p class="empty-title">Nenhum contracheque gerado</p>
-          <p class="empty-description">Clique em "Calcular Folha" para gerar os contracheques deste periodo.</p>
-        </div>
+        <EmptyState
+          v-else
+          title="Nenhum contracheque gerado"
+          description="Clique em 'Calcular Folha' para gerar os contracheques deste periodo."
+        />
       </template>
 
       <!-- Lista de períodos -->
       <template v-else>
-        <div v-if="isLoading" class="loading-state">Carregando...</div>
+        <div v-if="isLoading" class="loading-state"><LoadingSpinner text="Carregando..." /></div>
 
         <div v-else-if="periods.length > 0" class="table-container">
           <table class="data-table">
@@ -547,16 +552,17 @@ onMounted(() => {
           </table>
         </div>
 
-        <div v-else class="empty-state">
-          <p class="empty-title">Nenhum periodo encontrado</p>
-          <p class="empty-description">Crie um novo periodo para iniciar a folha de pagamento.</p>
-        </div>
+        <EmptyState
+          v-else
+          title="Nenhum periodo encontrado"
+          description="Crie um novo periodo para iniciar a folha de pagamento."
+        />
       </template>
     </template>
 
     <!-- === TAB: MEUS CONTRACHEQUES === -->
     <template v-if="activeTab === 'mySlips'">
-      <div v-if="isLoading" class="loading-state">Carregando...</div>
+      <div v-if="isLoading" class="loading-state"><LoadingSpinner text="Carregando..." /></div>
 
       <div v-else-if="myPaySlips.length > 0" class="table-container">
         <table class="data-table">
@@ -585,10 +591,11 @@ onMounted(() => {
         </table>
       </div>
 
-      <div v-else class="empty-state">
-        <p class="empty-title">Nenhum contracheque encontrado</p>
-        <p class="empty-description">Seus contracheques aparecerao aqui apos o calculo da folha.</p>
-      </div>
+      <EmptyState
+        v-else
+        title="Nenhum contracheque encontrado"
+        description="Seus contracheques aparecerao aqui apos o calculo da folha."
+      />
     </template>
 
     <!-- === TAB: COMPONENTES SALARIAIS === -->
@@ -661,7 +668,7 @@ onMounted(() => {
         </form>
       </div>
 
-      <div v-if="isLoading" class="loading-state">Carregando...</div>
+      <div v-if="isLoading" class="loading-state"><LoadingSpinner text="Carregando..." /></div>
 
       <div v-else-if="componentEmployeeId && components.length > 0" class="table-container">
         <table class="data-table">
@@ -693,15 +700,17 @@ onMounted(() => {
         </table>
       </div>
 
-      <div v-else-if="componentEmployeeId && components.length === 0" class="empty-state">
-        <p class="empty-title">Nenhum componente salarial</p>
-        <p class="empty-description">Este colaborador nao possui componentes salariais cadastrados.</p>
-      </div>
+      <EmptyState
+        v-else-if="componentEmployeeId && components.length === 0"
+        title="Nenhum componente salarial"
+        description="Este colaborador nao possui componentes salariais cadastrados."
+      />
 
-      <div v-else-if="!componentEmployeeId" class="empty-state">
-        <p class="empty-title">Selecione um colaborador</p>
-        <p class="empty-description">Escolha um colaborador para ver e gerenciar seus componentes salariais.</p>
-      </div>
+      <EmptyState
+        v-else-if="!componentEmployeeId"
+        title="Selecione um colaborador"
+        description="Escolha um colaborador para ver e gerenciar seus componentes salariais."
+      />
     </template>
 
     <!-- Modal detalhamento do contracheque -->
@@ -1342,7 +1351,7 @@ onMounted(() => {
 .empty-state {
   text-align: center;
   padding: 3rem 1rem;
-  color: #a0aec0;
+  color: var(--color-text-muted, #718096);
   font-size: 0.875rem;
   background: #fff;
   border-radius: 8px;
@@ -1362,8 +1371,22 @@ onMounted(() => {
 
 .empty-description {
   font-size: 0.875rem;
-  color: #a0aec0;
+  color: var(--color-text-muted, #718096);
   margin: 0 !important;
+}
+
+/* Fade transition */
+.fade-enter-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 @media (max-width: 768px) {
@@ -1437,6 +1460,16 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+  }
+
+  /* Touch targets - minimo 44px para mobile */
+  .btn-action {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.813rem;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 

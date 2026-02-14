@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import performanceService from '../services/performance.service'
 import employeeService from '@/modules/employees/services/employee.service'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import type {
   PerformanceCycle,
   Competency,
@@ -835,7 +836,7 @@ onMounted(() => {
       </div>
 
       <!-- Lista de ciclos -->
-      <div v-if="isLoading" class="loading-state">Carregando...</div>
+      <div v-if="isLoading" class="loading-state"><LoadingSpinner text="Carregando..." /></div>
 
       <div v-else-if="cycles.length > 0" class="cycles-list">
         <div v-for="cycle in cycles" :key="cycle.id" class="cycle-card">
@@ -961,7 +962,7 @@ onMounted(() => {
       </div>
 
       <!-- Lista de competencias -->
-      <div v-if="isLoading" class="loading-state">Carregando...</div>
+      <div v-if="isLoading" class="loading-state"><LoadingSpinner text="Carregando..." /></div>
 
       <div v-else-if="competencies.length > 0" class="table-container">
         <table class="data-table">
@@ -1075,7 +1076,7 @@ onMounted(() => {
         <p class="empty-description">Escolha um ciclo para ver as metas cadastradas.</p>
       </div>
 
-      <div v-else-if="isLoading" class="loading-state">Carregando...</div>
+      <div v-else-if="isLoading" class="loading-state"><LoadingSpinner text="Carregando..." /></div>
 
       <div v-else-if="goals.length > 0" class="goals-list">
         <div v-for="goal in goals" :key="goal.id" class="goal-card">
@@ -1185,7 +1186,7 @@ onMounted(() => {
         <p class="empty-description">Escolha um ciclo para ver as avaliacoes.</p>
       </div>
 
-      <div v-else-if="isLoading" class="loading-state">Carregando...</div>
+      <div v-else-if="isLoading" class="loading-state"><LoadingSpinner text="Carregando..." /></div>
 
       <div v-else-if="evaluations.length > 0" class="table-container">
         <table class="data-table">
@@ -1312,7 +1313,7 @@ onMounted(() => {
       </div>
 
       <!-- Lista de PDIs -->
-      <div v-if="isLoading" class="loading-state">Carregando...</div>
+      <div v-if="isLoading" class="loading-state"><LoadingSpinner text="Carregando..." /></div>
 
       <div v-else-if="developmentPlans.length > 0" class="pdi-list">
         <div v-for="pdi in developmentPlans" :key="pdi.id" class="pdi-card">

@@ -41,7 +41,7 @@ interface UpdateComponentData {
 interface CreateEntryData {
   payrollPeriodId: number
   employeeId: number
-  componentType: 'earning' | 'deduction'
+  componentType: 'earning' | 'deduction' | 'employer_charge'
   code:
     | 'base_salary'
     | 'overtime_50'
@@ -231,40 +231,37 @@ export default class PayrollService {
    * Metodo principal que processa todos os colaboradores ativos
    */
   async calculatePayroll(periodId: number) {
+    // Fase 1: Adquirir lock atomico via UPDATE condicional (fora da transacao longa)
+    // Isso garante que apenas um processamento ocorra por vez para o mesmo periodo
+    const lockResult = await db
+      .from('payroll_periods')
+      .where('id', periodId)
+      .where('status', 'open')
+      .update({ status: 'calculating', updated_at: DateTime.now().toSQL() })
+
+    if (!lockResult) {
+      // Verifica o motivo da falha para retornar mensagem adequada
+      const period = await PayrollPeriod.find(periodId)
+      if (!period) {
+        throw new Error('Periodo de folha nao encontrado')
+      }
+      if (period.status === 'closed') {
+        throw new Error('Nao e possivel calcular folha em periodo fechado')
+      }
+      if (period.status === 'calculating') {
+        throw new Error('Calculo de folha ja esta em andamento para este periodo')
+      }
+      throw new Error('Periodo nao esta mais aberto para calculo')
+    }
+
+    // Fase 2: Processar dentro de transacao
     const trx = await db.transaction()
 
     try {
-      // Lock pessimista: busca e trava o registro do periodo
       const period = await PayrollPeriod.query({ client: trx })
         .where('id', periodId)
         .forUpdate()
         .firstOrFail()
-
-      if (period.status === 'closed') {
-        await trx.rollback()
-        throw new Error('Nao e possivel calcular folha em periodo fechado')
-      }
-
-      if (period.status === 'calculating') {
-        await trx.rollback()
-        throw new Error('Calculo de folha ja esta em andamento para este periodo')
-      }
-
-      // Atualiza status para 'calculating' com WHERE status='open'
-      const [updated] = await db
-        .from('payroll_periods')
-        .where('id', periodId)
-        .where('status', 'open')
-        .update({ status: 'calculating', updated_at: DateTime.now().toSQL() })
-        .returning('*')
-        .useTransaction(trx)
-
-      if (!updated) {
-        await trx.rollback()
-        throw new Error('Periodo nao esta mais aberto para calculo')
-      }
-
-      period.status = 'calculating'
 
       const employees = await Employee.query({ client: trx })
         .where('status', 'active')
@@ -279,7 +276,7 @@ export default class PayrollService {
         results.push(slip)
       }
 
-      // Atualiza status para 'open' no final
+      // Volta status para 'open' apos processamento bem-sucedido
       await db
         .from('payroll_periods')
         .where('id', periodId)
@@ -290,17 +287,23 @@ export default class PayrollService {
 
       return results
     } catch (error) {
-      await trx.rollback()
+      // Rollback da transacao
+      try {
+        await trx.rollback()
+      } catch (_rollbackError) {
+        // Transacao pode ja ter sido encerrada
+      }
 
-      // Garante que status volta para 'open' em caso de erro
+      // Fase 3: Cleanup - garante que status volta para 'open' em caso de erro
+      // Usa uma nova conexao (fora da transacao que falhou)
       try {
         await db
           .from('payroll_periods')
           .where('id', periodId)
           .where('status', 'calculating')
           .update({ status: 'open', updated_at: DateTime.now().toSQL() })
-      } catch (cleanupError) {
-        // Ignora erro de cleanup
+      } catch (_cleanupError) {
+        // Log silencioso - em producao deveria usar logger
       }
 
       throw error
@@ -383,8 +386,8 @@ export default class PayrollService {
       entries.push(inssEntry)
     }
 
-    // Calcula IRRF (progressivo)
-    const dependents = 0 // TODO: Buscar numero de dependentes do colaborador
+    // Calcula IRRF (progressivo) - busca dependentes do colaborador
+    const dependents = employee.irrfDependents || 0
     const irrfAmount = await this.calculateIRRF(grossSalary, inssAmount, dependents)
     if (irrfAmount > 0) {
       const irrfEntry = await PayrollEntry.create({
@@ -400,15 +403,15 @@ export default class PayrollService {
       entries.push(irrfEntry)
     }
 
-    // Calcula FGTS (8% sobre bruto) - nao e desconto, apenas informativo
+    // Calcula FGTS (8% sobre bruto) - encargo patronal, NAO desconta do colaborador
     const fgtsAmount = Math.round(grossSalary * 0.08 * 100) / 100
     if (fgtsAmount > 0) {
       const fgtsEntry = await PayrollEntry.create({
         payrollPeriodId: period.id,
         employeeId: employee.id,
-        componentType: 'deduction',
+        componentType: 'employer_charge',
         code: 'fgts',
-        description: 'FGTS - Fundo de Garantia (8%)',
+        description: 'FGTS - Fundo de Garantia (8%) - Encargo Patronal',
         referenceValue: grossSalary,
         quantity: null,
         amount: fgtsAmount,
@@ -446,20 +449,23 @@ export default class PayrollService {
       }
     }
 
-    // Calcula desconto de VT (6% do salario base se tiver beneficio VT ativo)
+    // Calcula desconto de VT (6% do salario BASE, nao do bruto)
+    // CLT: VT desconta 6% apenas sobre o salario base, nao sobre adicionais
     const hasVT = employee.employeeBenefits?.some(
       (eb) => eb.status === 'active' && eb.benefitPlan?.benefit?.type === 'vt'
     )
     let vtDiscount = 0
     if (hasVT) {
-      vtDiscount = Math.round(grossSalary * 0.06 * 100) / 100
+      const baseSalaryComponent = components.find((c) => c.type === 'base_salary')
+      const baseSalary = baseSalaryComponent ? toNumber(baseSalaryComponent.amount) : grossSalary
+      vtDiscount = Math.round(baseSalary * 0.06 * 100) / 100
       const vtEntry = await PayrollEntry.create({
         payrollPeriodId: period.id,
         employeeId: employee.id,
         componentType: 'deduction',
         code: 'vt_discount',
-        description: 'Desconto Vale Transporte (6%)',
-        referenceValue: grossSalary,
+        description: 'Desconto Vale Transporte (6% do salario base)',
+        referenceValue: baseSalary,
         quantity: null,
         amount: vtDiscount,
       }, trx ? { client: trx } : undefined)
@@ -472,7 +478,7 @@ export default class PayrollService {
       .reduce((sum, e) => sum + toNumber(e.amount), 0)
 
     const totalDeductions = entries
-      .filter((e) => e.componentType === 'deduction' && e.code !== 'fgts')
+      .filter((e) => e.componentType === 'deduction')
       .reduce((sum, e) => sum + toNumber(e.amount), 0)
 
     const netSalary = totalEarnings - totalDeductions
@@ -501,6 +507,9 @@ export default class PayrollService {
   /**
    * Calcula INSS progressivo brasileiro
    * Tabela 2024 (busca da tabela tax_tables)
+   *
+   * O calculo e PROGRESSIVO: cada faixa tributa apenas a parcela do salario
+   * que se encontra dentro dela, nao o salario total.
    */
   private async calculateINSS(grossSalary: number): Promise<number> {
     const today = DateTime.now().toISODate()!
@@ -514,26 +523,37 @@ export default class PayrollService {
       .orderBy('bracketMin', 'asc')
 
     if (brackets.length === 0) {
-      // Fallback para tabela 2024 caso nao exista na DB
       return this.calculateINSSFallback(grossSalary)
     }
 
-    let totalINSS = 0
     const salary = toNumber(grossSalary)
+    if (salary <= 0) return 0
+
+    // Teto do INSS: usa o bracketMax da ultima faixa
+    const lastBracket = brackets[brackets.length - 1]
+    const ceiling = lastBracket.bracketMax ? toNumber(lastBracket.bracketMax) : Infinity
+    const cappedSalary = Math.min(salary, ceiling)
+
+    let totalINSS = 0
+    let previousMax = 0
 
     for (const bracket of brackets) {
-      const min = toNumber(bracket.bracketMin)
       const max = bracket.bracketMax ? toNumber(bracket.bracketMax) : Infinity
       const rate = toNumber(bracket.rate)
 
-      if (salary < min) break
+      // A base tributavel de cada faixa vai do teto da faixa anterior ate o teto desta faixa
+      const bracketFloor = previousMax
+      const bracketCeiling = max
 
-      const upperLimit = Math.min(max, salary)
-      const taxableInBracket = upperLimit - min
+      if (cappedSalary <= bracketFloor) break
+
+      const taxableInBracket = Math.min(cappedSalary, bracketCeiling) - bracketFloor
 
       if (taxableInBracket > 0) {
         totalINSS += taxableInBracket * (rate / 100)
       }
+
+      previousMax = bracketCeiling
     }
 
     return Math.round(totalINSS * 100) / 100
@@ -541,25 +561,37 @@ export default class PayrollService {
 
   /**
    * Fallback: Calcula INSS progressivo usando tabela 2024
+   * Faixas INSS 2024:
+   *   Ate R$1.412,00         -> 7,5%
+   *   De R$1.412,01 a R$2.666,68 -> 9,0%
+   *   De R$2.666,69 a R$4.000,03 -> 12,0%
+   *   De R$4.000,04 a R$7.786,02 -> 14,0%
    */
   private calculateINSSFallback(grossSalary: number): number {
     const brackets = [
-      { min: 0, max: 1412.0, rate: 7.5 },
-      { min: 1412.01, max: 2666.68, rate: 9.0 },
-      { min: 2666.69, max: 4000.03, rate: 12.0 },
-      { min: 4000.04, max: 7786.02, rate: 14.0 },
+      { max: 1412.00, rate: 7.5 },
+      { max: 2666.68, rate: 9.0 },
+      { max: 4000.03, rate: 12.0 },
+      { max: 7786.02, rate: 14.0 },
     ]
 
-    let totalINSS = 0
     const salary = toNumber(grossSalary)
+    if (salary <= 0) return 0
+
+    const cappedSalary = Math.min(salary, 7786.02)
+    let totalINSS = 0
+    let previousMax = 0
 
     for (const bracket of brackets) {
-      if (salary < bracket.min) break
-      const upperLimit = Math.min(bracket.max, salary)
-      const taxableInBracket = upperLimit - bracket.min
+      if (cappedSalary <= previousMax) break
+
+      const taxableInBracket = Math.min(cappedSalary, bracket.max) - previousMax
+
       if (taxableInBracket > 0) {
         totalINSS += taxableInBracket * (bracket.rate / 100)
       }
+
+      previousMax = bracket.max
     }
 
     return Math.round(totalINSS * 100) / 100
@@ -568,6 +600,9 @@ export default class PayrollService {
   /**
    * Calcula IRRF progressivo brasileiro
    * Tabela 2024
+   *
+   * IRRF usa metodo de aliquota efetiva: aplica aliquota da faixa sobre
+   * a base de calculo total e subtrai a parcela a deduzir.
    */
   private async calculateIRRF(
     grossSalary: number,
@@ -576,9 +611,8 @@ export default class PayrollService {
   ): Promise<number> {
     const today = DateTime.now().toISODate()!
 
-    // Base de calculo: salario bruto - INSS - dedução por dependente
     const dependentDeduction = 189.59 * dependents
-    const taxableBase = grossSalary - inssAmount - dependentDeduction
+    const taxableBase = toNumber(grossSalary) - toNumber(inssAmount) - dependentDeduction
 
     if (taxableBase <= 0) return 0
 
@@ -591,18 +625,19 @@ export default class PayrollService {
       .orderBy('bracketMin', 'asc')
 
     if (brackets.length === 0) {
-      // Fallback para tabela 2024 caso nao exista na DB
       return this.calculateIRRFFallback(taxableBase)
     }
 
+    // IRRF: encontra a faixa correspondente e aplica aliquota - parcela a deduzir
     for (let i = brackets.length - 1; i >= 0; i--) {
       const bracket = brackets[i]
       const min = toNumber(bracket.bracketMin)
-      const max = bracket.bracketMax ? toNumber(bracket.bracketMax) : Infinity
 
-      if (taxableBase >= min && taxableBase <= max) {
-        const irrfGross = taxableBase * (toNumber(bracket.rate) / 100)
-        const irrfNet = irrfGross - toNumber(bracket.deductionValue)
+      if (taxableBase >= min) {
+        const rate = toNumber(bracket.rate)
+        const deduction = toNumber(bracket.deductionValue)
+        const irrfGross = taxableBase * (rate / 100)
+        const irrfNet = irrfGross - deduction
         return Math.max(0, Math.round(irrfNet * 100) / 100)
       }
     }
@@ -612,20 +647,27 @@ export default class PayrollService {
 
   /**
    * Fallback: Calcula IRRF usando tabela 2024
+   * Faixas IRRF 2024:
+   *   Ate R$2.259,20          -> Isento
+   *   De R$2.259,21 a R$2.826,65 -> 7,5%  (deduzir R$169,44)
+   *   De R$2.826,66 a R$3.751,05 -> 15,0% (deduzir R$381,44)
+   *   De R$3.751,06 a R$4.664,68 -> 22,5% (deduzir R$662,77)
+   *   Acima de R$4.664,68       -> 27,5% (deduzir R$896,00)
    */
   private calculateIRRFFallback(taxableBase: number): number {
     const brackets = [
-      { min: 0, max: 2259.2, rate: 0, deduction: 0 },
-      { min: 2259.21, max: 2826.65, rate: 7.5, deduction: 169.44 },
-      { min: 2826.66, max: 3751.05, rate: 15.0, deduction: 381.44 },
-      { min: 3751.06, max: 4664.68, rate: 22.5, deduction: 662.77 },
-      { min: 4664.69, max: Infinity, rate: 27.5, deduction: 896.0 },
+      { min: 0, rate: 0, deduction: 0 },
+      { min: 2259.21, rate: 7.5, deduction: 169.44 },
+      { min: 2826.66, rate: 15.0, deduction: 381.44 },
+      { min: 3751.06, rate: 22.5, deduction: 662.77 },
+      { min: 4664.69, rate: 27.5, deduction: 896.0 },
     ]
 
-    for (const bracket of brackets) {
-      if (taxableBase >= bracket.min && taxableBase <= bracket.max) {
-        const irrfGross = taxableBase * (bracket.rate / 100)
-        const irrfNet = irrfGross - bracket.deduction
+    // Percorre de tras para frente para encontrar a faixa correta
+    for (let i = brackets.length - 1; i >= 0; i--) {
+      if (taxableBase >= brackets[i].min) {
+        const irrfGross = taxableBase * (brackets[i].rate / 100)
+        const irrfNet = irrfGross - brackets[i].deduction
         return Math.max(0, Math.round(irrfNet * 100) / 100)
       }
     }
@@ -674,14 +716,21 @@ export default class PayrollService {
 
   /**
    * Lista contracheques de um periodo
+   * Se employeeId for fornecido, filtra apenas os contracheques desse colaborador
    */
-  async getPaySlips(periodId: number) {
-    return await PaySlip.query()
+  async getPaySlips(periodId: number, employeeId?: number) {
+    const query = PaySlip.query()
       .where('payrollPeriodId', periodId)
-      .preload('employee', (query) => {
-        query.preload('department').preload('position')
+      .preload('employee', (q) => {
+        q.preload('department').preload('position')
       })
       .orderBy('employeeId', 'asc')
+
+    if (employeeId) {
+      query.where('employeeId', employeeId)
+    }
+
+    return await query
   }
 
   /**

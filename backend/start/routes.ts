@@ -10,6 +10,7 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
 
+const HealthController = () => import('#controllers/health_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const DepartmentsController = () => import('#controllers/departments_controller')
 const PositionsController = () => import('#controllers/positions_controller')
@@ -33,13 +34,22 @@ router.get('/', async () => {
   }
 })
 
+// Healthcheck - rota publica (sem autenticacao)
+router.get('api/v1/health', [HealthController, 'check'])
+
 // Rotas de autenticacao
 router
   .group(() => {
-    // Rotas publicas
-    router.post('login', [AuthController, 'login'])
-    router.post('forgot-password', [AuthController, 'forgotPassword'])
-    router.post('reset-password', [AuthController, 'resetPassword'])
+    // Rotas publicas (com rate limiting para protecao contra brute force)
+    router
+      .post('login', [AuthController, 'login'])
+      .use(middleware.rateLimit({ maxAttempts: 5, windowSeconds: 60 }))
+    router
+      .post('forgot-password', [AuthController, 'forgotPassword'])
+      .use(middleware.rateLimit({ maxAttempts: 3, windowSeconds: 120 }))
+    router
+      .post('reset-password', [AuthController, 'resetPassword'])
+      .use(middleware.rateLimit({ maxAttempts: 5, windowSeconds: 120 }))
 
     // Rotas autenticadas
     router
@@ -216,7 +226,10 @@ router
       .use(middleware.role({ roles: ['admin', 'manager'] }))
 
     // --- Folha de Pagamento ---
-    router.get('payroll/periods', [PayrollController, 'periods'])
+    // Periodos: admin/manager podem listar, employee nao
+    router
+      .get('payroll/periods', [PayrollController, 'periods'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
     router
       .post('payroll/periods', [PayrollController, 'createPeriod'])
       .use(middleware.role({ roles: ['admin'] }))
@@ -226,9 +239,11 @@ router
     router
       .post('payroll/periods/:id/calculate', [PayrollController, 'calculatePayroll'])
       .use(middleware.role({ roles: ['admin'] }))
+    // Contracheques de um periodo: controller filtra por role (employee ve apenas o proprio)
     router.get('payroll/periods/:periodId/slips', [PayrollController, 'slips'])
 
     // --- Contracheques ---
+    // Controller filtra por role: employee ve apenas os proprios
     router.get('payroll/slips', [PayrollController, 'employeeSlips'])
     router.get('payroll/slips/:id', [PayrollController, 'slipDetail'])
 

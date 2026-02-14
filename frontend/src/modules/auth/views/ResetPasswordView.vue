@@ -75,7 +75,7 @@ onMounted(() => {
     <div class="reset-brand" :class="{ 'animate-in': mounted }">
       <div class="brand-content">
         <div class="brand-icon">
-          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <rect width="64" height="64" rx="16" fill="rgba(255,255,255,0.15)" />
             <rect x="18" y="26" width="28" height="20" rx="2" stroke="white" stroke-width="2.5" fill="none" />
             <path d="M24 26V20c0-4.418 3.582-8 8-8s8 3.582 8 8v6" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" />
@@ -89,7 +89,7 @@ onMounted(() => {
         <div class="brand-features">
           <div class="feature-item">
             <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
@@ -98,7 +98,7 @@ onMounted(() => {
           </div>
           <div class="feature-item">
             <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
             </div>
@@ -106,7 +106,7 @@ onMounted(() => {
           </div>
           <div class="feature-item">
             <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                 <polyline points="22 4 12 14.01 9 11.01" />
               </svg>
@@ -131,7 +131,7 @@ onMounted(() => {
           <!-- Logo mobile -->
           <div class="mobile-logo">
             <div class="mobile-logo-icon">
-              <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <rect width="40" height="40" rx="10" fill="#667eea" />
                 <circle cx="20" cy="14" r="5.5" stroke="white" stroke-width="2" fill="none" />
                 <path d="M10 32c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" />
@@ -146,7 +146,7 @@ onMounted(() => {
 
         <!-- Se não tiver token -->
         <div v-if="!hasToken" class="error-state">
-          <svg class="error-state-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="error-state-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <circle cx="32" cy="32" r="28" />
             <line x1="40" y1="24" x2="24" y2="40" />
             <line x1="24" y1="24" x2="40" y2="40" />
@@ -197,7 +197,7 @@ onMounted(() => {
           <div class="field">
             <label for="password">Nova Senha</label>
             <div class="input-wrapper">
-              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
@@ -234,7 +234,7 @@ onMounted(() => {
           <div class="field">
             <label for="password-confirmation">Confirmar Nova Senha</label>
             <div class="input-wrapper">
-              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
@@ -892,7 +892,7 @@ onMounted(() => {
 
 .reset-footer p {
   font-size: 0.75rem;
-  color: #a0aec0;
+  color: var(--color-text-muted, #718096);
 }
 
 /* ========== Transitions ========== */
