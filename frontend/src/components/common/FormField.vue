@@ -74,16 +74,17 @@ withDefaults(defineProps<Props>(), {
 }
 
 .form-field-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #4a5568;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.025em;
+  transition: color 0.3s ease;
 }
 
 .form-field-required {
-  color: #e53e3e;
-  margin-left: 0.125rem;
+  color: var(--color-danger);
+  margin-left: var(--space-1);
 }
 
 /* Estiliza inputs dentro do slot */
@@ -91,21 +92,23 @@ withDefaults(defineProps<Props>(), {
 .form-field-input :deep(select),
 .form-field-input :deep(textarea) {
   width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 5px;
-  font-size: 0.875rem;
-  color: #2d3748;
-  background: #fff;
+  padding: var(--input-padding-y) var(--input-padding-x);
+  border: var(--border-width) solid var(--input-border-color);
+  border-radius: var(--input-border-radius);
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-input);
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.2s ease, background-color 0.3s ease, color 0.3s ease;
   font-family: inherit;
+  min-height: 44px;
 }
 
 .form-field-input :deep(input:focus),
 .form-field-input :deep(select:focus),
 .form-field-input :deep(textarea:focus) {
-  border-color: #667eea;
+  border-color: var(--color-border-focus);
+  box-shadow: var(--input-focus-ring);
 }
 
 .form-field-input :deep(textarea) {
@@ -117,29 +120,31 @@ withDefaults(defineProps<Props>(), {
 .form-field--error .form-field-input :deep(input),
 .form-field--error .form-field-input :deep(select),
 .form-field--error .form-field-input :deep(textarea) {
-  border-color: #e53e3e;
+  border-color: var(--color-danger);
 }
 
 .form-field--error .form-field-input :deep(input:focus),
 .form-field--error .form-field-input :deep(select:focus),
 .form-field--error .form-field-input :deep(textarea:focus) {
-  border-color: #e53e3e;
-  box-shadow: 0 0 0 1px #e53e3e;
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 1px var(--color-danger);
 }
 
 /* Mensagem de erro */
 .form-field-error {
-  font-size: 0.75rem;
-  color: #e53e3e;
-  margin: 0.125rem 0 0;
-  line-height: 1.4;
+  font-size: var(--font-size-xs);
+  color: var(--color-danger);
+  margin: var(--space-1) 0 0;
+  line-height: var(--line-height-normal);
+  transition: color 0.3s ease;
 }
 
 /* Texto de ajuda */
 .form-field-help {
-  font-size: 0.75rem;
-  color: #a0aec0;
-  margin: 0.125rem 0 0;
-  line-height: 1.4;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-placeholder);
+  margin: var(--space-1) 0 0;
+  line-height: var(--line-height-normal);
+  transition: color 0.3s ease;
 }
 </style>

@@ -22,6 +22,7 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #app {
@@ -35,12 +36,13 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--color-bg-muted, #edf2f7);
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--color-text-disabled, #cbd5e0);
   border-radius: var(--radius-xs, 4px);
+  transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {

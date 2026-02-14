@@ -273,3 +273,80 @@
   --filter-bar-border-radius: var(--radius-lg);
   --filter-label-font-size: var(--font-size-xs);
 }
+
+/* ==========================================================================
+ * DARK MODE
+ * ========================================================================== */
+
+[data-theme="dark"] {
+  /* Cores de fundo */
+  --color-bg-page: #0f0f23;
+  --color-bg-card: #1a1a2e;
+  --color-bg-input: #16213e;
+  --color-bg-hover: #1f2937;
+  --color-bg-subtle: #16213e;
+  --color-bg-muted: #1f2937;
+  --color-bg-disabled: #1a202c;
+
+  /* Cores de texto */
+  --color-text-primary: #e2e8f0;
+  --color-text-secondary: #cbd5e0;
+  --color-text-tertiary: #a0aec0;
+  --color-text-muted: #718096;
+  --color-text-placeholder: #4a5568;
+  --color-text-disabled: #4a5568;
+
+  /* Bordas */
+  --color-border: #2d3748;
+  --color-border-light: #1a202c;
+  --color-border-hover: #4a5568;
+  --color-border-focus: #667eea;
+
+  /* Sombras - mais sutis no dark */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 10px 25px rgba(0, 0, 0, 0.7);
+
+  /* Cores de acao - ajustadas para dark */
+  --color-success: #48bb78;
+  --color-success-dark: #38a169;
+  --color-success-light: rgba(72, 187, 120, 0.15);
+  --color-success-lighter: rgba(72, 187, 120, 0.25);
+  --color-success-bg: rgba(72, 187, 120, 0.12);
+
+  --color-danger: #fc8181;
+  --color-danger-dark: #f56565;
+  --color-danger-light: rgba(252, 129, 129, 0.15);
+  --color-danger-lighter: rgba(252, 129, 129, 0.25);
+  --color-danger-bg: rgba(252, 129, 129, 0.12);
+
+  --color-warning: #f6ad55;
+  --color-warning-dark: #ed8936;
+  --color-warning-light: rgba(246, 173, 85, 0.15);
+  --color-warning-lighter: rgba(246, 173, 85, 0.25);
+  --color-warning-bg: rgba(246, 173, 85, 0.12);
+
+  --color-info: #63b3ed;
+  --color-info-dark: #4299e1;
+  --color-info-light: rgba(99, 179, 237, 0.15);
+  --color-info-lighter: rgba(99, 179, 237, 0.25);
+  --color-info-bg: rgba(99, 179, 237, 0.12);
+
+  /* Sidebar no dark - ainda mais escura */
+  --color-sidebar-bg: #0a0a18;
+  --color-sidebar-text: #8e8ea0;
+  --color-sidebar-text-hover: #d4d4e0;
+  --color-sidebar-text-active: #ffffff;
+  --color-sidebar-accent: #667eea;
+  --color-sidebar-border: rgba(255, 255, 255, 0.06);
+
+  /* Componentes - ajustes especificos */
+  --input-border-color: #2d3748;
+  --card-border-color: #2d3748;
+  --table-border-color: #2d3748;
+  --table-row-border-color: #1a202c;
+  --table-row-hover-bg: #1f2937;
+  --table-header-bg: rgba(255, 255, 255, 0.02);
+}

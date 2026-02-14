@@ -253,6 +253,7 @@ onMounted(() => {
   min-height: 100vh;
   display: flex;
   background: var(--color-bg-page);
+  transition: background-color 0.3s ease;
 }
 
 /* ========== Painel Esquerdo - Branding ========== */

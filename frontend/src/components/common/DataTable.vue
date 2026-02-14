@@ -167,6 +167,7 @@ function getCellValue(row: Record<string, unknown>, key: string): unknown {
               <th
                 v-for="col in columns"
                 :key="col.key"
+                scope="col"
                 :class="{
                   'th-sortable': col.sortable,
                   'th-sorted': sortBy?.key === col.key,
@@ -176,6 +177,9 @@ function getCellValue(row: Record<string, unknown>, key: string): unknown {
                 @click="handleSort(col)"
                 :role="col.sortable ? 'columnheader button' : 'columnheader'"
                 :aria-sort="sortBy?.key === col.key ? (sortBy.direction === 'asc' ? 'ascending' : 'descending') : undefined"
+                :tabindex="col.sortable ? 0 : undefined"
+                @keydown.enter="handleSort(col)"
+                @keydown.space.prevent="handleSort(col)"
               >
                 <span class="th-content">
                   {{ col.label }}
@@ -262,17 +266,19 @@ function getCellValue(row: Record<string, unknown>, key: string): unknown {
 .data-table-loading {
   text-align: center;
   padding: 3rem 1rem;
-  background: #fff;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  border: var(--border-width) solid var(--color-border);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 /* Container da tabela */
 .table-container {
-  background: #fff;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  border: var(--border-width) solid var(--color-border);
   overflow-x: auto;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 /* Tabela */
@@ -285,27 +291,28 @@ function getCellValue(row: Record<string, unknown>, key: string): unknown {
 .data-table th {
   text-align: left;
   padding: 0.75rem 1rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #4a5568;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.025em;
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: 2px solid var(--color-border);
+  background-color: var(--table-header-bg);
   white-space: nowrap;
   user-select: none;
+  transition: color 0.2s ease, background-color 0.3s ease;
 }
 
 .th-sortable {
   cursor: pointer;
-  transition: color 0.15s;
 }
 
 .th-sortable:hover {
-  color: #2d3748;
+  color: var(--color-text-secondary);
 }
 
 .th-sorted {
-  color: #667eea;
+  color: var(--color-primary);
 }
 
 .th-content {
@@ -342,21 +349,22 @@ function getCellValue(row: Record<string, unknown>, key: string): unknown {
 /* Celulas */
 .data-table td {
   padding: 0.75rem 1rem;
-  font-size: 0.875rem;
-  color: #2d3748;
-  border-bottom: 1px solid #f0f0f0;
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  border-bottom: var(--border-width) solid var(--table-row-border-color);
+  transition: background-color 0.15s ease, color 0.3s ease;
 }
 
 .data-table tbody tr:hover {
-  background-color: #f7fafc;
+  background-color: var(--table-row-hover-bg);
 }
 
 .data-table tbody tr:nth-child(even) {
-  background-color: #fafbfc;
+  background-color: var(--color-bg-subtle);
 }
 
 .data-table tbody tr:nth-child(even):hover {
-  background-color: #f0f4f8;
+  background-color: var(--table-row-hover-bg);
 }
 
 /* Paginacao */
@@ -375,18 +383,20 @@ function getCellValue(row: Record<string, unknown>, key: string): unknown {
 }
 
 .pagination-btn {
-  padding: 0.5rem 1rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 5px;
-  background: #fff;
-  color: #4a5568;
-  font-size: 0.875rem;
+  padding: var(--pagination-btn-padding-y) var(--pagination-btn-padding-x);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-card);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-base);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all var(--transition-fast);
+  min-height: 44px;
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background-color: #edf2f7;
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border-hover);
 }
 
 .pagination-btn:disabled {
@@ -398,24 +408,25 @@ function getCellValue(row: Record<string, unknown>, key: string): unknown {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: 1px solid #e2e8f0;
-  border-radius: 5px;
-  background: #fff;
-  color: #4a5568;
-  font-size: 0.813rem;
+  min-width: 44px;
+  min-height: 44px;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-card);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all var(--transition-fast);
 }
 
 .pagination-page:hover:not(.pagination-page--active) {
-  background-color: #edf2f7;
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border-hover);
 }
 
 .pagination-page--active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  background: var(--color-primary-gradient);
+  color: white;
   border-color: transparent;
   cursor: default;
 }
@@ -424,10 +435,10 @@ function getCellValue(row: Record<string, unknown>, key: string): unknown {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  font-size: 0.813rem;
-  color: #a0aec0;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-placeholder);
 }
 
 /* Responsivo */

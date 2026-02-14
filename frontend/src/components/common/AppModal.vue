@@ -141,13 +141,14 @@ onUnmounted(() => {
 
 /* Container do modal */
 .modal-container {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
   display: flex;
   flex-direction: column;
   max-height: calc(100vh - 2rem);
   width: 100%;
+  transition: background-color 0.3s ease;
 }
 
 .modal-container--sm {
@@ -167,40 +168,41 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid #e2e8f0;
+  padding: var(--space-8) var(--space-10);
+  border-bottom: var(--border-width) solid var(--color-border);
   flex-shrink: 0;
 }
 
 .modal-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #1a202c;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 .modal-close {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  min-width: 44px;
+  min-height: 44px;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   background: none;
-  color: #a0aec0;
+  color: var(--color-text-placeholder);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all var(--transition-fast);
   flex-shrink: 0;
 }
 
 .modal-close:hover {
-  background-color: #f7fafc;
-  color: #4a5568;
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-tertiary);
 }
 
 .modal-close:focus-visible {
-  outline: 2px solid #667eea;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -216,9 +218,9 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
-  border-top: 1px solid #e2e8f0;
+  gap: var(--space-6);
+  padding: var(--space-8) var(--space-10);
+  border-top: var(--border-width) solid var(--color-border);
   flex-shrink: 0;
 }
 
