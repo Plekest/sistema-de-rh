@@ -37,14 +37,17 @@ test.group('DashboardService - getAdminDashboard', (group) => {
     const dashboard = await service.getAdminDashboard()
 
     assert.property(dashboard, 'totalEmployees')
+    assert.property(dashboard, 'activeEmployees')
+    assert.property(dashboard, 'departmentsCount')
     assert.property(dashboard, 'employeesByType')
     assert.property(dashboard, 'employeesByStatus')
     assert.property(dashboard, 'departmentDistribution')
     assert.property(dashboard, 'pendingLeaves')
     assert.property(dashboard, 'upcomingLeaves')
     assert.property(dashboard, 'recentHires')
-    assert.property(dashboard, 'totalPayroll')
-    assert.property(dashboard, 'attendanceToday')
+    assert.property(dashboard, 'todayAttendance')
+    assert.property(dashboard, 'monthlyPayroll')
+    assert.property(dashboard, 'notifications')
   })
 
   test('deve contar total de employees ativos corretamente', async ({ assert }) => {
@@ -266,15 +269,19 @@ test.group('DashboardService - getAdminDashboard', (group) => {
 
     const dashboard = await service.getAdminDashboard()
 
-    assert.isAtLeast(dashboard.attendanceToday, 1)
+    assert.isAtLeast(dashboard.todayAttendance.present, 1)
   })
 
-  test('deve retornar 0 para totalPayroll quando nao ha periodos fechados', async ({
+  test('deve retornar monthlyPayroll >= 0', async ({
     assert,
   }) => {
     const dashboard = await service.getAdminDashboard()
 
-    assert.equal(dashboard.totalPayroll, 0)
+    assert.isObject(dashboard.monthlyPayroll)
+    assert.isNumber(dashboard.monthlyPayroll.totalGross)
+    assert.isNumber(dashboard.monthlyPayroll.totalNet)
+    assert.isBoolean(dashboard.monthlyPayroll.processed)
+    assert.isAtLeast(dashboard.monthlyPayroll.totalGross, 0)
   })
 })
 

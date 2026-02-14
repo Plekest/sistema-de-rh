@@ -120,26 +120,61 @@ export default class DashboardService {
       totalPayroll = toNumber(payrollSum[0].$extras.total)
     }
 
-    // Attendance today
+    // Attendance today - contagem de presentes, ausentes e atrasados
     const today = now.toSQLDate()!
-    const attendanceTodayData = await TimeEntry.query()
+    const presentData = await TimeEntry.query()
       .where('date', today)
       .whereNotNull('clock_in')
       .countDistinct('employee_id as total')
+    const present = toNumber(presentData[0].$extras.total)
 
-    const attendanceToday = toNumber(attendanceTodayData[0].$extras.total)
+    const lateData = await TimeEntry.query()
+      .where('date', today)
+      .whereNotNull('clock_in')
+      .where('is_late', true)
+      .countDistinct('employee_id as total')
+    const late = toNumber(lateData[0].$extras.total)
+
+    const absent = totalEmployeesCount - present
+
+    // Count departments
+    const departmentsData = await Database.from('departments').count('* as total')
+    const departmentsCount = toNumber(departmentsData[0].total)
+
+    // Unread notifications count (assumindo que existe uma tabela notifications)
+    let unreadNotifications = 0
+    try {
+      const notificationsData = await Database.from('notifications')
+        .where('is_read', false)
+        .count('* as total')
+      unreadNotifications = toNumber(notificationsData[0].total)
+    } catch (_error) {
+      // Se tabela nao existir, retorna 0
+    }
 
     return {
       totalEmployees: totalEmployeesCount,
+      activeEmployees: totalEmployeesCount,
+      departmentsCount,
       employeesByType,
       employeesByStatus,
       departmentDistribution,
       pendingLeaves,
       upcomingLeaves,
       recentHires,
-      totalPayroll,
-      attendanceToday,
-      totalEmployeesCount,
+      todayAttendance: {
+        present,
+        absent,
+        late,
+      },
+      monthlyPayroll: {
+        totalGross: totalPayroll,
+        totalNet: totalPayroll,
+        processed: totalPayroll > 0,
+      },
+      notifications: {
+        unread: unreadNotifications,
+      },
     }
   }
 

@@ -1,5 +1,7 @@
 export interface AdminDashboard {
   totalEmployees: number
+  activeEmployees: number
+  departmentsCount: number
   employeesByType: { clt: number; pj: number }
   employeesByStatus: { active: number; inactive: number; terminated: number }
   departmentDistribution: { departmentName: string; count: number }[]
@@ -20,9 +22,19 @@ export interface AdminDashboard {
     department: string
     position: string
   }[]
-  totalPayroll: number
-  attendanceToday: number
-  totalEmployeesCount: number
+  todayAttendance: {
+    present: number
+    absent: number
+    late: number
+  }
+  monthlyPayroll: {
+    totalGross: number
+    totalNet: number
+    processed: boolean
+  }
+  notifications: {
+    unread: number
+  }
 }
 
 export interface EmployeeDashboard {

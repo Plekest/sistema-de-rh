@@ -32,8 +32,8 @@ function formatCurrency(value: number): string {
 }
 
 function getAttendancePercentage(): number {
-  if (!data.value || data.value.totalEmployeesCount === 0) return 0
-  return Math.round((data.value.attendanceToday / data.value.totalEmployeesCount) * 100)
+  if (!data.value || data.value.activeEmployees === 0) return 0
+  return Math.round((data.value.todayAttendance.present / data.value.activeEmployees) * 100)
 }
 
 onMounted(async () => {
@@ -82,12 +82,12 @@ onMounted(async () => {
 
         <div class="kpi-card" role="link" tabindex="0" @click="router.push('/attendance')" @keydown.enter="router.push('/attendance')">
           <div class="kpi-content">
-            <span class="kpi-value">{{ data.attendanceToday }}</span>
+            <span class="kpi-value">{{ data.todayAttendance.present }}</span>
             <span class="kpi-label">Presentes Hoje</span>
           </div>
           <div class="kpi-detail">
             <span class="kpi-percentage">{{ getAttendancePercentage() }}%</span>
-            <span class="kpi-percentage-label">do total</span>
+            <span class="kpi-percentage-label">{{ data.todayAttendance.absent }} ausentes, {{ data.todayAttendance.late }} atrasados</span>
           </div>
         </div>
 
@@ -103,11 +103,12 @@ onMounted(async () => {
 
         <div class="kpi-card" role="link" tabindex="0" @click="router.push('/payroll')" @keydown.enter="router.push('/payroll')">
           <div class="kpi-content">
-            <span class="kpi-value">{{ formatCurrency(data.totalPayroll) }}</span>
+            <span class="kpi-value">{{ formatCurrency(data.monthlyPayroll.totalNet) }}</span>
             <span class="kpi-label">Ultima Folha Fechada</span>
           </div>
           <div class="kpi-detail">
-            <span class="kpi-action">Ver folha &rarr;</span>
+            <span class="kpi-action" v-if="data.monthlyPayroll.processed">Ver folha &rarr;</span>
+            <span class="kpi-percentage-label" v-else>Nenhuma folha processada</span>
           </div>
         </div>
       </div>
@@ -136,7 +137,7 @@ onMounted(async () => {
                     <div
                       class="department-bar-fill"
                       :style="{
-                        width: `${Math.round((dept.count / data!.totalEmployeesCount) * 100)}%`,
+                        width: `${Math.round((dept.count / data!.activeEmployees) * 100)}%`,
                       }"
                     ></div>
                   </div>
@@ -246,19 +247,19 @@ onMounted(async () => {
 
 /* Welcome Section */
 .welcome-section {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-12);
 }
 
 .welcome-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin: 0 0 0.25rem 0;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-2) 0;
 }
 
 .welcome-subtitle {
-  font-size: 0.875rem;
-  color: #718096;
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
   margin: 0;
 }
 
@@ -266,18 +267,18 @@ onMounted(async () => {
 .loading-state,
 .error-state {
   text-align: center;
-  padding: 3rem;
-  color: #718096;
+  padding: var(--space-24);
+  color: var(--color-text-muted);
 }
 
 .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid #e2e8f0;
-  border-top-color: #667eea;
-  border-radius: 50%;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: var(--radius-full);
   animation: spin 0.6s linear infinite;
-  margin: 0 auto 1rem;
+  margin: 0 auto var(--space-8);
 }
 
 @keyframes spin {
@@ -285,31 +286,31 @@ onMounted(async () => {
 }
 
 .error-state {
-  color: #e53e3e;
+  color: var(--color-danger);
 }
 
 /* KPI Grid */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: var(--space-8);
+  margin-bottom: var(--space-12);
 }
 
 .kpi-card {
-  background: white;
-  border-radius: 10px;
-  padding: 1.25rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: var(--color-bg-card);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-10);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
-  transition: box-shadow 0.15s, transform 0.15s;
+  transition: var(--transition-base);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-6);
 }
 
 .kpi-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-1px);
 }
 
@@ -319,76 +320,76 @@ onMounted(async () => {
 }
 
 .kpi-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1a202c;
-  line-height: 1.2;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
 }
 
 .kpi-label {
-  font-size: 0.75rem;
-  color: #718096;
-  margin-top: 0.125rem;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--space-1);
 }
 
 .kpi-detail {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-4);
 }
 
 .kpi-badge {
-  font-size: 0.688rem;
-  font-weight: 600;
-  padding: 0.125rem 0.5rem;
-  border-radius: 10px;
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-semibold);
+  padding: var(--badge-padding-y) var(--badge-padding-x);
+  border-radius: var(--badge-border-radius);
 }
 
 .kpi-badge.clt {
-  background: #e6fffa;
-  color: #234e52;
+  background: var(--color-success-light);
+  color: var(--color-success-darker);
 }
 
 .kpi-badge.pj {
-  background: #fefcbf;
-  color: #744210;
+  background: var(--color-warning-bg);
+  color: var(--color-warning-darker);
 }
 
 .kpi-percentage {
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: #38a169;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-success);
 }
 
 .kpi-percentage-label {
-  font-size: 0.688rem;
-  color: #a0aec0;
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-placeholder);
 }
 
 .kpi-action {
-  font-size: 0.75rem;
-  color: #667eea;
-  font-weight: 500;
+  font-size: var(--font-size-xs);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
 }
 
 /* Content Grid */
 .content-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  gap: var(--space-12);
 }
 
 .content-column {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--space-12);
 }
 
 /* Card */
 .card {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: var(--color-bg-card);
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--card-shadow);
   overflow: hidden;
 }
 
@@ -396,24 +397,24 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid #f0f0f5;
+  padding: var(--space-8) var(--space-10);
+  border-bottom: var(--border-width) solid var(--color-border-light);
 }
 
 .card-header h3 {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #2d3748;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
   margin: 0;
 }
 
 .card-link {
-  font-size: 0.75rem;
-  color: #667eea;
+  font-size: var(--font-size-xs);
+  color: var(--color-primary);
   background: none;
   border: none;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   padding: 0;
 }
 
@@ -422,27 +423,27 @@ onMounted(async () => {
 }
 
 .card-body {
-  padding: 1rem 1.25rem;
+  padding: var(--space-8) var(--space-10);
 }
 
 .empty-state {
   text-align: center;
-  padding: 1.5rem 0;
-  color: #a0aec0;
-  font-size: 0.813rem;
+  padding: var(--space-12) 0;
+  color: var(--color-text-placeholder);
+  font-size: var(--font-size-sm);
 }
 
 /* Department Distribution */
 .department-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-6);
 }
 
 .department-item {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-2);
 }
 
 .department-info {
@@ -452,159 +453,159 @@ onMounted(async () => {
 }
 
 .department-name {
-  font-size: 0.813rem;
-  color: #4a5568;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  font-weight: var(--font-weight-medium);
 }
 
 .department-count {
-  font-size: 0.813rem;
-  color: #718096;
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-semibold);
 }
 
 .department-bar {
   height: 6px;
-  background: #edf2f7;
-  border-radius: 3px;
+  background: var(--color-bg-muted);
+  border-radius: var(--radius-xs);
   overflow: hidden;
 }
 
 .department-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  border-radius: 3px;
+  background: var(--color-primary-gradient);
+  border-radius: var(--radius-xs);
   min-width: 4px;
-  transition: width 0.3s ease;
+  transition: width var(--transition-slow);
 }
 
 /* Status Grid */
 .status-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
+  gap: var(--space-6);
 }
 
 .status-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1rem;
-  border-radius: 8px;
-  gap: 0.25rem;
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
+  gap: var(--space-2);
 }
 
-.status-active { background: #f0fff4; }
-.status-inactive { background: #fffff0; }
-.status-terminated { background: #fff5f5; }
+.status-active { background: var(--color-success-light); }
+.status-inactive { background: var(--color-warning-light); }
+.status-terminated { background: var(--color-danger-light); }
 
 .status-count {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
 }
 
-.status-active .status-count { color: #22543d; }
-.status-inactive .status-count { color: #744210; }
-.status-terminated .status-count { color: #742a2a; }
+.status-active .status-count { color: var(--color-success-darker); }
+.status-inactive .status-count { color: var(--color-warning-darker); }
+.status-terminated .status-count { color: var(--color-danger-darker); }
 
 .status-label {
-  font-size: 0.688rem;
-  color: #718096;
-  font-weight: 500;
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
 }
 
 /* Leave List */
 .leave-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-6);
 }
 
 .leave-item {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 0.75rem;
-  background: #fafbfc;
-  border-radius: 8px;
-  border-left: 3px solid #667eea;
+  padding: var(--space-6);
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-lg);
+  border-left: 3px solid var(--color-primary);
 }
 
 .leave-info {
   display: flex;
   flex-direction: column;
-  gap: 0.125rem;
+  gap: var(--space-1);
 }
 
 .leave-name {
-  font-size: 0.813rem;
-  font-weight: 600;
-  color: #2d3748;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
 }
 
 .leave-dept {
-  font-size: 0.688rem;
-  color: #a0aec0;
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-placeholder);
 }
 
 .leave-details {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.125rem;
+  gap: var(--space-1);
 }
 
 .leave-type {
-  font-size: 0.688rem;
-  font-weight: 600;
-  color: #667eea;
-  background: #ebf4ff;
-  padding: 0.125rem 0.5rem;
-  border-radius: 8px;
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  padding: var(--badge-padding-y) var(--badge-padding-x);
+  border-radius: var(--radius-lg);
 }
 
 .leave-dates {
-  font-size: 0.688rem;
-  color: #718096;
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-muted);
 }
 
 .leave-days {
-  font-size: 0.688rem;
-  color: #a0aec0;
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-placeholder);
 }
 
 /* Hire List */
 .hire-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-4);
 }
 
 .hire-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem;
-  border-radius: 8px;
+  gap: var(--space-6);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background var(--transition-fast);
 }
 
 .hire-item:hover {
-  background: #f7fafc;
+  background: var(--color-bg-hover);
 }
 
 .hire-avatar {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-gradient);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
   flex-shrink: 0;
 }
 
@@ -616,25 +617,25 @@ onMounted(async () => {
 }
 
 .hire-name {
-  font-size: 0.813rem;
-  font-weight: 600;
-  color: #2d3748;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .hire-position {
-  font-size: 0.688rem;
-  color: #a0aec0;
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-placeholder);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .hire-date {
-  font-size: 0.688rem;
-  color: #a0aec0;
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-placeholder);
   white-space: nowrap;
 }
 

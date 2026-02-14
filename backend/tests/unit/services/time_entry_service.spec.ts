@@ -3,6 +3,7 @@ import TimeEntryService from '#services/time_entry_service'
 import Database from '@adonisjs/lucid/services/db'
 import Employee from '#models/employee'
 import TimeEntry from '#models/time_entry'
+import User from '#models/user'
 import { DateTime } from 'luxon'
 
 test.group('TimeEntryService - clockIn', (group) => {
@@ -36,7 +37,7 @@ test.group('TimeEntryService - clockIn', (group) => {
     assert.isNotNull(entry)
     assert.equal(entry.employeeId, employee.id)
     assert.isNotNull(entry.clockIn)
-    assert.isNull(entry.clockOut)
+    assert.isUndefined(entry.clockOut)
     assert.equal(entry.type, 'regular')
   })
 
@@ -126,7 +127,18 @@ test.group('TimeEntryService - clockOut', (group) => {
   })
 
   test('deve registrar clock out com sucesso', async ({ assert }) => {
-    await service.clockIn(employee.id)
+    const today = DateTime.now().toISODate()!
+    const clockInTime = DateTime.now().set({ hour: 8, minute: 0, second: 0, millisecond: 0 })
+
+    // Criar entrada manual com clock in no passado
+    await TimeEntry.create({
+      employeeId: employee.id,
+      date: DateTime.fromISO(today),
+      clockIn: clockInTime,
+      type: 'regular',
+      totalWorkedMinutes: 0,
+    })
+
     const entry = await service.clockOut(employee.id)
 
     assert.isNotNull(entry.clockOut)
@@ -347,6 +359,7 @@ test.group('TimeEntryService - getToday', (group) => {
 test.group('TimeEntryService - getRecent', (group) => {
   let service: TimeEntryService
   let employee: Employee
+  let user: User
 
   group.setup(async () => {
     await Database.beginGlobalTransaction()
@@ -358,16 +371,26 @@ test.group('TimeEntryService - getRecent', (group) => {
   })
 
   group.each.setup(async () => {
-    // Criar employee com userId vinculado
-    const uniqueEmail = `funcionario.teste.${Date.now()}@empresa.com`
+    // Criar user unico para cada teste
+    const uniqueEmail = `user.teste.${Date.now()}@empresa.com`
+    user = await User.create({
+      fullName: 'User Teste',
+      email: uniqueEmail,
+      password: 'senha123',
+      role: 'employee',
+      isActive: true,
+    })
+
+    // Criar employee com userId vinculado ao user criado
+    const employeeEmail = `funcionario.teste.${Date.now()}@empresa.com`
     employee = await Employee.create({
       fullName: 'Funcionario Teste',
-      email: uniqueEmail,
+      email: employeeEmail,
       type: 'clt',
       hireDate: DateTime.now(),
       status: 'active',
       irrfDependents: 0,
-      userId: 1, // Assumindo que user ID 1 existe
+      userId: user.id,
     })
   })
 

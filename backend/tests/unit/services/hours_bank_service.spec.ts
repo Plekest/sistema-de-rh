@@ -67,21 +67,25 @@ test.group('HoursBankService - calculateMonth', (group) => {
     const month = DateTime.now().month
     const year = DateTime.now().year
 
-    // Criar 5 dias com 10h cada = 600 min (2h extras por dia)
-    for (let i = 0; i < 5; i++) {
-      const date = DateTime.fromObject({ year, month, day: i + 1 })
-      if (date.weekday >= 1 && date.weekday <= 5) {
+    // Criar entradas para todos os dias uteis do mes com 10h cada = 600 min (2h extras por dia)
+    const startDate = DateTime.fromObject({ year, month, day: 1 })
+    const endDate = startDate.endOf('month')
+    let current = startDate
+
+    while (current <= endDate) {
+      if (current.weekday >= 1 && current.weekday <= 5) {
         await TimeEntry.create({
           employeeId: employee.id,
-          date: date,
-          clockIn: date.set({ hour: 8 }),
-          clockOut: date.set({ hour: 19 }),
-          lunchStart: date.set({ hour: 12 }),
-          lunchEnd: date.set({ hour: 13 }),
+          date: current,
+          clockIn: current.set({ hour: 8 }),
+          clockOut: current.set({ hour: 19 }),
+          lunchStart: current.set({ hour: 12 }),
+          lunchEnd: current.set({ hour: 13 }),
           type: 'regular',
           totalWorkedMinutes: 600, // 10 horas
         })
       }
+      current = current.plus({ days: 1 })
     }
 
     const hoursBank = await service.calculateMonth(employee.id, month, year)
@@ -93,21 +97,25 @@ test.group('HoursBankService - calculateMonth', (group) => {
     const month = DateTime.now().month
     const year = DateTime.now().year
 
-    // Criar 5 dias com 6h cada = 360 min (2h a menos por dia)
-    for (let i = 0; i < 5; i++) {
-      const date = DateTime.fromObject({ year, month, day: i + 1 })
-      if (date.weekday >= 1 && date.weekday <= 5) {
+    // Criar entradas para todos os dias uteis do mes com 6h cada = 360 min (2h a menos por dia)
+    const startDate = DateTime.fromObject({ year, month, day: 1 })
+    const endDate = startDate.endOf('month')
+    let current = startDate
+
+    while (current <= endDate) {
+      if (current.weekday >= 1 && current.weekday <= 5) {
         await TimeEntry.create({
           employeeId: employee.id,
-          date: date,
-          clockIn: date.set({ hour: 8 }),
-          clockOut: date.set({ hour: 15 }),
-          lunchStart: date.set({ hour: 12 }),
-          lunchEnd: date.set({ hour: 13 }),
+          date: current,
+          clockIn: current.set({ hour: 8 }),
+          clockOut: current.set({ hour: 15 }),
+          lunchStart: current.set({ hour: 12 }),
+          lunchEnd: current.set({ hour: 13 }),
           type: 'regular',
           totalWorkedMinutes: 360, // 6 horas
         })
       }
+      current = current.plus({ days: 1 })
     }
 
     const hoursBank = await service.calculateMonth(employee.id, month, year)
@@ -133,10 +141,30 @@ test.group('HoursBankService - calculateMonth', (group) => {
       accumulatedBalanceMinutes: 120,
     })
 
-    // Criar mes atual com saldo zero
+    // Criar entradas para todos os dias uteis do mes atual com 8h (saldo zero)
+    const startDate = DateTime.fromObject({ year: currentYear, month: currentMonth, day: 1 })
+    const endDate = startDate.endOf('month')
+    let current = startDate
+
+    while (current <= endDate) {
+      if (current.weekday >= 1 && current.weekday <= 5) {
+        await TimeEntry.create({
+          employeeId: employee.id,
+          date: current,
+          clockIn: current.set({ hour: 8 }),
+          clockOut: current.set({ hour: 17 }),
+          lunchStart: current.set({ hour: 12 }),
+          lunchEnd: current.set({ hour: 13 }),
+          type: 'regular',
+          totalWorkedMinutes: 480, // 8 horas
+        })
+      }
+      current = current.plus({ days: 1 })
+    }
+
     const hoursBank = await service.calculateMonth(employee.id, currentMonth, currentYear)
 
-    // Saldo acumulado deve incluir o anterior
+    // Saldo acumulado deve incluir o anterior (120) + saldo do mes atual (aprox 0)
     assert.isAtLeast(hoursBank.accumulatedBalanceMinutes, 120)
   })
 
