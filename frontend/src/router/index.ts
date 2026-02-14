@@ -51,6 +51,9 @@ import PerformanceView from '@/modules/performance/views/PerformanceView.vue'
 // Views - Recruitment
 import RecruitmentView from '@/modules/recruitment/views/RecruitmentView.vue'
 
+// Views - Training
+import TrainingListView from '@/modules/training/views/TrainingListView.vue'
+
 // Views - Admin
 import PermissionsView from '@/modules/admin/views/PermissionsView.vue'
 
@@ -222,6 +225,14 @@ const router = createRouter({
           name: 'recruitment',
           component: RecruitmentView,
           meta: { module: 'recruitment' },
+        },
+
+        // Treinamentos
+        {
+          path: 'training',
+          name: 'training',
+          component: TrainingListView,
+          meta: { module: 'training' },
         },
 
         // Usuarios (admin)

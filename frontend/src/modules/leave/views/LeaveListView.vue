@@ -121,7 +121,7 @@ onMounted(() => {
 
 <style scoped>
 .leave-list-view {
-  max-width: 1200px;
+  max-width: var(--max-width-2xl);
   margin: 0 auto;
 }
 
@@ -129,31 +129,31 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-12);
 }
 
 .page-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1a202c;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
   margin: 0;
 }
 
 /* Botoes */
 .btn-primary {
-  padding: 0.625rem 1.25rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  padding: var(--btn-padding-y) var(--btn-padding-x);
+  background: var(--color-primary-gradient);
+  color: var(--color-bg-card);
   border: none;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 600;
+  border-radius: var(--btn-border-radius);
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition-base);
 }
 
 .btn-primary:hover:not(:disabled) {
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+  box-shadow: var(--shadow-primary);
   transform: translateY(-1px);
 }
 
@@ -164,27 +164,27 @@ onMounted(() => {
 
 /* Alertas */
 .alert {
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
+  padding: var(--alert-padding-y) var(--alert-padding-x);
+  border-radius: var(--alert-border-radius);
+  font-size: var(--alert-font-size);
+  margin-bottom: var(--space-8);
 }
 
 .alert-success {
-  background: #c6f6d5;
-  border: 1px solid #9ae6b4;
-  color: #276749;
+  background: var(--color-success-lighter);
+  border: var(--border-width) solid var(--color-success-bg);
+  color: var(--color-success-dark);
 }
 
 .alert-error {
-  background: #fff5f5;
-  border: 1px solid #fed7d7;
-  color: #c53030;
+  background: var(--color-danger-light);
+  border: var(--border-width) solid var(--color-danger-lighter);
+  color: var(--color-danger-dark);
 }
 
 /* Animacao fade para mensagens de sucesso */
 .fade-enter-active {
-  transition: opacity 0.3s ease;
+  transition: opacity var(--transition-slow);
 }
 
 .fade-leave-active {
@@ -200,7 +200,7 @@ onMounted(() => {
   .page-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: var(--space-8);
   }
 }
 </style>

@@ -28,6 +28,7 @@ const DashboardController = () => import('#controllers/dashboard_controller')
 const PerformanceController = () => import('#controllers/performance_controller')
 const RecruitmentController = () => import('#controllers/recruitment_controller')
 const NotificationsController = () => import('#controllers/notifications_controller')
+const TrainingsController = () => import('#controllers/trainings_controller')
 
 router.get('/', async () => {
   return {
@@ -378,6 +379,30 @@ router
     router.get('notifications/unread-count', [NotificationsController, 'unreadCount'])
     router.patch('notifications/:id/read', [NotificationsController, 'markAsRead'])
     router.patch('notifications/read-all', [NotificationsController, 'markAllAsRead'])
+
+    // --- Treinamentos ---
+    router.get('trainings', [TrainingsController, 'index'])
+    router.get('trainings/stats', [TrainingsController, 'stats'])
+    router.get('trainings/:id', [TrainingsController, 'show'])
+    router
+      .post('trainings', [TrainingsController, 'store'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .put('trainings/:id', [TrainingsController, 'update'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .delete('trainings/:id', [TrainingsController, 'destroy'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .post('trainings/:id/enroll', [TrainingsController, 'enroll'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .post('trainings/:id/bulk-enroll', [TrainingsController, 'bulkEnroll'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .put('trainings/enrollments/:enrollmentId', [TrainingsController, 'updateEnrollment'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router.get('trainings/employee/:employeeId', [TrainingsController, 'employeeTrainings'])
   })
   .prefix('api/v1')
   .use(middleware.auth({ guards: ['api'] }))

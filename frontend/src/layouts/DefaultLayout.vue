@@ -40,6 +40,7 @@ const menuItems = computed(() => {
     { name: 'Folha de Pagamento', path: '/payroll', module: 'payroll' },
     { name: 'Avaliacao', path: '/performance', module: 'performance' },
     { name: 'Recrutamento', path: '/recruitment', module: 'recruitment' },
+    { name: 'Treinamentos', path: '/training', module: 'training' },
   ]
   if (!authStore.permissions) return all
   return all.filter(item => !item.module || authStore.permissions![item.module as keyof UserPermissions])
@@ -78,6 +79,7 @@ function getPageTitle(): string {
   if (path.startsWith('/payroll')) return 'Folha de Pagamento'
   if (path.startsWith('/performance')) return 'Avaliacao de Desempenho'
   if (path.startsWith('/recruitment')) return 'Recrutamento e Selecao'
+  if (path.startsWith('/training')) return 'Treinamentos'
   if (path.startsWith('/users')) {
     if (path.includes('/new')) return 'Novo Usuario'
     if (path.includes('/edit')) return 'Editar Usuario'

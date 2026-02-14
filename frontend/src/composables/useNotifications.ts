@@ -8,16 +8,24 @@ import notificationService from '@/modules/notifications/services/notification.s
  * - Manter contador de notificacoes nao lidas (badge no header)
  * - Fazer polling a cada 60 segundos para atualizar o contador
  * - Fornecer metodos para marcar como lida e atualizar contador
+ * - Implementa singleton pattern para evitar multiplas instancias
  *
  * Uso:
  * ```ts
  * const { unreadCount, loadUnreadCount, markAsRead, markAllAsRead } = useNotifications()
  * ```
  */
-export function useNotifications() {
+
+// Singleton: armazena a instancia unica do composable
+let instance: ReturnType<typeof createNotifications> | null = null
+
+/**
+ * Cria a instancia do composable de notificacoes
+ */
+function createNotifications() {
   const unreadCount = ref<number>(0)
   const isLoading = ref<boolean>(false)
-  let pollingInterval: number | undefined = undefined
+  let pollingInterval: ReturnType<typeof setInterval> | undefined = undefined
 
   /**
    * Carrega o contador de notificacoes nao lidas
@@ -78,7 +86,7 @@ export function useNotifications() {
     loadUnreadCount()
 
     // Configura polling a cada 60 segundos
-    pollingInterval = window.setInterval(() => {
+    pollingInterval = setInterval(() => {
       loadUnreadCount()
     }, 60000) // 60 segundos
   }
@@ -88,7 +96,7 @@ export function useNotifications() {
    */
   const stopPolling = () => {
     if (pollingInterval !== undefined) {
-      window.clearInterval(pollingInterval)
+      clearInterval(pollingInterval)
       pollingInterval = undefined
     }
   }
@@ -111,4 +119,14 @@ export function useNotifications() {
     startPolling,
     stopPolling
   }
+}
+
+/**
+ * Hook principal: retorna sempre a mesma instancia (singleton)
+ */
+export function useNotifications() {
+  if (!instance) {
+    instance = createNotifications()
+  }
+  return instance
 }
