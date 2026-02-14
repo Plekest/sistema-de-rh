@@ -8,6 +8,8 @@ export type NotificationType =
   | 'leave_rejected'
   | 'document_uploaded'
   | 'salary_changed'
+  | 'training_enrollment'
+  | 'training_completed'
   | 'general'
 
 export default class Notification extends BaseModel {

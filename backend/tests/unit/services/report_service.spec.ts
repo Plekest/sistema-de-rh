@@ -8,6 +8,17 @@ import PayrollPeriod from '#models/payroll_period'
 import PaySlip from '#models/pay_slip'
 import { DateTime } from 'luxon'
 
+// Helper para gerar IDs únicos
+function generateUniqueId() {
+  const rand = Math.floor(Math.random() * 90000000) + 10000000
+  return `${Date.now()}${rand}`
+}
+
+function generateUniqueCPF() {
+  const rand = Math.floor(Math.random() * 90000000) + 10000000
+  return `${rand}000`
+}
+
 test.group('ReportService - exportEmployeesCSV', (group) => {
   let service: ReportService
   let department: Department
@@ -74,12 +85,12 @@ test.group('ReportService - exportEmployeesCSV', (group) => {
 
   test('deve formatar datas como DD/MM/YYYY', async ({ assert }) => {
     // Arrange
-    const timestamp = `${Date.now()}${counter++}`
+    const uniqueId = generateUniqueId()
     await Employee.create({
-      registrationNumber: `REG${timestamp}`,
-      fullName: `Colaborador Teste ${timestamp}`,
-      cpf: `${timestamp}`.substring(0, 11).padEnd(11, '0'),
-      email: `colaborador${timestamp}@empresa.com`,
+      registrationNumber: `REG${uniqueId}`,
+      fullName: `Colaborador Teste ${uniqueId}`,
+      cpf: generateUniqueCPF(),
+      email: `colaborador${uniqueId}@empresa.com`,
       phone: '11999999999',
       type: 'clt',
       departmentId: department.id,
@@ -110,14 +121,16 @@ test.group('ReportService - exportEmployeesCSV', (group) => {
 
   test('deve filtrar por tipo (CLT/PJ)', async ({ assert }) => {
     // Arrange
-    const timestamp = `${Date.now()}${counter++}`
-    const timestamp2 = `${Date.now()}${counter++}`
+    const rand1 = Math.floor(Math.random() * 90000000) + 10000000
+    const rand2 = Math.floor(Math.random() * 90000000) + 10000000
+    const uniqueId1 = `${Date.now()}${rand1}`
+    const uniqueId2 = `${Date.now()}${rand2}`
 
     await Employee.create({
-      registrationNumber: `CLT${timestamp}`,
-      fullName: `CLT ${timestamp}`,
-      cpf: `${timestamp}`.substring(0, 11).padEnd(11, '0'),
-      email: `clt${timestamp}@empresa.com`,
+      registrationNumber: `CLT${uniqueId1}`,
+      fullName: `CLT ${uniqueId1}`,
+      cpf: `${rand1}000`,
+      email: `clt${uniqueId1}@empresa.com`,
       phone: '11999999999',
       type: 'clt',
       departmentId: department.id,
@@ -129,10 +142,10 @@ test.group('ReportService - exportEmployeesCSV', (group) => {
     })
 
     await Employee.create({
-      registrationNumber: `PJ${timestamp2}`,
-      fullName: `PJ ${timestamp2}`,
-      cnpj: `${timestamp2}`.substring(0, 14).padEnd(14, '0'),
-      email: `pj${timestamp2}@empresa.com`,
+      registrationNumber: `PJ${uniqueId2}`,
+      fullName: `PJ ${uniqueId2}`,
+      cnpj: `${rand2}000000`,
+      email: `pj${uniqueId2}@empresa.com`,
       phone: '11999999998',
       type: 'pj',
       departmentId: department.id,
@@ -147,18 +160,18 @@ test.group('ReportService - exportEmployeesCSV', (group) => {
     const csv = await service.exportEmployeesCSV({ type: 'clt' })
 
     // Assert
-    assert.include(csv, `CLT ${timestamp}`)
-    assert.notInclude(csv, `PJ ${timestamp2}`)
+    assert.include(csv, `CLT ${uniqueId1}`)
+    assert.notInclude(csv, `PJ ${uniqueId2}`)
   })
 
   test('deve escapar campos com ponto-e-vírgula', async ({ assert }) => {
     // Arrange
-    const timestamp = `${Date.now()}${counter++}`
+    const uniqueId = generateUniqueId()
     await Employee.create({
-      registrationNumber: `REG${timestamp}`,
-      fullName: `Nome; Com; Ponto-e-vírgula ${timestamp}`,
-      cpf: `${timestamp}`.substring(0, 11).padEnd(11, '0'),
-      email: `colaborador${timestamp}@empresa.com`,
+      registrationNumber: `REG${uniqueId}`,
+      fullName: `Nome; Com; Ponto-e-vírgula ${uniqueId}`,
+      cpf: generateUniqueCPF(),
+      email: `colaborador${uniqueId}@empresa.com`,
       phone: '11999999999',
       type: 'clt',
       departmentId: department.id,
@@ -174,7 +187,7 @@ test.group('ReportService - exportEmployeesCSV', (group) => {
 
     // Assert
     // Campo deve estar entre aspas por conter ;
-    assert.include(csv, `"Nome; Com; Ponto-e-vírgula ${timestamp}"`)
+    assert.include(csv, `"Nome; Com; Ponto-e-vírgula ${uniqueId}"`)
   })
 })
 
@@ -197,21 +210,21 @@ test.group('ReportService - exportPayrollCSV', (group) => {
 
   group.each.setup(async () => {
     counter++
-    const timestamp = `${Date.now()}${counter}`
+    const uniqueId = generateUniqueId()
     department = await Department.create({
-      name: `Dept ${timestamp}`,
+      name: `Dept ${uniqueId}`,
     })
 
     position = await Position.create({
-      title: `Cargo ${timestamp}`,
+      title: `Cargo ${uniqueId}`,
       departmentId: department.id,
     })
 
     employee = await Employee.create({
-      registrationNumber: `REG${timestamp}`,
-      fullName: `Colaborador ${timestamp}`,
-      cpf: `${timestamp}`.substring(0, 11).padEnd(11, '0'),
-      email: `colaborador${timestamp}@empresa.com`,
+      registrationNumber: `REG${uniqueId}`,
+      fullName: `Colaborador ${uniqueId}`,
+      cpf: generateUniqueCPF(),
+      email: `colaborador${uniqueId}@empresa.com`,
       phone: '11999999999',
       type: 'clt',
       departmentId: department.id,
@@ -222,9 +235,14 @@ test.group('ReportService - exportPayrollCSV', (group) => {
       birthDate: DateTime.fromISO('1990-01-01'),
     })
 
+    // Gera mes/ano unicos usando counter
+    const baseYear = 2020
+    const yearOffset = Math.floor(counter / 12)
+    const month = (counter % 12) + 1
+
     period = await PayrollPeriod.create({
-      referenceMonth: 1,
-      referenceYear: 2024,
+      referenceMonth: month,
+      referenceYear: baseYear + yearOffset,
       status: 'open',
     })
   })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, watch } from 'vue'
+import { onMounted, watch, computed } from 'vue'
 import { useTraining } from '../composables/useTraining'
 import TrainingFilters from '../components/TrainingFilters.vue'
 import TrainingCard from '../components/TrainingCard.vue'
@@ -71,6 +71,27 @@ const {
   init,
   handleExport,
 } = useTraining()
+
+// Computed properties para garantir valores não-undefined
+const filterStatus = computed({
+  get: () => filters.value.status ?? '',
+  set: (val) => { filters.value.status = val }
+})
+
+const filterType = computed({
+  get: () => filters.value.type ?? '',
+  set: (val) => { filters.value.type = val }
+})
+
+const filterCategory = computed({
+  get: () => filters.value.category ?? '',
+  set: (val) => { filters.value.category = val }
+})
+
+const filterSearch = computed({
+  get: () => filters.value.search ?? '',
+  set: (val) => { filters.value.search = val }
+})
 
 // Recarrega ao mudar filtros
 watch(
@@ -160,10 +181,10 @@ function isEmployeeSelected(employeeId: number): boolean {
 
     <!-- Filtros -->
     <TrainingFilters
-      v-model:status="filters.status"
-      v-model:type="filters.type"
-      v-model:category="filters.category"
-      v-model:search="filters.search"
+      v-model:status="filterStatus"
+      v-model:type="filterType"
+      v-model:category="filterCategory"
+      v-model:search="filterSearch"
       :typeLabels="typeLabels"
       :statusLabels="statusLabels"
     />

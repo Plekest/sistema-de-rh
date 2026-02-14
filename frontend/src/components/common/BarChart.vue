@@ -40,7 +40,7 @@ function getBarColor(index: number, customColor?: string): string {
     'var(--color-info)',
     'var(--color-warning)',
   ]
-  return colors[index % colors.length]
+  return colors[index % colors.length] || 'var(--color-primary)'
 }
 </script>
 

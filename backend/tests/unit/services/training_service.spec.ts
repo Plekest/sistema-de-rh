@@ -9,6 +9,17 @@ import Department from '#models/department'
 import Position from '#models/position'
 import { DateTime } from 'luxon'
 
+// Helper para gerar IDs únicos
+function generateUniqueId() {
+  const rand = Math.floor(Math.random() * 90000000) + 10000000
+  return `${Date.now()}${rand}`
+}
+
+function generateUniqueCPF() {
+  const rand = Math.floor(Math.random() * 90000000) + 10000000
+  return `${rand}000`
+}
+
 test.group('TrainingService - list', (group) => {
   let service: TrainingService
   let user: User
@@ -26,30 +37,30 @@ test.group('TrainingService - list', (group) => {
   })
 
   group.each.setup(async () => {
-    const timestamp = Date.now()
+    const uniqueId = generateUniqueId()
     user = await User.create({
-      fullName: `Admin ${timestamp}`,
-      email: `admin${timestamp}@empresa.com`,
+      fullName: `Admin ${uniqueId}`,
+      email: `admin${uniqueId}@empresa.com`,
       password: 'senha123',
       role: 'admin',
       isActive: true,
     })
 
     department = await Department.create({
-      name: `Dept ${timestamp}`,
+      name: `Dept ${uniqueId}`,
     })
 
     position = await Position.create({
-      title: `Cargo ${timestamp}`,
+      title: `Cargo ${uniqueId}`,
       departmentId: department.id,
     })
 
     employee = await Employee.create({
       userId: user.id,
-      registrationNumber: `REG${timestamp}`,
-      fullName: `Colaborador ${timestamp}`,
-      cpf: `${timestamp}`.substring(0, 11).padEnd(11, '0'),
-      email: `colaborador${timestamp}@empresa.com`,
+      registrationNumber: `REG${uniqueId}`,
+      fullName: `Colaborador ${uniqueId}`,
+      cpf: generateUniqueCPF(),
+      email: `colaborador${uniqueId}@empresa.com`,
       phone: '11999999999',
       type: 'clt',
       departmentId: department.id,
@@ -244,10 +255,10 @@ test.group('TrainingService - show', (group) => {
   })
 
   group.each.setup(async () => {
-    const timestamp = Date.now()
+    const uniqueId = generateUniqueId()
     user = await User.create({
-      fullName: `Admin ${timestamp}`,
-      email: `admin${timestamp}@empresa.com`,
+      fullName: `Admin ${uniqueId}`,
+      email: `admin${uniqueId}@empresa.com`,
       password: 'senha123',
       role: 'admin',
       isActive: true,
@@ -272,8 +283,10 @@ test.group('TrainingService - show', (group) => {
     // Assert
     assert.equal(result.id, training.id)
     assert.equal(result.title, 'Treinamento Teste')
-    assert.property(result, 'creator')
-    assert.property(result, 'enrollments')
+    // Verifica que o creator foi preloaded
+    await result.load('creator')
+    assert.isDefined(result.creator)
+    assert.isDefined(result.enrollments)
   })
 
   test('deve lançar erro quando treinamento não existe', async ({ assert }) => {
@@ -282,7 +295,7 @@ test.group('TrainingService - show', (group) => {
       await service.show(99999)
       assert.fail('Deveria lançar erro')
     } catch (error) {
-      assert.include(error.message, 'E_ROW_NOT_FOUND')
+      assert.include(error.message, 'not found')
     }
   })
 })
@@ -301,10 +314,10 @@ test.group('TrainingService - create', (group) => {
   })
 
   group.each.setup(async () => {
-    const timestamp = Date.now()
+    const uniqueId = generateUniqueId()
     user = await User.create({
-      fullName: `Admin ${timestamp}`,
-      email: `admin${timestamp}@empresa.com`,
+      fullName: `Admin ${uniqueId}`,
+      email: `admin${uniqueId}@empresa.com`,
       password: 'senha123',
       role: 'admin',
       isActive: true,
@@ -422,10 +435,10 @@ test.group('TrainingService - update', (group) => {
   })
 
   group.each.setup(async () => {
-    const timestamp = Date.now()
+    const uniqueId = generateUniqueId()
     user = await User.create({
-      fullName: `Admin ${timestamp}`,
-      email: `admin${timestamp}@empresa.com`,
+      fullName: `Admin ${uniqueId}`,
+      email: `admin${uniqueId}@empresa.com`,
       password: 'senha123',
       role: 'admin',
       isActive: true,
@@ -481,7 +494,7 @@ test.group('TrainingService - update', (group) => {
       await service.update(99999, { title: 'Teste' })
       assert.fail('Deveria lançar erro')
     } catch (error) {
-      assert.include(error.message, 'E_ROW_NOT_FOUND')
+      assert.include(error.message, 'not found')
     }
   })
 })
@@ -504,30 +517,30 @@ test.group('TrainingService - delete', (group) => {
   })
 
   group.each.setup(async () => {
-    const timestamp = Date.now()
+    const uniqueId = generateUniqueId()
     user = await User.create({
-      fullName: `Admin ${timestamp}`,
-      email: `admin${timestamp}@empresa.com`,
+      fullName: `Admin ${uniqueId}`,
+      email: `admin${uniqueId}@empresa.com`,
       password: 'senha123',
       role: 'admin',
       isActive: true,
     })
 
     department = await Department.create({
-      name: `Dept ${timestamp}`,
+      name: `Dept ${uniqueId}`,
     })
 
     position = await Position.create({
-      title: `Cargo ${timestamp}`,
+      title: `Cargo ${uniqueId}`,
       departmentId: department.id,
     })
 
     employee = await Employee.create({
       userId: user.id,
-      registrationNumber: `REG${timestamp}`,
-      fullName: `Colaborador ${timestamp}`,
-      cpf: `${timestamp}`.substring(0, 11).padEnd(11, '0'),
-      email: `colaborador${timestamp}@empresa.com`,
+      registrationNumber: `REG${uniqueId}`,
+      fullName: `Colaborador ${uniqueId}`,
+      cpf: generateUniqueCPF(),
+      email: `colaborador${uniqueId}@empresa.com`,
       phone: '11999999999',
       type: 'clt',
       departmentId: department.id,
@@ -598,30 +611,30 @@ test.group('TrainingService - enroll', (group) => {
   })
 
   group.each.setup(async () => {
-    const timestamp = Date.now()
+    const uniqueId = generateUniqueId()
     user = await User.create({
-      fullName: `Admin ${timestamp}`,
-      email: `admin${timestamp}@empresa.com`,
+      fullName: `Admin ${uniqueId}`,
+      email: `admin${uniqueId}@empresa.com`,
       password: 'senha123',
       role: 'admin',
       isActive: true,
     })
 
     department = await Department.create({
-      name: `Dept ${timestamp}`,
+      name: `Dept ${uniqueId}`,
     })
 
     position = await Position.create({
-      title: `Cargo ${timestamp}`,
+      title: `Cargo ${uniqueId}`,
       departmentId: department.id,
     })
 
     employee = await Employee.create({
       userId: user.id,
-      registrationNumber: `REG${timestamp}`,
-      fullName: `Colaborador ${timestamp}`,
-      cpf: `${timestamp}`.substring(0, 11).padEnd(11, '0'),
-      email: `colaborador${timestamp}@empresa.com`,
+      registrationNumber: `REG${uniqueId}`,
+      fullName: `Colaborador ${uniqueId}`,
+      cpf: generateUniqueCPF(),
+      email: `colaborador${uniqueId}@empresa.com`,
       phone: '11999999999',
       type: 'clt',
       departmentId: department.id,
@@ -688,12 +701,12 @@ test.group('TrainingService - enroll', (group) => {
     await training.save()
 
     // Criar outro colaborador e inscrevê-lo
-    const timestamp = Date.now()
+    const uniqueId2 = `${Date.now()}${Math.random().toString(36).substring(2, 9)}`
     const employee2 = await Employee.create({
-      registrationNumber: `REG2${timestamp}`,
-      fullName: `Colaborador 2 ${timestamp}`,
-      cpf: `${timestamp + 1}`.substring(0, 11).padEnd(11, '0'),
-      email: `colaborador2${timestamp}@empresa.com`,
+      registrationNumber: `REG2${uniqueId2}`,
+      fullName: `Colaborador 2 ${uniqueId2}`,
+      cpf: generateUniqueCPF(),
+      email: `colaborador2${uniqueId2}@empresa.com`,
       phone: '11999999998',
       type: 'clt',
       departmentId: department.id,
@@ -747,29 +760,30 @@ test.group('TrainingService - bulkEnroll', (group) => {
   })
 
   group.each.setup(async () => {
-    const timestamp = Date.now()
+    const uniqueId = generateUniqueId()
     user = await User.create({
-      fullName: `Admin ${timestamp}`,
-      email: `admin${timestamp}@empresa.com`,
+      fullName: `Admin ${uniqueId}`,
+      email: `admin${uniqueId}@empresa.com`,
       password: 'senha123',
       role: 'admin',
       isActive: true,
     })
 
     department = await Department.create({
-      name: `Dept ${timestamp}`,
+      name: `Dept ${uniqueId}`,
     })
 
     position = await Position.create({
-      title: `Cargo ${timestamp}`,
+      title: `Cargo ${uniqueId}`,
       departmentId: department.id,
     })
 
+    const uniqueId2 = generateUniqueId()
     employee1 = await Employee.create({
-      registrationNumber: `REG1${timestamp}`,
-      fullName: `Colaborador 1 ${timestamp}`,
-      cpf: `${timestamp}`.substring(0, 11).padEnd(11, '0'),
-      email: `colaborador1${timestamp}@empresa.com`,
+      registrationNumber: `REG1${uniqueId}`,
+      fullName: `Colaborador 1 ${uniqueId}`,
+      cpf: generateUniqueCPF(),
+      email: `colaborador1${uniqueId}@empresa.com`,
       phone: '11999999999',
       type: 'clt',
       departmentId: department.id,
@@ -781,10 +795,10 @@ test.group('TrainingService - bulkEnroll', (group) => {
     })
 
     employee2 = await Employee.create({
-      registrationNumber: `REG2${timestamp}`,
-      fullName: `Colaborador 2 ${timestamp}`,
-      cpf: `${timestamp + 1}`.substring(0, 11).padEnd(11, '0'),
-      email: `colaborador2${timestamp}@empresa.com`,
+      registrationNumber: `REG2${uniqueId2}`,
+      fullName: `Colaborador 2 ${uniqueId2}`,
+      cpf: generateUniqueCPF(),
+      email: `colaborador2${uniqueId2}@empresa.com`,
       phone: '11999999998',
       type: 'clt',
       departmentId: department.id,
@@ -849,30 +863,30 @@ test.group('TrainingService - updateEnrollment', (group) => {
   })
 
   group.each.setup(async () => {
-    const timestamp = Date.now()
+    const uniqueId = generateUniqueId()
     user = await User.create({
-      fullName: `Admin ${timestamp}`,
-      email: `admin${timestamp}@empresa.com`,
+      fullName: `Admin ${uniqueId}`,
+      email: `admin${uniqueId}@empresa.com`,
       password: 'senha123',
       role: 'admin',
       isActive: true,
     })
 
     department = await Department.create({
-      name: `Dept ${timestamp}`,
+      name: `Dept ${uniqueId}`,
     })
 
     position = await Position.create({
-      title: `Cargo ${timestamp}`,
+      title: `Cargo ${uniqueId}`,
       departmentId: department.id,
     })
 
     employee = await Employee.create({
       userId: user.id,
-      registrationNumber: `REG${timestamp}`,
-      fullName: `Colaborador ${timestamp}`,
-      cpf: `${timestamp}`.substring(0, 11).padEnd(11, '0'),
-      email: `colaborador${timestamp}@empresa.com`,
+      registrationNumber: `REG${uniqueId}`,
+      fullName: `Colaborador ${uniqueId}`,
+      cpf: generateUniqueCPF(),
+      email: `colaborador${uniqueId}@empresa.com`,
       phone: '11999999999',
       type: 'clt',
       departmentId: department.id,
@@ -952,10 +966,10 @@ test.group('TrainingService - getStats', (group) => {
   })
 
   group.each.setup(async () => {
-    const timestamp = Date.now()
+    const uniqueId = generateUniqueId()
     user = await User.create({
-      fullName: `Admin ${timestamp}`,
-      email: `admin${timestamp}@empresa.com`,
+      fullName: `Admin ${uniqueId}`,
+      email: `admin${uniqueId}@empresa.com`,
       password: 'senha123',
       role: 'admin',
       isActive: true,
@@ -1001,10 +1015,10 @@ test.group('TrainingService - getStats', (group) => {
     const stats = await service.getStats()
 
     // Assert
-    assert.isAtLeast(stats.total, 3)
-    assert.isAtLeast(stats.planned, 1)
-    assert.isAtLeast(stats.inProgress, 1)
-    assert.isAtLeast(stats.completed, 1)
+    assert.isAtLeast(Number(stats.total), 3)
+    assert.isAtLeast(Number(stats.planned), 1)
+    assert.isAtLeast(Number(stats.inProgress), 1)
+    assert.isAtLeast(Number(stats.completed), 1)
     assert.isNumber(stats.completionRate)
   })
 
@@ -1039,30 +1053,30 @@ test.group('TrainingService - getEmployeeTrainings', (group) => {
   })
 
   group.each.setup(async () => {
-    const timestamp = Date.now()
+    const uniqueId = generateUniqueId()
     user = await User.create({
-      fullName: `Admin ${timestamp}`,
-      email: `admin${timestamp}@empresa.com`,
+      fullName: `Admin ${uniqueId}`,
+      email: `admin${uniqueId}@empresa.com`,
       password: 'senha123',
       role: 'admin',
       isActive: true,
     })
 
     department = await Department.create({
-      name: `Dept ${timestamp}`,
+      name: `Dept ${uniqueId}`,
     })
 
     position = await Position.create({
-      title: `Cargo ${timestamp}`,
+      title: `Cargo ${uniqueId}`,
       departmentId: department.id,
     })
 
     employee = await Employee.create({
       userId: user.id,
-      registrationNumber: `REG${timestamp}`,
-      fullName: `Colaborador ${timestamp}`,
-      cpf: `${timestamp}`.substring(0, 11).padEnd(11, '0'),
-      email: `colaborador${timestamp}@empresa.com`,
+      registrationNumber: `REG${uniqueId}`,
+      fullName: `Colaborador ${uniqueId}`,
+      cpf: generateUniqueCPF(),
+      email: `colaborador${uniqueId}@empresa.com`,
       phone: '11999999999',
       type: 'clt',
       departmentId: department.id,

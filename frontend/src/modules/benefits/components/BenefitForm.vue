@@ -215,9 +215,9 @@ const emit = defineEmits<{
 }
 
 .alert-error {
-  background: #fff5f5;
-  border: 1px solid #fed7d7;
-  color: var(--color-error, #c53030);
+  background: var(--color-danger-light, #fff5f5);
+  border: 1px solid var(--color-danger-lighter, #fed7d7);
+  color: var(--color-danger-dark, #c53030);
 }
 
 .form-grid {
@@ -299,7 +299,7 @@ const emit = defineEmits<{
 
 .btn-secondary:hover:not(:disabled) {
   background: var(--color-background, #f7fafc);
-  border-color: #cbd5e0;
+  border-color: var(--color-border-hover, #cbd5e0);
 }
 
 .btn-secondary:disabled {

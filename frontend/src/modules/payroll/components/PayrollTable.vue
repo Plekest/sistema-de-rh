@@ -78,7 +78,7 @@ const emit = defineEmits<{
   padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
   font-size: 0.875rem;
   color: var(--color-text, #2d3748);
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--color-border-light, #f0f0f0);
 }
 
 .data-table tbody tr:hover {
@@ -107,12 +107,12 @@ const emit = defineEmits<{
 }
 
 .btn-detail {
-  background: #ebf4ff;
+  background: var(--color-info-bg, #ebf4ff);
   color: var(--color-primary, #667eea);
 }
 
 .btn-detail:hover {
-  background: #bee3f8;
+  background: var(--color-info-lighter, #bee3f8);
 }
 
 @media (max-width: 768px) {

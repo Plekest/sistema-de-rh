@@ -95,7 +95,7 @@ export function useApiError() {
       // Erro de validacao (422) - extrai erros por campo
       if (status === 422 && data.errors) {
         return {
-          message: data.message || HTTP_ERROR_MESSAGES[422],
+          message: data.message || HTTP_ERROR_MESSAGES[422] || 'Erro de validação',
           fieldErrors: data.errors,
           statusCode: 422,
           isNetworkError: false,
@@ -187,7 +187,7 @@ export function useApiError() {
    */
   function getFieldError(field: string): string {
     const errors = fieldErrors.value[field]
-    return errors && errors.length > 0 ? errors[0] : ''
+    return errors && errors.length > 0 ? (errors[0] ?? '') : ''
   }
 
   /**

@@ -51,8 +51,8 @@ function availableSlots(training: Training): string {
       <div class="card-title-row">
         <h3 class="card-title">{{ training.title }}</h3>
         <div class="card-badges">
-          <span class="badge badge-type">{{ typeLabels[training.type] }}</span>
-          <StatusBadge :status="statusLabels[training.status]" />
+          <span class="badge badge-type">{{ typeLabels[training.type] ?? '' }}</span>
+          <StatusBadge :status="statusLabels[training.status] ?? ''" />
           <span v-if="training.isMandatory" class="badge badge-mandatory">Obrigatorio</span>
         </div>
       </div>

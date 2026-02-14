@@ -6,6 +6,9 @@ import PayrollTable from '../components/PayrollTable.vue'
 import PayrollProcessForm from '../components/PayrollProcessForm.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
 
 const {
   // Estado
@@ -106,7 +109,7 @@ onMounted(() => {
         Periodos
       </button>
       <button
-        v-if="$authStore?.employeeId"
+        v-if="authStore?.employeeId"
         class="tab"
         :class="{ 'tab-active': activeTab === 'mySlips' }"
         @click="activeTab = 'mySlips'; loadMyPaySlips()"
@@ -491,7 +494,7 @@ onMounted(() => {
   padding: 0.375rem 0.75rem;
   background: transparent;
   color: var(--color-primary, #667eea);
-  border: 1px solid #bee3f8;
+  border: 1px solid var(--color-info-lighter, #bee3f8);
   border-radius: 5px;
   font-size: 0.813rem;
   font-weight: 500;
@@ -500,7 +503,7 @@ onMounted(() => {
 }
 
 .btn-back:hover {
-  background: #ebf8ff;
+  background: var(--color-info-bg, #ebf8ff);
 }
 
 .tabs {
@@ -568,7 +571,7 @@ onMounted(() => {
 
 .btn-secondary:hover:not(:disabled) {
   background: var(--color-background, #f7fafc);
-  border-color: #cbd5e0;
+  border-color: var(--color-border-hover, #cbd5e0);
 }
 
 .btn-close {
@@ -600,21 +603,21 @@ onMounted(() => {
 }
 
 .btn-detail {
-  background: #ebf4ff;
+  background: var(--color-info-bg, #ebf4ff);
   color: var(--color-primary, #667eea);
 }
 
 .btn-detail:hover {
-  background: #bee3f8;
+  background: var(--color-info-lighter, #bee3f8);
 }
 
 .btn-approve {
-  background: #c6f6d5;
-  color: #276749;
+  background: var(--color-success-bg, #c6f6d5);
+  color: var(--color-success-darker, #276749);
 }
 
 .btn-approve:hover {
-  background: #9ae6b4;
+  background: var(--color-success-lighter, #9ae6b4);
 }
 
 .btn-cancel {
@@ -623,7 +626,7 @@ onMounted(() => {
 }
 
 .btn-cancel:hover {
-  background: #cbd5e0;
+  background: var(--color-border-hover, #cbd5e0);
 }
 
 .alert {
@@ -634,15 +637,15 @@ onMounted(() => {
 }
 
 .alert-success {
-  background: #c6f6d5;
-  border: 1px solid #9ae6b4;
-  color: #276749;
+  background: var(--color-success-lighter, #c6f6d5);
+  border: 1px solid var(--color-success-bg, #9ae6b4);
+  color: var(--color-success-darker, #276749);
 }
 
 .alert-error {
-  background: #fff5f5;
-  border: 1px solid #fed7d7;
-  color: var(--color-error, #c53030);
+  background: var(--color-danger-light, #fff5f5);
+  border: 1px solid var(--color-danger-lighter, #fed7d7);
+  color: var(--color-danger-dark, #c53030);
 }
 
 .filter-action-row {
@@ -748,7 +751,7 @@ onMounted(() => {
   padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
   font-size: 0.875rem;
   color: var(--color-text, #2d3748);
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--color-border-light, #f0f0f0);
 }
 
 .data-table tbody tr:hover {
@@ -772,10 +775,10 @@ onMounted(() => {
   white-space: nowrap;
 }
 
-.badge-open { background: #fef3c7; color: #92400e; }
-.badge-calculating { background: #dbeafe; color: #1e40af; }
-.badge-closed { background: #d1fae5; color: #065f46; }
-.badge-active { background: #d1fae5; color: #065f46; }
+.badge-open { background: var(--color-warning-lighter, #fef3c7); color: var(--color-warning-darker, #92400e); }
+.badge-calculating { background: var(--color-info-bg, #dbeafe); color: var(--color-info-dark, #1e40af); }
+.badge-closed { background: var(--color-success-bg, #d1fae5); color: var(--color-success-darker, #065f46); }
+.badge-active { background: var(--color-success-bg, #d1fae5); color: var(--color-success-darker, #065f46); }
 .badge-inactive { background: var(--color-border, #e2e8f0); color: var(--color-text-secondary, #4a5568); }
 
 .modal-overlay {
@@ -849,7 +852,7 @@ onMounted(() => {
 
 .summary-highlight {
   grid-column: 1 / -1;
-  background: #ebf8ff;
+  background: var(--color-info-bg, #ebf8ff);
 }
 
 .summary-label {
@@ -874,7 +877,7 @@ onMounted(() => {
   gap: var(--spacing-4, 1rem);
   margin-bottom: var(--spacing-4, 1rem);
   padding: var(--spacing-3, 0.75rem);
-  background: #fffbeb;
+  background: var(--color-warning-light, #fffbeb);
   border-radius: 6px;
 }
 
@@ -887,14 +890,14 @@ onMounted(() => {
 .tax-label {
   font-size: 0.688rem;
   font-weight: 600;
-  color: #92400e;
+  color: var(--color-warning-darker, #92400e);
   text-transform: uppercase;
 }
 
 .tax-value {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #78350f;
+  color: var(--color-warning-darker, #78350f);
 }
 
 .slip-entries {
@@ -920,7 +923,7 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 0.375rem 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--color-border-light, #f0f0f0);
 }
 
 .entry-desc {

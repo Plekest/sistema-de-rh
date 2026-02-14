@@ -116,7 +116,7 @@ const emit = defineEmits<{
 .benefit-type-tag {
   display: inline-block;
   padding: 0.188rem var(--spacing-2, 0.5rem);
-  background: #ebf4ff;
+  background: var(--color-info-bg, #ebf4ff);
   color: var(--color-primary, #667eea);
   border-radius: 4px;
   font-size: 0.688rem;
@@ -150,7 +150,7 @@ const emit = defineEmits<{
 
 .expand-indicator {
   font-size: 1.25rem;
-  color: #a0aec0;
+  color: var(--color-text-placeholder, #a0aec0);
   font-weight: 300;
   width: 24px;
   text-align: center;
@@ -255,12 +255,12 @@ const emit = defineEmits<{
 }
 
 .btn-approve {
-  background: #c6f6d5;
-  color: #276749;
+  background: var(--color-success-bg, #c6f6d5);
+  color: var(--color-success-darker, #276749);
 }
 
 .btn-approve:hover {
-  background: #9ae6b4;
+  background: var(--color-success-lighter, #9ae6b4);
 }
 
 .btn-cancel {
@@ -269,12 +269,12 @@ const emit = defineEmits<{
 }
 
 .btn-cancel:hover {
-  background: #cbd5e0;
+  background: var(--color-border-hover, #cbd5e0);
 }
 
 .plans-empty {
   font-size: 0.813rem;
-  color: #a0aec0;
+  color: var(--color-text-placeholder, #a0aec0);
   text-align: center;
   padding: var(--spacing-3, 0.75rem);
 }
@@ -282,7 +282,7 @@ const emit = defineEmits<{
 .benefit-admin-actions {
   margin-top: var(--spacing-3, 0.75rem);
   padding-top: var(--spacing-3, 0.75rem);
-  border-top: 1px solid #edf2f7;
+  border-top: 1px solid var(--color-bg-muted, #edf2f7);
   display: flex;
   justify-content: flex-end;
 }

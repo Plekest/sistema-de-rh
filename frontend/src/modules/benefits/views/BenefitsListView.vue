@@ -6,6 +6,9 @@ import BenefitsTable from '../components/BenefitsTable.vue'
 import BenefitForm from '../components/BenefitForm.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { ENROLLMENT_STATUS_LABELS, RELATIONSHIP_LABELS } from '../types'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
 
 const {
   // Estado
@@ -102,7 +105,7 @@ onMounted(() => {
         Catalogo de Beneficios
       </button>
       <button
-        v-if="$authStore?.employeeId"
+        v-if="authStore?.employeeId"
         class="tab"
         :class="{ 'tab-active': activeTab === 'myBenefits' }"
         @click="activeTab = 'myBenefits'; loadEmployeeBenefits()"

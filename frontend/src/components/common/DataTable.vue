@@ -220,9 +220,9 @@ function getCellValue(row: Record<string, unknown>, key: string): unknown {
 
         <div class="pagination-pages">
           <!-- Primeira pagina + ellipsis -->
-          <template v-if="pageNumbers.length > 0 && pageNumbers[0] > 1">
+          <template v-if="pageNumbers.length > 0 && (pageNumbers[0] ?? 0) > 1">
             <button class="pagination-page" @click="goToPage(1)">1</button>
-            <span v-if="pageNumbers[0] > 2" class="pagination-ellipsis">...</span>
+            <span v-if="(pageNumbers[0] ?? 0) > 2" class="pagination-ellipsis">...</span>
           </template>
 
           <!-- Paginas visíveis -->
@@ -238,8 +238,8 @@ function getCellValue(row: Record<string, unknown>, key: string): unknown {
           </button>
 
           <!-- Ultima pagina + ellipsis -->
-          <template v-if="pageNumbers.length > 0 && pageNumbers[pageNumbers.length - 1] < totalPages">
-            <span v-if="pageNumbers[pageNumbers.length - 1] < totalPages - 1" class="pagination-ellipsis">...</span>
+          <template v-if="pageNumbers.length > 0 && (pageNumbers[pageNumbers.length - 1] ?? 0) < totalPages">
+            <span v-if="(pageNumbers[pageNumbers.length - 1] ?? 0) < totalPages - 1" class="pagination-ellipsis">...</span>
             <button class="pagination-page" @click="goToPage(totalPages)">{{ totalPages }}</button>
           </template>
         </div>

@@ -70,7 +70,7 @@ export function usePayroll() {
   const componentTypeLabels = COMPONENT_TYPE_LABELS
   const entryCodeLabels = ENTRY_CODE_LABELS
 
-  const monthOptions = Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: MONTH_LABELS[i + 1] }))
+  const monthOptions = Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: MONTH_LABELS[i + 1] ?? '' }))
   const currentYear = new Date().getFullYear()
   const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i)
 
