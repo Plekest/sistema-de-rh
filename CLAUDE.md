@@ -498,6 +498,7 @@ npm install                      # Instala dependencias de todos os workspaces
 
 # --- Backend ---
 cd backend
+node ace generate:key            # Gerar APP_KEY (obrigatorio antes do primeiro uso)
 node ace serve --watch           # Iniciar servidor de desenvolvimento
 node ace make:controller Name    # Gerar controller
 node ace make:model Name         # Gerar model

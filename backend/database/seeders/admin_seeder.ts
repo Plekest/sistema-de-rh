@@ -24,7 +24,7 @@ export default class extends BaseSeeder {
       {
         fullName: 'Administrador',
         email: 'admin@sistema-rh.com',
-        password: 'admin123456',
+        password: 'Admin@123',
         role: 'admin',
         isActive: true,
       }
@@ -1930,7 +1930,7 @@ export default class extends BaseSeeder {
     console.log('  ' + '-'.repeat(96))
 
     const credentials = [
-      { name: 'Administrador', email: 'admin@sistema-rh.com', password: 'admin123456', role: 'admin' },
+      { name: 'Administrador', email: 'admin@sistema-rh.com', password: 'Admin@123', role: 'admin' },
       { name: 'Maria Oliveira', email: 'gerente@sistema-rh.com', password: 'gerente123456', role: 'manager' },
       { name: 'Joao Silva', email: 'joao.silva@sistema-rh.com', password: 'employee123456', role: 'employee' },
       { name: 'Ana Santos', email: 'ana.santos@sistema-rh.com', password: 'employee123456', role: 'employee' },

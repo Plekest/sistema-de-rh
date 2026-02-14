@@ -68,53 +68,68 @@ defineEmits<{
 .empty-state {
   text-align: center;
   padding: 3rem 1.5rem;
-  background: #fff;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  border: var(--border-width) solid var(--color-border);
+  transition: background-color var(--transition-slow), border-color var(--transition-slow);
 }
 
 .empty-state-icon {
   margin-bottom: 1rem;
 }
 
+.empty-state-icon svg {
+  transition: stroke var(--transition-slow);
+}
+
+[data-theme="dark"] .empty-state-icon svg rect {
+  stroke: var(--color-border-hover);
+}
+
+[data-theme="dark"] .empty-state-icon svg line {
+  stroke: var(--color-border);
+}
+
 .empty-state-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #4a5568;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-tertiary);
   margin: 0 0 0.5rem;
+  transition: color var(--transition-slow);
 }
 
 .empty-state-description {
-  font-size: 0.875rem;
-  color: var(--color-text-muted, #718096);
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
   margin: 0 0 1.25rem;
   max-width: 400px;
   margin-left: auto;
   margin-right: auto;
-  line-height: 1.5;
+  line-height: var(--line-height-normal);
+  transition: color var(--transition-slow);
 }
 
 .empty-state-action {
   display: inline-flex;
   align-items: center;
-  padding: 0.625rem 1.25rem;
+  padding: var(--btn-padding-y) var(--btn-padding-x);
   border: none;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 600;
+  border-radius: var(--btn-border-radius);
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
   cursor: pointer;
-  transition: all 0.15s ease;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  transition: all var(--transition-fast);
+  background: var(--color-primary-gradient);
+  color: #ffffff;
 }
 
 .empty-state-action:hover {
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+  box-shadow: var(--shadow-primary);
   transform: translateY(-1px);
 }
 
 .empty-state-action:focus-visible {
-  outline: 2px solid #667eea;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 </style>

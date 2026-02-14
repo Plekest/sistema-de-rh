@@ -36,7 +36,7 @@ export default class extends BaseSchema {
 
   async down() {
     // Remove permissoes de training
-    await this.db.table(this.tableName).where('module', 'training').delete()
+    await this.db.rawQuery("DELETE FROM role_permissions WHERE module = 'training'")
 
     // Restaura constraint sem training
     await this.db.rawQuery(`

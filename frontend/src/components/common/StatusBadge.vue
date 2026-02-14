@@ -101,36 +101,37 @@ function resolvedVariant(): string {
 <style scoped>
 .status-badge {
   display: inline-block;
-  padding: 0.125rem 0.5rem;
-  border-radius: 10px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  line-height: 1.5;
+  padding: var(--badge-padding-y) var(--badge-padding-x);
+  border-radius: var(--badge-border-radius);
+  font-size: var(--badge-font-size);
+  font-weight: var(--badge-font-weight);
+  line-height: var(--line-height-normal);
   white-space: nowrap;
+  transition: background-color var(--transition-slow), color var(--transition-slow);
 }
 
 .status-badge--success {
-  background-color: #f0fff4;
-  color: #276749;
+  background-color: var(--color-success-light);
+  color: var(--color-success-dark);
 }
 
 .status-badge--warning {
-  background-color: #fffff0;
-  color: #975a16;
+  background-color: var(--color-warning-light);
+  color: var(--color-warning-darker);
 }
 
 .status-badge--danger {
-  background-color: #fff5f5;
-  color: #c53030;
+  background-color: var(--color-danger-light);
+  color: var(--color-danger-dark);
 }
 
 .status-badge--info {
-  background-color: #ebf4ff;
-  color: #667eea;
+  background-color: var(--color-info-light);
+  color: var(--color-primary);
 }
 
 .status-badge--neutral {
-  background-color: #f7fafc;
-  color: #718096;
+  background-color: var(--color-bg-muted);
+  color: var(--color-text-muted);
 }
 </style>

@@ -63,8 +63,8 @@ withDefaults(defineProps<Props>(), {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  border: 3px solid #e2e8f0;
-  border-top-color: #667eea;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
   animation: spin 0.7s linear infinite;
 }
 
@@ -78,8 +78,8 @@ withDefaults(defineProps<Props>(), {
 
 /* Texto */
 .loading-text {
-  color: #718096;
-  font-weight: 500;
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
 }
 
 .loading-text--sm {

@@ -37,16 +37,38 @@ body {
 
 ::-webkit-scrollbar-track {
   background: var(--color-bg-muted, #edf2f7);
+  transition: background-color var(--transition-slow);
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--color-text-disabled, #cbd5e0);
   border-radius: var(--radius-xs, 4px);
-  transition: background 0.2s ease;
+  transition: background-color var(--transition-base);
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-muted, #718096);
+}
+
+/* Selecao de texto */
+::selection {
+  background-color: rgba(102, 126, 234, 0.2);
+  color: var(--color-text-primary);
+}
+
+::-moz-selection {
+  background-color: rgba(102, 126, 234, 0.2);
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] ::selection {
+  background-color: rgba(102, 126, 234, 0.3);
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] ::-moz-selection {
+  background-color: rgba(102, 126, 234, 0.3);
+  color: var(--color-text-primary);
 }
 
 /* Acessibilidade: Focus ring global */
