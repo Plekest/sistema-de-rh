@@ -266,7 +266,7 @@ function updateField(field: keyof CreateTrainingData, value: any) {
 
 .btn-primary {
   background: var(--color-primary-gradient);
-  color: #fff;
+  color: var(--color-bg-card);
 }
 
 .btn-primary:hover:not(:disabled) {

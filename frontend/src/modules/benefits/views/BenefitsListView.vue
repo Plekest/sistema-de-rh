@@ -384,7 +384,7 @@ onMounted(() => {
 .btn-primary {
   padding: 0.625rem 1.25rem;
   background: linear-gradient(135deg, var(--color-primary, #667eea) 0%, #764ba2 100%);
-  color: var(--color-surface, #fff);
+  color: #fff;
   border: none;
   border-radius: 6px;
   font-size: 0.875rem;
@@ -405,7 +405,7 @@ onMounted(() => {
 
 .btn-secondary {
   padding: 0.625rem 1.25rem;
-  background: var(--color-surface, #fff);
+  background: var(--color-bg-card);
   color: var(--color-text-secondary, #4a5568);
   border: 1px solid var(--color-border, #e2e8f0);
   border-radius: 6px;
@@ -417,7 +417,7 @@ onMounted(() => {
 
 .btn-secondary:hover:not(:disabled) {
   background: var(--color-background, #f7fafc);
-  border-color: #cbd5e0;
+  border-color: var(--color-border-hover);
 }
 
 .btn-secondary:disabled {
@@ -454,12 +454,12 @@ onMounted(() => {
 }
 
 .btn-approve {
-  background: #c6f6d5;
-  color: #276749;
+  background: var(--color-success-lighter);
+  color: var(--color-success-dark);
 }
 
 .btn-approve:hover {
-  background: #9ae6b4;
+  background: var(--color-success);
 }
 
 .btn-cancel {
@@ -468,7 +468,7 @@ onMounted(() => {
 }
 
 .btn-cancel:hover {
-  background: #cbd5e0;
+  background: var(--color-border-hover);
 }
 
 .btn-tiny {
@@ -484,19 +484,19 @@ onMounted(() => {
 }
 
 .alert-success {
-  background: #c6f6d5;
-  border: 1px solid #9ae6b4;
-  color: #276749;
+  background: var(--color-success-lighter);
+  border: 1px solid var(--color-success);
+  color: var(--color-success-dark);
 }
 
 .alert-error {
-  background: #fff5f5;
-  border: 1px solid #fed7d7;
-  color: var(--color-error, #c53030);
+  background: var(--color-danger-light);
+  border: 1px solid var(--color-danger-lighter);
+  color: var(--color-danger-dark);
 }
 
 .form-card {
-  background: var(--color-surface, #fff);
+  background: var(--color-bg-card);
   border: 1px solid var(--color-border, #e2e8f0);
   border-radius: 8px;
   padding: var(--spacing-6, 1.5rem);
@@ -547,7 +547,7 @@ onMounted(() => {
   border-radius: 5px;
   font-size: 0.875rem;
   color: var(--color-text, #2d3748);
-  background: var(--color-surface, #fff);
+  background: var(--color-bg-card);
   outline: none;
   transition: border-color 0.2s;
 }
@@ -578,7 +578,7 @@ onMounted(() => {
 }
 
 .enrollment-card {
-  background: var(--color-surface, #fff);
+  background: var(--color-bg-card);
   border: 1px solid var(--color-border, #e2e8f0);
   border-radius: 8px;
   padding: var(--spacing-5, 1.25rem);
@@ -601,8 +601,8 @@ onMounted(() => {
 .benefit-type-tag {
   display: inline-block;
   padding: 0.188rem var(--spacing-2, 0.5rem);
-  background: #ebf4ff;
-  color: var(--color-primary, #667eea);
+  background: var(--color-info-light);
+  color: var(--color-primary);
   border-radius: 4px;
   font-size: 0.688rem;
   font-weight: 600;
@@ -647,7 +647,7 @@ onMounted(() => {
 .dependents-section {
   margin-top: var(--spacing-3, 0.75rem);
   padding-top: var(--spacing-3, 0.75rem);
-  border-top: 1px solid #edf2f7;
+  border-top: 1px solid var(--color-border-light);
 }
 
 .dependents-title {
@@ -678,7 +678,7 @@ onMounted(() => {
 }
 
 .dependent-birth {
-  color: #a0aec0;
+  color: var(--color-text-placeholder);
 }
 
 .enrollment-actions {
@@ -697,8 +697,8 @@ onMounted(() => {
 }
 
 .badge-active {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-success-bg);
+  color: var(--color-success-dark);
 }
 
 .badge-cancelled {
@@ -707,8 +707,8 @@ onMounted(() => {
 }
 
 .badge-suspended {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--color-warning-lighter);
+  color: var(--color-warning-darker);
 }
 
 .loading-state {
@@ -723,7 +723,7 @@ onMounted(() => {
   padding: var(--spacing-12, 3rem) var(--spacing-4, 1rem);
   color: #a0aec0;
   font-size: 0.875rem;
-  background: var(--color-surface, #fff);
+  background: var(--color-bg-card);
   border-radius: 8px;
   border: 1px solid var(--color-border, #e2e8f0);
 }
@@ -741,7 +741,7 @@ onMounted(() => {
 
 .empty-description {
   font-size: 0.875rem;
-  color: #a0aec0;
+  color: var(--color-text-placeholder);
   margin: 0 !important;
 }
 

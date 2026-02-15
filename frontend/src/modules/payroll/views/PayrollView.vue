@@ -538,7 +538,7 @@ onMounted(() => {
 .btn-primary {
   padding: 0.625rem 1.25rem;
   background: linear-gradient(135deg, var(--color-primary, #667eea) 0%, #764ba2 100%);
-  color: var(--color-surface, #fff);
+  color: #fff;
   border: none;
   border-radius: 6px;
   font-size: 0.875rem;
@@ -559,7 +559,7 @@ onMounted(() => {
 
 .btn-secondary {
   padding: 0.625rem 1.25rem;
-  background: var(--color-surface, #fff);
+  background: var(--color-bg-card);
   color: var(--color-text-secondary, #4a5568);
   border: 1px solid var(--color-border, #e2e8f0);
   border-radius: 6px;
@@ -655,7 +655,7 @@ onMounted(() => {
 }
 
 .form-card {
-  background: var(--color-surface, #fff);
+  background: var(--color-bg-card);
   border: 1px solid var(--color-border, #e2e8f0);
   border-radius: 8px;
   padding: var(--spacing-6, 1.5rem);
@@ -705,7 +705,7 @@ onMounted(() => {
   border-radius: 5px;
   font-size: 0.875rem;
   color: var(--color-text, #2d3748);
-  background: var(--color-surface, #fff);
+  background: var(--color-bg-card);
   outline: none;
   transition: border-color 0.2s;
 }
@@ -724,7 +724,7 @@ onMounted(() => {
 }
 
 .table-container {
-  background: var(--color-surface, #fff);
+  background: var(--color-bg-card);
   border-radius: 8px;
   border: 1px solid var(--color-border, #e2e8f0);
   overflow-x: auto;
@@ -796,7 +796,7 @@ onMounted(() => {
 }
 
 .modal-card {
-  background: var(--color-surface, #fff);
+  background: var(--color-bg-card);
   border-radius: 10px;
   padding: var(--spacing-6, 1.5rem);
   width: 100%;

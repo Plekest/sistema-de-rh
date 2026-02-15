@@ -236,7 +236,7 @@ function availableSlots(training: Training): string {
 
 .btn-primary {
   background: var(--color-primary-gradient);
-  color: #fff;
+  color: var(--color-bg-card);
 }
 
 .btn-primary:hover {
@@ -262,7 +262,7 @@ function availableSlots(training: Training): string {
 
 .btn-danger:hover {
   background: var(--color-danger);
-  color: #fff;
+  color: var(--color-bg-card);
 }
 
 @media (max-width: 768px) {

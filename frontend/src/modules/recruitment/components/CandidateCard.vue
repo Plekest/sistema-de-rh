@@ -77,10 +77,11 @@ const emit = defineEmits<{
 
 <style scoped>
 .candidate-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 1rem 1.25rem;
+  transition: background-color var(--transition-slow), border-color var(--transition-slow);
 }
 
 .candidate-header {
@@ -99,14 +100,14 @@ const emit = defineEmits<{
 .candidate-name {
   font-size: 0.938rem;
   font-weight: 600;
-  color: #1a202c;
+  color: var(--color-text-primary);
   margin: 0;
 }
 
 .candidate-meta,
 .candidate-job {
   font-size: 0.813rem;
-  color: #718096;
+  color: var(--color-text-muted);
 }
 
 .candidate-status-info {
@@ -118,7 +119,7 @@ const emit = defineEmits<{
 
 .candidate-stage {
   font-size: 0.75rem;
-  color: #718096;
+  color: var(--color-text-muted);
 }
 
 .badge {
@@ -153,21 +154,21 @@ const emit = defineEmits<{
 }
 
 .btn-approve {
-  background: #c6f6d5;
-  color: #276749;
+  background: var(--color-success-lighter);
+  color: var(--color-success-dark);
 }
 
 .btn-approve:hover:not(:disabled) {
-  background: #9ae6b4;
+  background: var(--color-success);
 }
 
 .btn-cancel {
-  background: #e2e8f0;
-  color: #4a5568;
+  background: var(--color-bg-muted);
+  color: var(--color-text-tertiary);
 }
 
 .btn-cancel:hover:not(:disabled) {
-  background: #cbd5e0;
+  background: var(--color-border-hover);
 }
 
 @media (max-width: 768px) {

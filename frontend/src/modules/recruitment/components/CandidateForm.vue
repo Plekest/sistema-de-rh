@@ -146,11 +146,12 @@ function updateField(field: keyof CreateCandidateData, value: any) {
 
 <style scoped>
 .form-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  transition: background-color var(--transition-slow), border-color var(--transition-slow);
 }
 
 .form-header {
@@ -163,15 +164,15 @@ function updateField(field: keyof CreateCandidateData, value: any) {
 .form-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #1a202c;
+  color: var(--color-text-primary);
   margin: 0;
 }
 
 .btn-close {
   padding: 0.375rem 0.875rem;
   background: transparent;
-  color: #718096;
-  border: 1px solid #e2e8f0;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
   border-radius: 5px;
   font-size: 0.813rem;
   font-weight: 500;
@@ -180,8 +181,8 @@ function updateField(field: keyof CreateCandidateData, value: any) {
 }
 
 .btn-close:hover {
-  background: #f7fafc;
-  color: #4a5568;
+  background: var(--color-bg-hover);
+  color: var(--color-text-tertiary);
 }
 
 .alert {
@@ -192,9 +193,9 @@ function updateField(field: keyof CreateCandidateData, value: any) {
 }
 
 .alert-error {
-  background: #fff5f5;
+  background: var(--color-danger-light);
   border: 1px solid #fed7d7;
-  color: #c53030;
+  color: var(--color-danger-dark);
 }
 
 .form-grid {
@@ -216,26 +217,26 @@ function updateField(field: keyof CreateCandidateData, value: any) {
 .form-group label {
   font-size: 0.813rem;
   font-weight: 600;
-  color: #4a5568;
+  color: var(--color-text-tertiary);
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   padding: 0.5rem 0.75rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 5px;
   font-size: 0.875rem;
-  color: #2d3748;
-  background: #fff;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-input);
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color var(--transition-slow), color var(--transition-slow);
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-  border-color: #667eea;
+  border-color: var(--color-border-focus);
 }
 
 .form-group textarea {
@@ -275,9 +276,9 @@ function updateField(field: keyof CreateCandidateData, value: any) {
 
 .btn-secondary {
   padding: 0.625rem 1.25rem;
-  background: #fff;
-  color: #4a5568;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-card);
+  color: var(--color-text-tertiary);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 600;
@@ -286,8 +287,8 @@ function updateField(field: keyof CreateCandidateData, value: any) {
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #f7fafc;
-  border-color: #cbd5e0;
+  background: var(--color-bg-hover);
+  border-color: var(--color-border-hover);
 }
 
 .btn-secondary:disabled {

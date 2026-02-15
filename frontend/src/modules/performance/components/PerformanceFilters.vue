@@ -49,10 +49,11 @@ const emit = defineEmits<{
   gap: 1rem;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
-  background: #fff;
+  background: var(--color-bg-card);
   padding: 1rem 1.25rem;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
+  transition: background-color var(--transition-slow), border-color var(--transition-slow);
 }
 
 .filter-group {
@@ -64,24 +65,24 @@ const emit = defineEmits<{
 .filter-group label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #4a5568;
+  color: var(--color-text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.025em;
 }
 
 .filter-group select {
   padding: 0.5rem 0.75rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 5px;
   font-size: 0.875rem;
-  color: #2d3748;
-  background: #fff;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-input);
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color var(--transition-slow), color var(--transition-slow);
 }
 
 .filter-group select:focus {
-  border-color: #667eea;
+  border-color: var(--color-border-focus);
 }
 
 @media (max-width: 768px) {

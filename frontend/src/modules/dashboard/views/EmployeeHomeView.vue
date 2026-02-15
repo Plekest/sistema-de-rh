@@ -653,7 +653,7 @@ onUnmounted(() => {
 
 /* Card */
 .card {
-  background: white;
+  background: var(--color-bg-card);
   border-radius: 10px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   overflow: hidden;
@@ -670,13 +670,13 @@ onUnmounted(() => {
 .card-header h3 {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #2d3748;
+  color: var(--color-text-secondary);
   margin: 0;
 }
 
 .card-link {
   font-size: 0.75rem;
-  color: #667eea;
+  color: var(--color-primary);
   background: none;
   border: none;
   cursor: pointer;
@@ -691,7 +691,7 @@ onUnmounted(() => {
 .empty-state {
   text-align: center;
   padding: 1.5rem 0;
-  color: #a0aec0;
+  color: var(--color-text-placeholder);
   font-size: 0.813rem;
 }
 

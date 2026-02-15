@@ -45,7 +45,7 @@ function handleChange(event: Event) {
   gap: 1rem;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
-  background: var(--color-surface, #fff);
+  background: var(--color-bg-card);
   padding: 1rem 1.25rem;
   border-radius: 8px;
   border: 1px solid var(--color-border, #e2e8f0);
@@ -77,7 +77,7 @@ function handleChange(event: Event) {
   border-radius: 5px;
   font-size: 0.875rem;
   color: var(--color-text, #2d3748);
-  background: var(--color-surface, #fff);
+  background: var(--color-bg-card);
   outline: none;
   transition: border-color 0.2s;
 }

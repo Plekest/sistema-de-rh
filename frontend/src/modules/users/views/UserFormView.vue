@@ -254,7 +254,7 @@ onMounted(() => {
 .page-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1a202c;
+  color: var(--color-text-primary);
   margin: 0;
 }
 
@@ -287,20 +287,22 @@ onMounted(() => {
 }
 
 .btn-secondary {
-  background-color: #edf2f7;
-  color: #4a5568;
+  background-color: var(--color-bg-muted);
+  color: var(--color-text-tertiary);
+  transition: background-color var(--transition-slow), color var(--transition-slow);
 }
 
 .btn-secondary:hover {
-  background-color: #e2e8f0;
+  background-color: var(--color-bg-hover);
 }
 
 /* Formulario */
 .form-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 1.5rem;
+  transition: background-color var(--transition-slow), border-color var(--transition-slow);
 }
 
 .form-grid {
@@ -322,29 +324,29 @@ onMounted(() => {
 .form-group label {
   font-size: 0.813rem;
   font-weight: 600;
-  color: #4a5568;
+  color: var(--color-text-tertiary);
 }
 
 .form-group input,
 .form-group select {
   padding: 0.5rem 0.75rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 5px;
   font-size: 0.875rem;
-  color: #2d3748;
-  background: #fff;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-input);
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, background-color var(--transition-slow), color var(--transition-slow);
 }
 
 .form-group input:focus,
 .form-group select:focus {
-  border-color: #667eea;
+  border-color: var(--color-border-focus);
 }
 
 .form-hint {
   font-size: 0.75rem;
-  color: #a0aec0;
+  color: var(--color-text-placeholder);
   margin-top: 0.125rem;
 }
 
@@ -377,7 +379,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #cbd5e0;
+  background-color: var(--color-border-hover);
   border-radius: 11px;
   transition: background-color 0.2s;
 }
@@ -389,13 +391,13 @@ onMounted(() => {
   width: 16px;
   left: 3px;
   bottom: 3px;
-  background-color: #fff;
+  background-color: var(--color-bg-card);
   border-radius: 50%;
   transition: transform 0.2s;
 }
 
 .toggle-input:checked + .toggle-slider {
-  background-color: #38a169;
+  background-color: var(--color-success);
 }
 
 .toggle-input:checked + .toggle-slider::before {
@@ -404,7 +406,7 @@ onMounted(() => {
 
 .toggle-label {
   font-size: 0.875rem;
-  color: #4a5568;
+  color: var(--color-text-tertiary);
   font-weight: 500;
 }
 
@@ -415,7 +417,7 @@ onMounted(() => {
   gap: 0.75rem;
   margin-top: 1.5rem;
   padding-top: 1.25rem;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--color-border);
 }
 
 /* Estados */
@@ -427,15 +429,15 @@ onMounted(() => {
 }
 
 .alert-error {
-  background: #fff5f5;
+  background: var(--color-danger-light);
   border: 1px solid #fed7d7;
-  color: #c53030;
+  color: var(--color-danger-dark);
 }
 
 .loading-state {
   text-align: center;
   padding: 3rem 1rem;
-  color: #718096;
+  color: var(--color-text-muted);
   font-size: 0.875rem;
 }
 

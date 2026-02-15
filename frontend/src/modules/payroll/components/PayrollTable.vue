@@ -51,7 +51,7 @@ const emit = defineEmits<{
 
 <style scoped>
 .table-container {
-  background: var(--color-surface, #fff);
+  background: var(--color-bg-card);
   border-radius: 8px;
   border: 1px solid var(--color-border, #e2e8f0);
   overflow-x: auto;

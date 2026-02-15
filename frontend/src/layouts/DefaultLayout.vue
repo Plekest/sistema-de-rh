@@ -337,7 +337,7 @@ function getPageTitle(): string {
 
 .sidebar-user-role {
   font-size: var(--font-size-2xs);
-  color: #6b6b80;
+  color: var(--color-text-muted);
   text-transform: capitalize;
 }
 

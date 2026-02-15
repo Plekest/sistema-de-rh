@@ -168,15 +168,15 @@ function updateField(field: keyof CreateLeaveData, value: unknown) {
 }
 
 .alert-error {
-  background: #fff5f5;
-  border: 1px solid #fed7d7;
-  color: #c53030;
+  background: var(--color-danger-light);
+  border: 1px solid var(--color-danger-lighter);
+  color: var(--color-danger-dark);
 }
 
 .btn-primary {
   padding: 0.625rem 1.25rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  color: var(--color-bg-card);
   border: none;
   border-radius: 6px;
   font-size: 0.875rem;
@@ -197,9 +197,9 @@ function updateField(field: keyof CreateLeaveData, value: unknown) {
 
 .btn-secondary {
   padding: 0.625rem 1.25rem;
-  background: #fff;
-  color: #4a5568;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-card);
+  color: var(--color-text-tertiary);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 600;
@@ -208,8 +208,8 @@ function updateField(field: keyof CreateLeaveData, value: unknown) {
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #f7fafc;
-  border-color: #cbd5e0;
+  background: var(--color-bg-hover);
+  border-color: var(--color-border-hover);
 }
 
 .btn-secondary:disabled {

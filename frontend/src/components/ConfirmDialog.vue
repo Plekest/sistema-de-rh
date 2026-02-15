@@ -91,9 +91,10 @@ function getIcon() {
 
 // Cores baseadas no variant
 function getIconColor() {
-  if (state.value.variant === 'danger') return '#e53e3e'
-  if (state.value.variant === 'warning') return '#ed8936'
-  return '#667eea'
+  const colors = getComputedStyle(document.documentElement)
+  if (state.value.variant === 'danger') return colors.getPropertyValue('--color-danger').trim()
+  if (state.value.variant === 'warning') return colors.getPropertyValue('--color-warning').trim()
+  return colors.getPropertyValue('--color-primary').trim()
 }
 </script>
 
@@ -174,7 +175,7 @@ function getIconColor() {
 
 /* Card */
 .dialog-card {
-  background: #fff;
+  background: var(--color-bg-card);
   border-radius: 12px;
   padding: 1.5rem;
   max-width: 440px;
@@ -184,6 +185,7 @@ function getIconColor() {
   flex-direction: column;
   align-items: center;
   text-align: center;
+  transition: background-color var(--transition-slow), color var(--transition-slow), border-color var(--transition-slow);
 }
 
 /* Icon */
@@ -205,14 +207,14 @@ function getIconColor() {
 .dialog-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1a202c;
+  color: var(--color-text-primary);
   margin: 0 0 0.5rem;
 }
 
 /* Message */
 .dialog-message {
   font-size: 0.938rem;
-  color: #4a5568;
+  color: var(--color-text-tertiary);
   line-height: 1.5;
   margin: 0 0 1.5rem;
 }
@@ -221,10 +223,11 @@ function getIconColor() {
 .dialog-input {
   width: 100%;
   padding: 0.625rem 0.875rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   font-size: 0.875rem;
-  color: #2d3748;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-input);
   font-family: inherit;
   resize: vertical;
   outline: none;
@@ -233,7 +236,7 @@ function getIconColor() {
 }
 
 .dialog-input:focus {
-  border-color: #667eea;
+  border-color: var(--color-border-focus);
 }
 
 /* Actions */
@@ -256,47 +259,47 @@ function getIconColor() {
 }
 
 .dialog-btn:focus-visible {
-  outline: 2px solid #667eea;
+  outline: 2px solid var(--color-border-focus);
   outline-offset: 2px;
 }
 
 .dialog-btn-cancel {
-  background: #fff;
-  color: #4a5568;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-card);
+  color: var(--color-text-tertiary);
+  border: 1px solid var(--color-border);
 }
 
 .dialog-btn-cancel:hover {
-  background: #f7fafc;
-  border-color: #cbd5e0;
+  background: var(--color-bg-hover);
+  border-color: var(--color-border-hover);
 }
 
 .dialog-btn-confirm {
-  color: #fff;
+  color: var(--color-bg-card);
 }
 
 .dialog-btn-danger {
-  background: #e53e3e;
+  background: var(--color-danger);
 }
 
 .dialog-btn-danger:hover:not(:disabled) {
-  background: #c53030;
+  background: var(--color-danger-dark);
 }
 
 .dialog-btn-warning {
-  background: #ed8936;
+  background: var(--color-warning);
 }
 
 .dialog-btn-warning:hover:not(:disabled) {
-  background: #dd6b20;
+  background: var(--color-warning-dark);
 }
 
 .dialog-btn-info {
-  background: #667eea;
+  background: var(--color-primary);
 }
 
 .dialog-btn-info:hover:not(:disabled) {
-  background: #5a67d8;
+  background: var(--color-primary-dark);
 }
 
 .dialog-btn:disabled {

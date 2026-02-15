@@ -424,7 +424,7 @@ function isEmployeeSelected(employeeId: number): boolean {
 .btn-primary {
   padding: var(--btn-padding-y) var(--btn-padding-x);
   background: var(--color-primary-gradient);
-  color: #fff;
+  color: var(--color-bg-card);
   border: none;
   border-radius: var(--btn-border-radius);
   font-size: var(--btn-font-size);

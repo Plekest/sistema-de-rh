@@ -140,30 +140,30 @@ import { computed } from 'vue'
 }
 
 .btn-approve {
-  background: #c6f6d5;
-  color: #276749;
+  background: var(--color-success-lighter);
+  color: var(--color-success-dark);
 }
 
 .btn-approve:hover {
-  background: #9ae6b4;
+  background: var(--color-success);
 }
 
 .btn-reject {
-  background: #fed7d7;
-  color: #c53030;
+  background: var(--color-danger-lighter);
+  color: var(--color-danger-dark);
 }
 
 .btn-reject:hover {
-  background: #fc8181;
+  background: var(--color-danger);
 }
 
 .btn-cancel-action {
-  background: #e2e8f0;
-  color: #4a5568;
+  background: var(--color-bg-muted);
+  color: var(--color-text-tertiary);
 }
 
 .btn-cancel-action:hover {
-  background: #cbd5e0;
+  background: var(--color-border-hover);
 }
 
 @media (max-width: 768px) {

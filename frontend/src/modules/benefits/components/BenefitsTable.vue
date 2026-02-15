@@ -87,7 +87,7 @@ const emit = defineEmits<{
 }
 
 .benefit-card {
-  background: var(--color-surface, #fff);
+  background: var(--color-bg-card);
   border: 1px solid var(--color-border, #e2e8f0);
   border-radius: 8px;
   overflow: hidden;
@@ -185,7 +185,7 @@ const emit = defineEmits<{
 .btn-small {
   padding: 0.25rem var(--spacing-3, 0.75rem);
   background: linear-gradient(135deg, var(--color-primary, #667eea) 0%, #764ba2 100%);
-  color: var(--color-surface, #fff);
+  color: #fff;
   border: none;
   border-radius: 4px;
   font-size: 0.75rem;

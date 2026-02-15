@@ -98,31 +98,32 @@ function formatDate(dateStr: string): string {
 }
 
 .balance-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 1rem 1.25rem;
-  border-left: 4px solid #a0aec0;
+  border-left: 4px solid var(--color-text-placeholder);
+  transition: background-color var(--transition-slow), color var(--transition-slow), border-color var(--transition-slow);
 }
 
 .balance-card.balance-available {
-  border-left-color: #38a169;
+  border-left-color: var(--color-success);
 }
 
 .balance-card.balance-accruing {
-  border-left-color: #667eea;
+  border-left-color: var(--color-primary);
 }
 
 .balance-card.balance-partial {
-  border-left-color: #d69e2e;
+  border-left-color: var(--color-warning-dark);
 }
 
 .balance-card.balance-used {
-  border-left-color: #718096;
+  border-left-color: var(--color-text-muted);
 }
 
 .balance-card.balance-expired {
-  border-left-color: #e53e3e;
+  border-left-color: var(--color-danger);
 }
 
 .balance-header {
@@ -135,13 +136,13 @@ function formatDate(dateStr: string): string {
 .balance-period {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #4a5568;
+  color: var(--color-text-tertiary);
 }
 
 .balance-status {
   font-size: 0.688rem;
   font-weight: 600;
-  color: #718096;
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -157,26 +158,26 @@ function formatDate(dateStr: string): string {
   display: block;
   font-size: 1.25rem;
   font-weight: 700;
-  color: #276749;
+  color: var(--color-success-dark);
   font-variant-numeric: tabular-nums;
 }
 
 .balance-stat-used {
-  color: #c53030;
+  color: var(--color-danger-dark);
 }
 
 .balance-stat-sold {
-  color: #667eea;
+  color: var(--color-primary);
 }
 
 .balance-stat-total {
-  color: #2d3748;
+  color: var(--color-text-secondary);
 }
 
 .balance-stat-label {
   display: block;
   font-size: 0.688rem;
-  color: #a0aec0;
+  color: var(--color-text-placeholder);
   margin-top: 0.125rem;
 }
 
