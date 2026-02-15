@@ -35,7 +35,7 @@ export default class DocumentService {
 
     const query = Document.query()
       .where('employeeId', employeeId)
-      .orderBy('uploadedAt', 'desc')
+      .orderBy('uploaded_at', 'desc')
 
     if (filters.type) {
       query.where('type', filters.type)

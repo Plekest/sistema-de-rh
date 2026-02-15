@@ -204,6 +204,31 @@ class RecruitmentService {
     const response = await api.get<{ data: any }>('/recruitment/dashboard')
     return response.data.data
   }
+
+  // ==================== Kanban Board ====================
+
+  /**
+   * Busca board Kanban de uma vaga
+   */
+  async getKanbanBoard(requisitionId: number): Promise<any> {
+    const response = await api.get<{ data: any }>(`/recruitment/requisitions/${requisitionId}/kanban`)
+    return response.data.data
+  }
+
+  /**
+   * Move candidato no Kanban
+   */
+  async moveKanbanCandidate(candidateId: number, toStageId: number): Promise<void> {
+    await api.patch(`/recruitment/candidates/${candidateId}/move`, { stageId: toStageId })
+  }
+
+  /**
+   * Busca estatisticas do Kanban board
+   */
+  async getKanbanStats(requisitionId: number): Promise<any> {
+    const response = await api.get<{ data: any }>(`/recruitment/requisitions/${requisitionId}/kanban/stats`)
+    return response.data.data
+  }
 }
 
 export default new RecruitmentService()

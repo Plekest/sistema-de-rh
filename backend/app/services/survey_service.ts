@@ -59,7 +59,7 @@ export default class SurveyService {
     const page = filters.page || 1
     const limit = filters.limit || 20
 
-    const query = Survey.query().preload('creator').orderBy('createdAt', 'desc')
+    const query = Survey.query().preload('creator').orderBy('created_at', 'desc')
 
     if (filters.status) {
       query.where('status', filters.status)

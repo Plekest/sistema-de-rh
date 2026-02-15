@@ -60,7 +60,7 @@ export default class EmployeeService {
     const query = Employee.query()
       .preload('department')
       .preload('position')
-      .orderBy('fullName', 'asc')
+      .orderBy('full_name', 'asc')
 
     if (filters.search) {
       const search = `%${filters.search}%`

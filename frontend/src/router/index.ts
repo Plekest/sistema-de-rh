@@ -249,6 +249,28 @@ const router = createRouter({
           component: RecruitmentView,
           meta: { module: 'recruitment' },
         },
+        {
+          path: 'recruitment/kanban',
+          name: 'recruitment-kanban',
+          component: () => import('@/modules/recruitment/views/RecruitmentKanbanView.vue'),
+          meta: { requiresAuth: true, module: 'recruitment' },
+        },
+
+        // Talent Pool
+        {
+          path: 'talent-pool',
+          name: 'talent-pool',
+          component: () => import('@/modules/talent-pool/views/TalentPoolView.vue'),
+          meta: { requiresAuth: true, module: 'recruitment' },
+        },
+
+        // Lifecycle
+        {
+          path: 'employees/:id/lifecycle',
+          name: 'employee-lifecycle',
+          component: () => import('@/modules/lifecycle/views/EmployeeLifecycleView.vue'),
+          meta: { requiresAuth: true, module: 'employees' },
+        },
 
         // Treinamentos
         {
@@ -363,6 +385,30 @@ const router = createRouter({
           name: 'audit-log',
           component: AuditLogView,
           meta: { adminOnly: true },
+        },
+
+        // Engagement Dashboard
+        {
+          path: 'engagement',
+          name: 'engagement',
+          component: () => import('@/modules/engagement/views/EngagementDashboardView.vue'),
+          meta: { requiresAuth: true, module: 'performance' },
+        },
+
+        // Turnover Dashboard
+        {
+          path: 'turnover',
+          name: 'turnover',
+          component: () => import('@/modules/turnover/views/TurnoverDashboardView.vue'),
+          meta: { requiresAuth: true, module: 'dashboard' },
+        },
+
+        // Comunicações Automatizadas
+        {
+          path: 'communications',
+          name: 'communications',
+          component: () => import('@/modules/communications/views/CommunicationsView.vue'),
+          meta: { requiresAuth: true, module: 'admin' },
         },
       ],
     },

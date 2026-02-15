@@ -49,9 +49,13 @@ const menuItems = computed(() => {
     { name: 'Folha de Pagamento', path: '/payroll', module: 'payroll' },
     { name: 'Avaliacao', path: '/performance', module: 'performance' },
     { name: 'Recrutamento', path: '/recruitment', module: 'recruitment' },
+    { name: 'Kanban', path: '/recruitment/kanban', module: 'recruitment' },
+    { name: 'Banco de Talentos', path: '/talent-pool', module: 'recruitment' },
     { name: 'Treinamentos', path: '/training', module: 'training' },
     { name: 'Calendario', path: '/calendar', module: 'calendar' },
     { name: 'Organograma', path: '/orgchart', module: 'orgchart' },
+    { name: 'Engagement', path: '/engagement', module: 'performance' },
+    { name: 'Turnover', path: '/turnover', module: 'dashboard' },
   ]
   if (!authStore.permissions) return all
   return all.filter(item => !item.module || authStore.permissions![item.module as keyof UserPermissions])
@@ -62,6 +66,7 @@ const adminMenuItems = [
   { name: 'Usuarios', path: '/users' },
   { name: 'Permissoes', path: '/admin/permissions' },
   { name: 'Audit Log', path: '/audit-log' },
+  { name: 'Comunicacoes', path: '/communications' },
 ]
 
 /**
@@ -97,7 +102,13 @@ function getPageTitle(): string {
   if (path.startsWith('/surveys')) return 'Pesquisas'
   if (path.startsWith('/payroll')) return 'Folha de Pagamento'
   if (path.startsWith('/performance')) return 'Avaliacao de Desempenho'
+  if (path.startsWith('/recruitment/kanban')) return 'Kanban de Recrutamento'
   if (path.startsWith('/recruitment')) return 'Recrutamento e Selecao'
+  if (path.startsWith('/talent-pool')) return 'Banco de Talentos'
+  if (path.includes('/lifecycle')) return 'Jornada do Colaborador'
+  if (path.startsWith('/engagement')) return 'Engagement Dashboard'
+  if (path.startsWith('/turnover')) return 'Turnover Dashboard'
+  if (path.startsWith('/communications')) return 'Comunicacoes Automatizadas'
   if (path.startsWith('/training')) return 'Treinamentos'
   if (path.startsWith('/users')) {
     if (path.includes('/new')) return 'Novo Usuario'

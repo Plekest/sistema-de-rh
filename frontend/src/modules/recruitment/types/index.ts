@@ -194,3 +194,33 @@ export const INTERVIEW_STATUS_LABELS: Record<string, string> = {
   cancelled: 'Cancelada',
   no_show: 'Nao Compareceu',
 }
+
+// ==================== Kanban Board Types ====================
+
+export interface KanbanBoard {
+  requisitionId: number
+  stages: KanbanStage[]
+}
+
+export interface KanbanStage {
+  id: number
+  name: string
+  order: number
+  candidates: KanbanCandidate[]
+}
+
+export interface KanbanCandidate {
+  id: number
+  fullName: string
+  email: string
+  currentStageId: number
+  daysInStage: number
+  rating?: number
+}
+
+export interface KanbanStats {
+  totalCandidates: number
+  byStage: { stageId: number; stageName: string; count: number }[]
+  avgDaysPerStage: { stageId: number; stageName: string; avgDays: number }[]
+  conversionRate: { from: string; to: string; rate: number }[]
+}

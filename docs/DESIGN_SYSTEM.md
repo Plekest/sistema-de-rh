@@ -1231,4 +1231,567 @@ Editor de templates com variáveis dinâmicas.
 
 ---
 
+## Novos Componentes - Fase 3 (CRM Features)
+
+### Kanban Board (Recrutamento)
+
+Sistema de quadro kanban para visualização de pipeline de candidatos.
+
+**Tokens CSS:**
+```css
+--kanban-column-width: 280px;
+--kanban-column-bg: var(--color-bg-card);              /* Light mode */
+--kanban-column-bg: var(--color-bg-subtle);            /* Dark mode */
+--kanban-column-header-bg: var(--color-bg-hover);      /* Light mode */
+--kanban-column-header-bg: rgba(255, 255, 255, 0.03);  /* Dark mode */
+--kanban-card-bg: var(--color-bg-card);
+--kanban-card-border: var(--color-border);
+--kanban-card-shadow: var(--shadow-sm);                /* Light mode */
+--kanban-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);    /* Dark mode */
+--kanban-card-hover-shadow: var(--shadow-md);          /* Light mode */
+--kanban-card-hover-shadow: 0 4px 6px rgba(0, 0, 0, 0.6); /* Dark mode */
+--kanban-badge-bg: var(--color-border);                /* Light mode */
+--kanban-badge-bg: rgba(255, 255, 255, 0.08);          /* Dark mode */
+--kanban-badge-color: var(--color-text-muted);
+```
+
+**Estrutura da Coluna:**
+```css
+.kanban-column {
+  width: var(--kanban-column-width);
+  background: var(--kanban-column-bg);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
+}
+
+.kanban-column-header {
+  background: var(--kanban-column-header-bg);
+  padding: var(--space-6) var(--space-8);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.kanban-badge {
+  background: var(--kanban-badge-bg);
+  color: var(--kanban-badge-color);
+  padding: var(--space-1) var(--space-4);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+```
+
+**Cards dentro da Coluna:**
+```css
+.kanban-card {
+  background: var(--kanban-card-bg);
+  border: var(--border-width) solid var(--kanban-card-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  box-shadow: var(--kanban-card-shadow);
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
+  cursor: grab;
+}
+
+.kanban-card:hover {
+  box-shadow: var(--kanban-card-hover-shadow);
+  transform: translateY(-2px);
+}
+
+.kanban-card:active {
+  cursor: grabbing;
+}
+```
+
+**Responsividade:**
+- Desktop: grid com múltiplas colunas
+- Tablet (768px): scroll horizontal
+- Mobile (480px): 1 coluna por vez, swipe horizontal
+
+**Acessibilidade:**
+- `aria-label` em cada coluna com nome do estágio
+- Drag & drop acessível via teclado (futuro)
+- Contadores anunciados por screen readers
+
+---
+
+### Talent Pool
+
+Sistema de banco de talentos com tags e status.
+
+**Tokens CSS:**
+```css
+--talent-tag-padding: 0.25rem 0.5rem;
+--talent-tag-border-radius: var(--radius-xs);
+--talent-tag-font-size: var(--font-size-2xs);
+--talent-status-active: #22c55e;                       /* Light mode */
+--talent-status-active: rgba(34, 197, 94, 0.9);        /* Dark mode */
+--talent-status-contacted: #3b82f6;                    /* Light mode */
+--talent-status-contacted: rgba(59, 130, 246, 0.9);    /* Dark mode */
+--talent-status-interviewing: #f59e0b;                 /* Light mode */
+--talent-status-interviewing: rgba(245, 158, 11, 0.9); /* Dark mode */
+--talent-status-hired: #8b5cf6;                        /* Light mode */
+--talent-status-hired: rgba(139, 92, 246, 0.9);        /* Dark mode */
+--talent-status-archived: #6b7280;                     /* Light mode */
+--talent-status-archived: rgba(107, 114, 128, 0.9);    /* Dark mode */
+```
+
+**Cores por Status:**
+| Status | Light Mode | Dark Mode | Uso |
+|--------|-----------|-----------|-----|
+| Active | #22c55e | rgba(34, 197, 94, 0.9) | Candidato ativo no pool |
+| Contacted | #3b82f6 | rgba(59, 130, 246, 0.9) | Já foi contatado |
+| Interviewing | #f59e0b | rgba(245, 158, 11, 0.9) | Em processo de entrevista |
+| Hired | #8b5cf6 | rgba(139, 92, 246, 0.9) | Contratado |
+| Archived | #6b7280 | rgba(107, 114, 128, 0.9) | Arquivado/inativo |
+
+**Tags de Habilidades:**
+```css
+.talent-tag {
+  display: inline-block;
+  padding: var(--talent-tag-padding);
+  border-radius: var(--talent-tag-border-radius);
+  font-size: var(--talent-tag-font-size);
+  font-weight: var(--font-weight-semibold);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+/* Dark mode */
+[data-theme="dark"] .talent-tag {
+  background: rgba(102, 126, 234, 0.15);
+}
+```
+
+**Status Badge com Dot:**
+```css
+.talent-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.talent-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+}
+
+.talent-status.active .talent-status-dot {
+  background: var(--talent-status-active);
+}
+
+.talent-status.contacted .talent-status-dot {
+  background: var(--talent-status-contacted);
+}
+
+.talent-status.interviewing .talent-status-dot {
+  background: var(--talent-status-interviewing);
+}
+
+.talent-status.hired .talent-status-dot {
+  background: var(--talent-status-hired);
+}
+
+.talent-status.archived .talent-status-dot {
+  background: var(--talent-status-archived);
+}
+```
+
+---
+
+### Engagement Score (Índice de Engajamento)
+
+Visualização de score de engajamento de colaboradores.
+
+**Tokens CSS:**
+```css
+--engagement-gauge-bg: var(--color-bg-muted);          /* Light mode */
+--engagement-gauge-bg: rgba(255, 255, 255, 0.08);      /* Dark mode */
+--engagement-gauge-fill: var(--color-primary);
+--engagement-score-high: #22c55e;                      /* Light mode */
+--engagement-score-high: rgba(34, 197, 94, 0.9);       /* Dark mode */
+--engagement-score-medium: #f59e0b;                    /* Light mode */
+--engagement-score-medium: rgba(245, 158, 11, 0.9);    /* Dark mode */
+--engagement-score-low: #ef4444;                       /* Light mode */
+--engagement-score-low: rgba(239, 68, 68, 0.9);        /* Dark mode */
+--engagement-bar-bg: var(--color-bg-muted);            /* Light mode */
+--engagement-bar-bg: rgba(255, 255, 255, 0.08);        /* Dark mode */
+--engagement-bar-height: 8px;
+```
+
+**Faixas de Score:**
+- **Alto** (>75): `--engagement-score-high` (verde)
+- **Médio** (50-75): `--engagement-score-medium` (amarelo)
+- **Baixo** (<50): `--engagement-score-low` (vermelho)
+
+**Gauge Circular:**
+```css
+.engagement-gauge {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius-full);
+  background: conic-gradient(
+    var(--engagement-gauge-fill) 0deg 270deg,
+    var(--engagement-gauge-bg) 270deg 360deg
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.engagement-gauge-inner {
+  width: 90px;
+  height: 90px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.engagement-score-value {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.engagement-score-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+```
+
+**Barra de Progresso:**
+```css
+.engagement-bar {
+  height: var(--engagement-bar-height);
+  background: var(--engagement-bar-bg);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.engagement-bar-fill {
+  height: 100%;
+  transition: width var(--transition-slow);
+  border-radius: var(--radius-full);
+}
+
+.engagement-bar-fill.high {
+  background: var(--engagement-score-high);
+}
+
+.engagement-bar-fill.medium {
+  background: var(--engagement-score-medium);
+}
+
+.engagement-bar-fill.low {
+  background: var(--engagement-score-low);
+}
+```
+
+---
+
+### Turnover Dashboard
+
+Dashboard de taxa de rotatividade (turnover).
+
+**Tokens CSS:**
+```css
+--turnover-rate-good: #22c55e;                         /* Light mode */
+--turnover-rate-good: rgba(34, 197, 94, 0.9);          /* Dark mode */
+--turnover-rate-warning: #f59e0b;                      /* Light mode */
+--turnover-rate-warning: rgba(245, 158, 11, 0.9);      /* Dark mode */
+--turnover-rate-danger: #ef4444;                       /* Light mode */
+--turnover-rate-danger: rgba(239, 68, 68, 0.9);        /* Dark mode */
+--turnover-bar-height: 32px;
+--turnover-bar-bg: var(--color-bg-muted);              /* Light mode */
+--turnover-bar-bg: rgba(255, 255, 255, 0.08);          /* Dark mode */
+```
+
+**Faixas de Taxa de Turnover:**
+- **Bom** (<3%): `--turnover-rate-good` (verde)
+- **Atenção** (3-5%): `--turnover-rate-warning` (amarelo)
+- **Crítico** (>5%): `--turnover-rate-danger` (vermelho)
+
+**Card de Taxa:**
+```css
+.turnover-card {
+  background: var(--color-bg-card);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-10);
+  text-align: center;
+}
+
+.turnover-rate {
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-extrabold);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--space-4);
+}
+
+.turnover-rate.good {
+  color: var(--turnover-rate-good);
+}
+
+.turnover-rate.warning {
+  color: var(--turnover-rate-warning);
+}
+
+.turnover-rate.danger {
+  color: var(--turnover-rate-danger);
+}
+
+.turnover-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+```
+
+**Gráfico de Barras de Distribuição:**
+```css
+.turnover-bar {
+  height: var(--turnover-bar-height);
+  background: var(--turnover-bar-bg);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  margin-bottom: var(--space-6);
+}
+
+.turnover-bar-segment {
+  height: 100%;
+  transition: width var(--transition-slow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-bg-card);
+}
+
+.turnover-bar-segment.voluntary {
+  background: var(--turnover-rate-danger);
+}
+
+.turnover-bar-segment.involuntary {
+  background: var(--turnover-rate-warning);
+}
+```
+
+---
+
+### Employee Lifecycle Timeline
+
+Timeline visual do ciclo de vida do colaborador.
+
+**Tokens CSS:**
+```css
+--timeline-line-color: var(--color-border);            /* Light mode */
+--timeline-line-color: rgba(255, 255, 255, 0.12);      /* Dark mode */
+--timeline-line-width: 2px;
+--timeline-dot-size: 12px;
+--timeline-card-bg: var(--color-bg-card);
+--timeline-type-history: #3b82f6;                      /* Light mode */
+--timeline-type-history: rgba(59, 130, 246, 0.9);      /* Dark mode */
+--timeline-type-leave: #22c55e;                        /* Light mode */
+--timeline-type-leave: rgba(34, 197, 94, 0.9);         /* Dark mode */
+--timeline-type-training: #8b5cf6;                     /* Light mode */
+--timeline-type-training: rgba(139, 92, 246, 0.9);     /* Dark mode */
+--timeline-type-evaluation: #f59e0b;                   /* Light mode */
+--timeline-type-evaluation: rgba(245, 158, 11, 0.9);   /* Dark mode */
+--timeline-type-onboarding: #06b6d4;                   /* Light mode */
+--timeline-type-onboarding: rgba(6, 182, 212, 0.9);    /* Dark mode */
+--timeline-type-turnover: #ef4444;                     /* Light mode */
+--timeline-type-turnover: rgba(239, 68, 68, 0.9);      /* Dark mode */
+```
+
+**Cores por Tipo de Evento:**
+| Tipo | Light Mode | Dark Mode | Uso |
+|------|-----------|-----------|-----|
+| History | #3b82f6 | rgba(59, 130, 246, 0.9) | Histórico geral |
+| Leave | #22c55e | rgba(34, 197, 94, 0.9) | Férias e licenças |
+| Training | #8b5cf6 | rgba(139, 92, 246, 0.9) | Treinamentos |
+| Evaluation | #f59e0b | rgba(245, 158, 11, 0.9) | Avaliações |
+| Onboarding | #06b6d4 | rgba(6, 182, 212, 0.9) | Onboarding |
+| Turnover | #ef4444 | rgba(239, 68, 68, 0.9) | Desligamento |
+
+**Estrutura da Timeline:**
+```css
+.timeline {
+  position: relative;
+  padding-left: var(--space-16);
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--timeline-line-width);
+  background: var(--timeline-line-color);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: var(--space-10);
+}
+
+.timeline-dot {
+  position: absolute;
+  left: calc(-1 * var(--space-16) - var(--timeline-dot-size) / 2 + var(--timeline-line-width) / 2);
+  top: var(--space-4);
+  width: var(--timeline-dot-size);
+  height: var(--timeline-dot-size);
+  border-radius: var(--radius-full);
+  border: var(--border-width-thick) solid var(--color-bg-card);
+}
+
+.timeline-dot.history {
+  background: var(--timeline-type-history);
+}
+
+.timeline-dot.leave {
+  background: var(--timeline-type-leave);
+}
+
+.timeline-dot.training {
+  background: var(--timeline-type-training);
+}
+
+.timeline-dot.evaluation {
+  background: var(--timeline-type-evaluation);
+}
+
+.timeline-dot.onboarding {
+  background: var(--timeline-type-onboarding);
+}
+
+.timeline-dot.turnover {
+  background: var(--timeline-type-turnover);
+}
+
+.timeline-card {
+  background: var(--timeline-card-bg);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+}
+
+.timeline-date {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.timeline-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.timeline-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-normal);
+}
+```
+
+**Responsividade:**
+- Desktop: timeline vertical com linha à esquerda
+- Mobile (480px): padding reduzido, dot menor (8px)
+
+---
+
+### Communications (Notificações Automatizadas)
+
+Sistema de templates de comunicação automatizada.
+
+**Tokens CSS:**
+```css
+--comm-trigger-badge-bg: var(--color-primary-light);   /* Light mode */
+--comm-trigger-badge-bg: rgba(102, 126, 234, 0.15);    /* Dark mode */
+--comm-trigger-badge-color: var(--color-primary);
+--comm-template-bg: var(--color-bg-subtle);            /* Light mode */
+--comm-template-bg: rgba(255, 255, 255, 0.03);         /* Dark mode */
+--comm-variable-color: var(--color-primary);
+--comm-active-color: var(--color-success);             /* Light mode */
+--comm-active-color: rgba(72, 187, 120, 0.9);          /* Dark mode */
+--comm-inactive-color: var(--color-text-muted);
+```
+
+**Badge de Trigger:**
+```css
+.comm-trigger-badge {
+  display: inline-block;
+  padding: var(--space-2) var(--space-4);
+  background: var(--comm-trigger-badge-bg);
+  color: var(--comm-trigger-badge-color);
+  border-radius: var(--radius-xs);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+```
+
+**Preview de Template:**
+```css
+.comm-template-preview {
+  background: var(--comm-template-bg);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-8);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+}
+
+.comm-variable {
+  color: var(--comm-variable-color);
+  font-weight: var(--font-weight-semibold);
+  background: rgba(102, 126, 234, 0.1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-xs);
+}
+```
+
+**Indicador de Status (Ativo/Inativo):**
+```css
+.comm-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+}
+
+.comm-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+}
+
+.comm-status-indicator.active .comm-status-dot {
+  background: var(--comm-active-color);
+}
+
+.comm-status-indicator.inactive .comm-status-dot {
+  background: var(--comm-inactive-color);
+}
+```
+
+---
+
 Atualizado em: 2026-02-14

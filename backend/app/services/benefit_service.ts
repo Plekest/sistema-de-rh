@@ -260,7 +260,7 @@ export default class BenefitService {
         planQuery.preload('benefit')
       })
       .preload('dependents')
-      .orderBy('enrollmentDate', 'desc')
+      .orderBy('enrollment_date', 'desc')
   }
 
   /**

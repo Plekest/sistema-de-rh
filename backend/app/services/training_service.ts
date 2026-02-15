@@ -70,7 +70,7 @@ export default class TrainingService {
       .preload('enrollments', (enrollmentQuery) => {
         enrollmentQuery.preload('employee')
       })
-      .orderBy('startDate', 'desc')
+      .orderBy('start_date', 'desc')
 
     if (filters.status) {
       query.where('status', filters.status)
@@ -413,7 +413,7 @@ export default class TrainingService {
       .preload('training', (trainingQuery) => {
         trainingQuery.preload('creator')
       })
-      .orderBy('enrolledAt', 'desc')
+      .orderBy('enrolled_at', 'desc')
   }
 
   /**

@@ -28,7 +28,7 @@ export default class UserService {
     const page = filters.page || 1
     const limit = filters.limit || 20
 
-    const query = User.query().orderBy('createdAt', 'desc')
+    const query = User.query().orderBy('created_at', 'desc')
 
     if (filters.search) {
       query.where((builder) => {

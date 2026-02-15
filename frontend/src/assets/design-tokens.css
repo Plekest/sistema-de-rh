@@ -341,6 +341,67 @@
   --template-variable-bg: var(--color-primary-light);
   --template-variable-color: var(--color-primary);
   --template-preview-bg: var(--color-bg-card);
+
+  /* ==========================================================================
+   * COMPONENTES - Fase 3 (CRM Features)
+   * ========================================================================== */
+
+  /* Kanban Board (Recrutamento) */
+  --kanban-column-width: 280px;
+  --kanban-column-bg: var(--color-bg-card);
+  --kanban-column-header-bg: var(--color-bg-hover);
+  --kanban-card-bg: var(--color-bg-card);
+  --kanban-card-border: var(--color-border);
+  --kanban-card-shadow: var(--shadow-sm);
+  --kanban-card-hover-shadow: var(--shadow-md);
+  --kanban-badge-bg: var(--color-border);
+  --kanban-badge-color: var(--color-text-muted);
+
+  /* Talent Pool */
+  --talent-tag-padding: 0.25rem 0.5rem;
+  --talent-tag-border-radius: var(--radius-xs);
+  --talent-tag-font-size: var(--font-size-2xs);
+  --talent-status-active: #22c55e;
+  --talent-status-contacted: #3b82f6;
+  --talent-status-interviewing: #f59e0b;
+  --talent-status-hired: #8b5cf6;
+  --talent-status-archived: #6b7280;
+
+  /* Engagement Score */
+  --engagement-gauge-bg: var(--color-bg-muted);
+  --engagement-gauge-fill: var(--color-primary);
+  --engagement-score-high: #22c55e;
+  --engagement-score-medium: #f59e0b;
+  --engagement-score-low: #ef4444;
+  --engagement-bar-bg: var(--color-bg-muted);
+  --engagement-bar-height: 8px;
+
+  /* Turnover Dashboard */
+  --turnover-rate-good: #22c55e;
+  --turnover-rate-warning: #f59e0b;
+  --turnover-rate-danger: #ef4444;
+  --turnover-bar-height: 32px;
+  --turnover-bar-bg: var(--color-bg-muted);
+
+  /* Employee Lifecycle Timeline */
+  --timeline-line-color: var(--color-border);
+  --timeline-line-width: 2px;
+  --timeline-dot-size: 12px;
+  --timeline-card-bg: var(--color-bg-card);
+  --timeline-type-history: #3b82f6;
+  --timeline-type-leave: #22c55e;
+  --timeline-type-training: #8b5cf6;
+  --timeline-type-evaluation: #f59e0b;
+  --timeline-type-onboarding: #06b6d4;
+  --timeline-type-turnover: #ef4444;
+
+  /* Communications */
+  --comm-trigger-badge-bg: var(--color-primary-light);
+  --comm-trigger-badge-color: var(--color-primary);
+  --comm-template-bg: var(--color-bg-subtle);
+  --comm-variable-color: var(--color-primary);
+  --comm-active-color: var(--color-success);
+  --comm-inactive-color: var(--color-text-muted);
 }
 
 /* ==========================================================================
@@ -435,4 +496,46 @@
   /* Document Templates - dark mode */
   --template-variable-bg: rgba(102, 126, 234, 0.15);
   --template-preview-bg: var(--color-bg-subtle);
+
+  /* Kanban Board - dark mode */
+  --kanban-column-bg: var(--color-bg-subtle);
+  --kanban-column-header-bg: rgba(255, 255, 255, 0.03);
+  --kanban-card-bg: var(--color-bg-card);
+  --kanban-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --kanban-card-hover-shadow: 0 4px 6px rgba(0, 0, 0, 0.6);
+  --kanban-badge-bg: rgba(255, 255, 255, 0.08);
+
+  /* Talent Pool - dark mode */
+  --talent-status-active: rgba(34, 197, 94, 0.9);
+  --talent-status-contacted: rgba(59, 130, 246, 0.9);
+  --talent-status-interviewing: rgba(245, 158, 11, 0.9);
+  --talent-status-hired: rgba(139, 92, 246, 0.9);
+  --talent-status-archived: rgba(107, 114, 128, 0.9);
+
+  /* Engagement Score - dark mode */
+  --engagement-gauge-bg: rgba(255, 255, 255, 0.08);
+  --engagement-score-high: rgba(34, 197, 94, 0.9);
+  --engagement-score-medium: rgba(245, 158, 11, 0.9);
+  --engagement-score-low: rgba(239, 68, 68, 0.9);
+  --engagement-bar-bg: rgba(255, 255, 255, 0.08);
+
+  /* Turnover Dashboard - dark mode */
+  --turnover-rate-good: rgba(34, 197, 94, 0.9);
+  --turnover-rate-warning: rgba(245, 158, 11, 0.9);
+  --turnover-rate-danger: rgba(239, 68, 68, 0.9);
+  --turnover-bar-bg: rgba(255, 255, 255, 0.08);
+
+  /* Employee Lifecycle Timeline - dark mode */
+  --timeline-line-color: rgba(255, 255, 255, 0.12);
+  --timeline-type-history: rgba(59, 130, 246, 0.9);
+  --timeline-type-leave: rgba(34, 197, 94, 0.9);
+  --timeline-type-training: rgba(139, 92, 246, 0.9);
+  --timeline-type-evaluation: rgba(245, 158, 11, 0.9);
+  --timeline-type-onboarding: rgba(6, 182, 212, 0.9);
+  --timeline-type-turnover: rgba(239, 68, 68, 0.9);
+
+  /* Communications - dark mode */
+  --comm-trigger-badge-bg: rgba(102, 126, 234, 0.15);
+  --comm-template-bg: rgba(255, 255, 255, 0.03);
+  --comm-active-color: rgba(72, 187, 120, 0.9);
 }

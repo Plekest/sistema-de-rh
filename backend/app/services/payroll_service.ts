@@ -160,7 +160,7 @@ export default class PayrollService {
     return await PayrollComponent.query()
       .where('employeeId', employeeId)
       .preload('employee')
-      .orderBy('effectiveFrom', 'desc')
+      .orderBy('effective_from', 'desc')
   }
 
   /**
@@ -520,7 +520,7 @@ export default class PayrollService {
       .where((query) => {
         query.whereNull('effectiveUntil').orWhere('effectiveUntil', '>=', today)
       })
-      .orderBy('bracketMin', 'asc')
+      .orderBy('bracket_min', 'asc')
 
     if (brackets.length === 0) {
       return this.calculateINSSFallback(grossSalary)
@@ -622,7 +622,7 @@ export default class PayrollService {
       .where((query) => {
         query.whereNull('effectiveUntil').orWhere('effectiveUntil', '>=', today)
       })
-      .orderBy('bracketMin', 'asc')
+      .orderBy('bracket_min', 'asc')
 
     if (brackets.length === 0) {
       return this.calculateIRRFFallback(taxableBase)
@@ -724,7 +724,7 @@ export default class PayrollService {
       .preload('employee', (q) => {
         q.preload('department').preload('position')
       })
-      .orderBy('employeeId', 'asc')
+      .orderBy('employee_id', 'asc')
 
     if (employeeId) {
       query.where('employeeId', employeeId)
@@ -745,7 +745,7 @@ export default class PayrollService {
       .preload('employee', (q) => {
         q.preload('department').preload('position')
       })
-      .orderBy('payrollPeriodId', 'desc')
+      .orderBy('payroll_period_id', 'desc')
 
     if (filters.employeeId) {
       query.where('employeeId', filters.employeeId)
@@ -772,7 +772,7 @@ export default class PayrollService {
     const entries = await PayrollEntry.query()
       .where('payrollPeriodId', slip.payrollPeriodId)
       .where('employeeId', slip.employeeId)
-      .orderBy('componentType', 'asc')
+      .orderBy('component_type', 'asc')
       .orderBy('code', 'asc')
 
     return {

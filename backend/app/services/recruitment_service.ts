@@ -108,7 +108,7 @@ export default class RecruitmentService {
       .preload('department')
       .preload('position')
       .preload('requester')
-      .orderBy('createdAt', 'desc')
+      .orderBy('created_at', 'desc')
 
     if (filters.status) {
       query.where('status', filters.status)
@@ -246,7 +246,7 @@ export default class RecruitmentService {
 
     const stages = await RecruitmentStage.query()
       .where('isActive', true)
-      .orderBy('displayOrder', 'asc')
+      .orderBy('display_order', 'asc')
 
     const stats = await Promise.all(
       stages.map(async (stage) => {
@@ -296,7 +296,7 @@ export default class RecruitmentService {
   async listStages() {
     return await RecruitmentStage.query()
       .where('isActive', true)
-      .orderBy('displayOrder', 'asc')
+      .orderBy('display_order', 'asc')
   }
 
   /**
@@ -320,7 +320,7 @@ export default class RecruitmentService {
     const query = Candidate.query()
       .preload('jobRequisition')
       .preload('currentStage')
-      .orderBy('createdAt', 'desc')
+      .orderBy('created_at', 'desc')
 
     if (filters.jobRequisitionId) {
       query.where('jobRequisitionId', filters.jobRequisitionId)
@@ -353,10 +353,10 @@ export default class RecruitmentService {
       })
       .preload('currentStage')
       .preload('stageHistory', (historyQuery) => {
-        historyQuery.preload('stage').preload('mover').orderBy('enteredAt', 'desc')
+        historyQuery.preload('stage').preload('mover').orderBy('entered_at', 'desc')
       })
       .preload('interviews', (interviewQuery) => {
-        interviewQuery.preload('interviewer').preload('stage').orderBy('scheduledAt', 'desc')
+        interviewQuery.preload('interviewer').preload('stage').orderBy('scheduled_at', 'desc')
       })
       .firstOrFail()
   }
@@ -565,7 +565,7 @@ export default class RecruitmentService {
       .where('candidateId', candidateId)
       .preload('interviewer')
       .preload('stage')
-      .orderBy('scheduledAt', 'desc')
+      .orderBy('scheduled_at', 'desc')
   }
 
   /**
@@ -576,7 +576,7 @@ export default class RecruitmentService {
       .preload('candidate')
       .preload('interviewer')
       .preload('stage')
-      .orderBy('scheduledAt', 'desc')
+      .orderBy('scheduled_at', 'desc')
       .limit(filters.limit || 100)
 
     if (filters.status) {

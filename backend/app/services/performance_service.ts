@@ -79,7 +79,7 @@ export default class PerformanceService {
 
     const query = PerformanceCycle.query()
       .preload('creator')
-      .orderBy('startDate', 'desc')
+      .orderBy('start_date', 'desc')
 
     if (filters.status) {
       query.where('status', filters.status)
@@ -326,7 +326,7 @@ export default class PerformanceService {
       .where('cycleId', cycleId)
       .preload('employee')
       .preload('cycle')
-      .orderBy('createdAt', 'desc')
+      .orderBy('created_at', 'desc')
 
     if (employeeId) {
       query.where('employeeId', employeeId)
@@ -390,7 +390,7 @@ export default class PerformanceService {
       .preload('scores', (query) => {
         query.preload('competency')
       })
-      .orderBy('createdAt', 'desc')
+      .orderBy('created_at', 'desc')
   }
 
   /**
@@ -554,7 +554,7 @@ export default class PerformanceService {
       .preload('employee')
       .preload('cycle')
       .preload('responsible')
-      .orderBy('createdAt', 'desc')
+      .orderBy('created_at', 'desc')
 
     if (employeeId) {
       query.where('employeeId', employeeId)

@@ -38,6 +38,12 @@ const OnboardingController = () => import('#controllers/onboarding_controller')
 const SurveysController = () => import('#controllers/surveys_controller')
 const DocumentTemplatesController = () => import('#controllers/document_templates_controller')
 const OrgchartController = () => import('#controllers/orgchart_controller')
+const TalentPoolController = () => import('#controllers/talent_pool_controller')
+const EngagementController = () => import('#controllers/engagement_controller')
+const TurnoverController = () => import('#controllers/turnover_controller')
+const AutoCommunicationController = () => import('#controllers/auto_communication_controller')
+const KanbanController = () => import('#controllers/kanban_controller')
+const EmployeeLifecycleController = () => import('#controllers/employee_lifecycle_controller')
 
 router.get('/', async () => {
   return {
@@ -545,6 +551,116 @@ router
 
     // --- Organograma ---
     router.get('orgchart', [OrgchartController, 'index'])
+
+    // --- Talent Pool ---
+    router
+      .group(() => {
+        router.get('/', [TalentPoolController, 'index'])
+        router
+          .post('/', [TalentPoolController, 'store'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router.get('/tags', [TalentPoolController, 'tags'])
+        router
+          .post('/tags', [TalentPoolController, 'createTag'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .delete('/tags/:id', [TalentPoolController, 'deleteTag'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router.get('/:id', [TalentPoolController, 'show'])
+        router
+          .put('/:id', [TalentPoolController, 'update'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .patch('/:id/archive', [TalentPoolController, 'archive'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .post('/import/:candidateId', [TalentPoolController, 'importFromCandidate'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .post('/:id/tags', [TalentPoolController, 'addTags'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .delete('/:id/tags', [TalentPoolController, 'removeTags'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+      })
+      .prefix('talent-pool')
+
+    // --- Engagement Score ---
+    router
+      .group(() => {
+        router.get('/ranking', [EngagementController, 'ranking'])
+        router.get('/company-average', [EngagementController, 'companyAverage'])
+        router.get('/department/:departmentId', [EngagementController, 'departmentAverage'])
+        router.get('/employee/:employeeId', [EngagementController, 'employeeHistory'])
+        router
+          .post('/calculate/:employeeId', [EngagementController, 'calculate'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .post('/calculate-all', [EngagementController, 'calculateAll'])
+          .use(middleware.role({ roles: ['admin'] }))
+      })
+      .prefix('engagement')
+
+    // --- Turnover ---
+    router
+      .group(() => {
+        router
+          .get('/', [TurnoverController, 'list'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .post('/', [TurnoverController, 'record'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .get('/rate', [TurnoverController, 'rate'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .get('/by-department', [TurnoverController, 'byDepartment'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .get('/by-reason', [TurnoverController, 'byReason'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .get('/trend', [TurnoverController, 'trend'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .get('/average-tenure', [TurnoverController, 'averageTenure'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+      })
+      .prefix('turnover')
+
+    // --- Comunicacoes Automatizadas ---
+    router
+      .group(() => {
+        router.get('/', [AutoCommunicationController, 'index'])
+        router
+          .post('/', [AutoCommunicationController, 'store'])
+          .use(middleware.role({ roles: ['admin'] }))
+        router
+          .put('/:id', [AutoCommunicationController, 'update'])
+          .use(middleware.role({ roles: ['admin'] }))
+        router
+          .delete('/:id', [AutoCommunicationController, 'destroy'])
+          .use(middleware.role({ roles: ['admin'] }))
+        router
+          .patch('/:id/toggle', [AutoCommunicationController, 'toggle'])
+          .use(middleware.role({ roles: ['admin'] }))
+        router
+          .post('/execute', [AutoCommunicationController, 'execute'])
+          .use(middleware.role({ roles: ['admin'] }))
+        router.get('/:id/log', [AutoCommunicationController, 'log'])
+      })
+      .prefix('communications')
+
+    // --- Kanban Recrutamento ---
+    router.get('recruitment/kanban/:requisitionId', [KanbanController, 'board'])
+    router
+      .patch('recruitment/kanban/move', [KanbanController, 'move'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router.get('recruitment/kanban/:requisitionId/stats', [KanbanController, 'stats'])
+
+    // --- Employee Lifecycle ---
+    router.get('employees/:employeeId/lifecycle', [EmployeeLifecycleController, 'timeline'])
+    router.get('employees/:employeeId/lifecycle/summary', [EmployeeLifecycleController, 'summary'])
   })
   .prefix('api/v1')
   .use(middleware.auth({ guards: ['api'] }))

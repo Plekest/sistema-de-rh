@@ -281,7 +281,7 @@ export default class OnboardingService {
     const query = EmployeeChecklist.query()
       .preload('employee')
       .preload('template')
-      .orderBy('createdAt', 'desc')
+      .orderBy('created_at', 'desc')
 
     if (filters.employeeId) {
       query.where('employeeId', filters.employeeId)

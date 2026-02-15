@@ -39,7 +39,7 @@ export default class Evaluation extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
 
-  @belongsTo(() => PerformanceCycle)
+  @belongsTo(() => PerformanceCycle, { foreignKey: 'cycleId' })
   declare cycle: BelongsTo<typeof PerformanceCycle>
 
   @belongsTo(() => Employee)
