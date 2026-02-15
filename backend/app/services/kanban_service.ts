@@ -48,7 +48,7 @@ export default class KanbanService {
   async moveCandidate(
     candidateId: number,
     toStageId: number,
-    position?: number,
+    _position?: number,
     userId?: number
   ) {
     const candidate = await Candidate.query()
@@ -69,7 +69,7 @@ export default class KanbanService {
     await CandidateStageHistory.create({
       candidateId,
       stageId: toStageId,
-      movedBy: userId || null,
+      movedBy: userId ?? undefined,
       enteredAt: DateTime.now(),
     })
 

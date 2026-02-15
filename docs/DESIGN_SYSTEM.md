@@ -1794,4 +1794,451 @@ Sistema de templates de comunicação automatizada.
 
 ---
 
+## Fase 4 - Advanced Features
+
+### Skills Matrix (Matriz de Competencias)
+
+Sistema de avaliacao e visualizacao de competencias por nivel de proficiencia.
+
+**Tokens CSS:**
+```css
+--skills-level-1: #ef4444;              /* Iniciante - vermelho */
+--skills-level-2: #f97316;              /* Basico - laranja */
+--skills-level-3: #eab308;              /* Intermediario - amarelo */
+--skills-level-4: #22c55e;              /* Avancado - verde claro */
+--skills-level-5: #16a34a;              /* Expert - verde */
+--skills-level-1-bg: #fef2f2;           /* Light mode */
+--skills-level-1-bg: #451a1a;           /* Dark mode */
+--skills-level-2-bg: #fff7ed;           /* Light mode */
+--skills-level-2-bg: #451a00;           /* Dark mode */
+--skills-level-3-bg: #fefce8;           /* Light mode */
+--skills-level-3-bg: #3d3500;           /* Dark mode */
+--skills-level-4-bg: #f0fdf4;           /* Light mode */
+--skills-level-4-bg: #052e16;           /* Dark mode */
+--skills-level-5-bg: #f0fdf4;           /* Light mode */
+--skills-level-5-bg: #052e16;           /* Dark mode */
+--skills-gap-negative: #dc2626;         /* Gap negativo (abaixo do target) */
+--skills-gap-positive: #16a34a;         /* Atingiu ou superou target */
+--skills-gap-neutral: #9ca3af;          /* Sem target definido */
+--skills-matrix-cell-size: 48px;
+--skills-matrix-header-bg: var(--color-bg-secondary);
+--skills-matrix-border: var(--color-border);
+--skills-category-bg: var(--color-bg-tertiary);
+--skills-category-text: var(--color-text-primary);
+```
+
+**Niveis de Proficiencia:**
+
+| Nivel | Cor | Background (Light) | Background (Dark) | Descricao |
+|-------|-----|-------------------|-------------------|-----------|
+| 1 | #ef4444 (vermelho) | #fef2f2 | #451a1a | Iniciante |
+| 2 | #f97316 (laranja) | #fff7ed | #451a00 | Basico |
+| 3 | #eab308 (amarelo) | #fefce8 | #3d3500 | Intermediario |
+| 4 | #22c55e (verde claro) | #f0fdf4 | #052e16 | Avancado |
+| 5 | #16a34a (verde) | #f0fdf4 | #052e16 | Expert |
+
+**Gap Analysis (Analise de Gap de Competencias):**
+- **Negativo** (`--skills-gap-negative`): Colaborador abaixo do nivel esperado para o cargo
+- **Positivo** (`--skills-gap-positive`): Colaborador atingiu ou superou o nivel esperado
+- **Neutro** (`--skills-gap-neutral`): Sem target definido para a competencia
+
+**Grid de Matriz:**
+```css
+.skills-matrix {
+  display: grid;
+  grid-template-columns: auto repeat(5, var(--skills-matrix-cell-size));
+  gap: var(--space-2);
+  border: var(--border-width) solid var(--skills-matrix-border);
+  border-radius: var(--radius-lg);
+}
+
+.skills-matrix-cell {
+  width: var(--skills-matrix-cell-size);
+  height: var(--skills-matrix-cell-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--border-width) solid var(--skills-matrix-border);
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.skills-matrix-cell.level-1 {
+  background: var(--skills-level-1-bg);
+  color: var(--skills-level-1);
+}
+
+.skills-matrix-cell.level-2 {
+  background: var(--skills-level-2-bg);
+  color: var(--skills-level-2);
+}
+
+.skills-matrix-cell.level-3 {
+  background: var(--skills-level-3-bg);
+  color: var(--skills-level-3);
+}
+
+.skills-matrix-cell.level-4 {
+  background: var(--skills-level-4-bg);
+  color: var(--skills-level-4);
+}
+
+.skills-matrix-cell.level-5 {
+  background: var(--skills-level-5-bg);
+  color: var(--skills-level-5);
+}
+```
+
+**Responsividade:**
+- Desktop: grid completo com todas as colunas visiveis
+- Tablet (768px): scroll horizontal com sombras laterais
+- Mobile (480px): cell-size reduzido para 36px
+
+---
+
+### Career Planning (Planejamento de Carreira)
+
+Sistema de trilhas de carreira e planejamento de sucessao.
+
+**Tokens CSS:**
+```css
+--career-path-line: var(--color-primary);
+--career-path-node-active: var(--color-primary);
+--career-path-node-completed: #16a34a;
+--career-path-node-future: #9ca3af;
+--career-path-node-size: 40px;
+--career-level-bg: var(--color-bg-secondary);
+--career-level-border: var(--color-border);
+--career-level-active-border: var(--color-primary);
+--career-succession-ready-now: #16a34a;
+--career-succession-ready-1y: #3b82f6;
+--career-succession-ready-2y: #f59e0b;
+--career-succession-needs-dev: #ef4444;
+--career-priority-critical: #dc2626;
+--career-priority-high: #f97316;
+--career-priority-medium: #eab308;
+--career-priority-low: #6b7280;
+```
+
+**Career Path Nodes (Nos da Trilha de Carreira):**
+
+| Estado | Cor | Uso |
+|--------|-----|-----|
+| Active | var(--color-primary) | Cargo atual do colaborador |
+| Completed | #16a34a (verde) | Cargos ja ocupados |
+| Future | #9ca3af (cinza) | Proximo(s) cargo(s) na trilha |
+
+**Succession Readiness (Prontidao para Sucessao):**
+
+| Nivel | Cor | Descricao |
+|-------|-----|-----------|
+| Ready Now | #16a34a (verde) | Pronto para assumir imediatamente |
+| Ready 1 Year | #3b82f6 (azul) | Pronto em ate 1 ano |
+| Ready 2 Years | #f59e0b (amarelo) | Pronto em 1-2 anos |
+| Needs Development | #ef4444 (vermelho) | Precisa de mais desenvolvimento |
+
+**Prioridade de Posicao (Criticidade):**
+
+| Nivel | Cor | Uso |
+|-------|-----|-----|
+| Critical | #dc2626 (vermelho escuro) | Posicao critica sem sucessor |
+| High | #f97316 (laranja) | Alta prioridade |
+| Medium | #eab308 (amarelo) | Media prioridade |
+| Low | #6b7280 (cinza) | Baixa prioridade |
+
+**Career Path Visual:**
+```css
+.career-path {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  position: relative;
+}
+
+.career-path::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--career-path-node-size) / 2 - 1px);
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--career-path-line);
+}
+
+.career-node {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.career-node-icon {
+  width: var(--career-path-node-size);
+  height: var(--career-path-node-size);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-semibold);
+  border: 2px solid var(--color-bg-card);
+  z-index: 1;
+}
+
+.career-node-icon.active {
+  background: var(--career-path-node-active);
+  color: #ffffff;
+}
+
+.career-node-icon.completed {
+  background: var(--career-path-node-completed);
+  color: #ffffff;
+}
+
+.career-node-icon.future {
+  background: var(--career-path-node-future);
+  color: #ffffff;
+}
+```
+
+---
+
+### Occupational Health (Saude Ocupacional)
+
+Sistema de gestao de exames medicos, ASO e restricoes de saude.
+
+**Tokens CSS:**
+```css
+--health-fit: #16a34a;
+--health-unfit: #dc2626;
+--health-restrictions: #f59e0b;
+--health-scheduled: #3b82f6;
+--health-completed: #16a34a;
+--health-expired: #dc2626;
+--health-cancelled: #9ca3af;
+--health-cert-pending: #f59e0b;
+--health-cert-approved: #16a34a;
+--health-cert-rejected: #dc2626;
+--health-alert-bg: #fef2f2;           /* Light mode */
+--health-alert-bg: #451a1a;           /* Dark mode */
+--health-alert-border: #fecaca;       /* Light mode */
+--health-alert-border: #7f1d1d;       /* Dark mode */
+--health-alert-text: #991b1b;         /* Light mode */
+--health-alert-text: #fca5a5;         /* Dark mode */
+--health-warning-bg: #fffbeb;         /* Light mode */
+--health-warning-bg: #451a00;         /* Dark mode */
+--health-warning-border: #fde68a;     /* Light mode */
+--health-warning-border: #78350f;     /* Dark mode */
+--health-warning-text: #92400e;       /* Light mode */
+--health-warning-text: #fcd34d;       /* Dark mode */
+--health-exam-card-bg: var(--color-bg-card);
+```
+
+**Status de Aptidao (ASO):**
+
+| Status | Cor | Descricao |
+|--------|-----|-----------|
+| Fit | #16a34a (verde) | Apto para funcao |
+| Unfit | #dc2626 (vermelho) | Inapto para funcao |
+| Restrictions | #f59e0b (amarelo) | Apto com restricoes |
+
+**Status de Exame:**
+
+| Status | Cor | Descricao |
+|--------|-----|-----------|
+| Scheduled | #3b82f6 (azul) | Agendado |
+| Completed | #16a34a (verde) | Realizado |
+| Expired | #dc2626 (vermelho) | Vencido/atrasado |
+| Cancelled | #9ca3af (cinza) | Cancelado |
+
+**Status de Certificado:**
+
+| Status | Cor | Descricao |
+|--------|-----|-----------|
+| Pending | #f59e0b (amarelo) | Aguardando aprovacao |
+| Approved | #16a34a (verde) | Aprovado |
+| Rejected | #dc2626 (vermelho) | Rejeitado |
+
+**Alerts de Saude:**
+```css
+.health-alert {
+  background: var(--health-alert-bg);
+  border: var(--border-width) solid var(--health-alert-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6) var(--space-8);
+  color: var(--health-alert-text);
+  font-size: var(--font-size-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.health-warning {
+  background: var(--health-warning-bg);
+  border: var(--border-width) solid var(--health-warning-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6) var(--space-8);
+  color: var(--health-warning-text);
+  font-size: var(--font-size-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+```
+
+**Exam Card:**
+```css
+.health-exam-card {
+  background: var(--health-exam-card-bg);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  transition: var(--transition-base);
+}
+
+.health-exam-card:hover {
+  box-shadow: var(--shadow-md);
+}
+```
+
+---
+
+### People Analytics (Analytics de Pessoas)
+
+Dashboard de metricas e insights de RH com visualizacoes de dados.
+
+**Tokens CSS:**
+```css
+--analytics-kpi-bg: var(--color-bg-secondary);
+--analytics-kpi-border: var(--color-border);
+--analytics-kpi-value-size: 2rem;
+--analytics-kpi-label-size: 0.875rem;
+--analytics-chart-primary: var(--color-primary);
+--analytics-chart-secondary: #8b5cf6;
+--analytics-chart-tertiary: #ec4899;
+--analytics-chart-quaternary: #14b8a6;
+--analytics-risk-high: #dc2626;
+--analytics-risk-high-bg: #fef2f2;       /* Light mode */
+--analytics-risk-high-bg: #451a1a;       /* Dark mode */
+--analytics-risk-medium: #f59e0b;
+--analytics-risk-medium-bg: #fffbeb;     /* Light mode */
+--analytics-risk-medium-bg: #451a00;     /* Dark mode */
+--analytics-risk-low: #16a34a;
+--analytics-risk-low-bg: #f0fdf4;        /* Light mode */
+--analytics-risk-low-bg: #052e16;        /* Dark mode */
+--analytics-trend-up: #16a34a;
+--analytics-trend-down: #dc2626;
+--analytics-trend-stable: #6b7280;
+--analytics-insight-bg: #eff6ff;         /* Light mode */
+--analytics-insight-bg: #1e3a5f;         /* Dark mode */
+--analytics-insight-border: #bfdbfe;     /* Light mode */
+--analytics-insight-border: #1e40af;     /* Dark mode */
+--analytics-insight-text: #1e40af;       /* Light mode */
+--analytics-insight-text: #93c5fd;       /* Dark mode */
+--analytics-section-gap: 2rem;
+```
+
+**Paleta de Cores para Graficos:**
+
+| Variavel | Cor | Uso |
+|----------|-----|-----|
+| Primary | var(--color-primary) | Primeira serie/categoria |
+| Secondary | #8b5cf6 (roxo) | Segunda serie/categoria |
+| Tertiary | #ec4899 (rosa) | Terceira serie/categoria |
+| Quaternary | #14b8a6 (teal) | Quarta serie/categoria |
+
+**Risk Levels (Niveis de Risco):**
+
+| Nivel | Cor | Background (Light) | Background (Dark) | Uso |
+|-------|-----|-------------------|-------------------|-----|
+| High | #dc2626 (vermelho) | #fef2f2 | #451a1a | Risco alto |
+| Medium | #f59e0b (amarelo) | #fffbeb | #451a00 | Risco medio |
+| Low | #16a34a (verde) | #f0fdf4 | #052e16 | Risco baixo |
+
+**Trend Indicators (Indicadores de Tendencia):**
+
+| Tipo | Cor | Icone | Uso |
+|------|-----|-------|-----|
+| Up | #16a34a (verde) | ↑ | Tendencia de alta/melhoria |
+| Down | #dc2626 (vermelho) | ↓ | Tendencia de queda/piora |
+| Stable | #6b7280 (cinza) | → | Estavel/sem mudancas |
+
+**KPI Card:**
+```css
+.analytics-kpi {
+  background: var(--analytics-kpi-bg);
+  border: var(--border-width) solid var(--analytics-kpi-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  text-align: center;
+}
+
+.analytics-kpi-value {
+  font-size: var(--analytics-kpi-value-size);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--space-2);
+}
+
+.analytics-kpi-label {
+  font-size: var(--analytics-kpi-label-size);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.analytics-kpi-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  margin-top: var(--space-3);
+}
+
+.analytics-kpi-trend.up {
+  color: var(--analytics-trend-up);
+}
+
+.analytics-kpi-trend.down {
+  color: var(--analytics-trend-down);
+}
+
+.analytics-kpi-trend.stable {
+  color: var(--analytics-trend-stable);
+}
+```
+
+**Insight Card:**
+```css
+.analytics-insight {
+  background: var(--analytics-insight-bg);
+  border: var(--border-width) solid var(--analytics-insight-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6) var(--space-8);
+  color: var(--analytics-insight-text);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+.analytics-insight-title {
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-3);
+}
+```
+
+**Responsividade:**
+- Desktop: grid de 2-4 colunas para KPIs
+- Tablet (768px): 2 colunas
+- Mobile (480px): 1 coluna (stack vertical)
+
+**Acessibilidade:**
+- Labels claras em todos os graficos
+- Contraste adequado em todos os risk levels
+- `aria-label` descritivo em KPIs
+- Trends com texto alem de icone/cor
+
+---
+
 Atualizado em: 2026-02-14

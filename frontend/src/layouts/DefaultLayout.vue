@@ -56,6 +56,10 @@ const menuItems = computed(() => {
     { name: 'Organograma', path: '/orgchart', module: 'orgchart' },
     { name: 'Engagement', path: '/engagement', module: 'performance' },
     { name: 'Turnover', path: '/turnover', module: 'dashboard' },
+    { name: 'Competências', path: '/skills', module: 'skills' },
+    { name: 'Carreira', path: '/career', module: 'career' },
+    { name: 'Saúde Ocupacional', path: '/health', module: 'health' },
+    { name: 'People Analytics', path: '/analytics', module: 'analytics' },
   ]
   if (!authStore.permissions) return all
   return all.filter(item => !item.module || authStore.permissions![item.module as keyof UserPermissions])
@@ -109,6 +113,10 @@ function getPageTitle(): string {
   if (path.startsWith('/engagement')) return 'Engagement Dashboard'
   if (path.startsWith('/turnover')) return 'Turnover Dashboard'
   if (path.startsWith('/communications')) return 'Comunicacoes Automatizadas'
+  if (path.startsWith('/skills')) return 'Matriz de Competências'
+  if (path.startsWith('/career')) return 'Planejamento de Carreira'
+  if (path.startsWith('/health')) return 'Saúde Ocupacional'
+  if (path.startsWith('/analytics')) return 'People Analytics'
   if (path.startsWith('/training')) return 'Treinamentos'
   if (path.startsWith('/users')) {
     if (path.includes('/new')) return 'Novo Usuario'

@@ -28,7 +28,7 @@ export default class EmployeeLifecycleService {
    * Retorna timeline unificada do colaborador
    */
   async getTimeline(employeeId: number, filters: TimelineFilters = {}) {
-    const employee = await Employee.findOrFail(employeeId)
+    await Employee.findOrFail(employeeId)
 
     const events: TimelineEvent[] = []
 
@@ -42,7 +42,7 @@ export default class EmployeeLifecycleService {
     for (const h of histories) {
       if (!filters.types || filters.types.includes('history')) {
         events.push({
-          date: h.eventDate,
+          date: typeof h.eventDate === 'string' ? h.eventDate : h.eventDate.toString(),
           type: h.type,
           title: h.title,
           description: h.description || '',
@@ -73,7 +73,7 @@ export default class EmployeeLifecycleService {
           metadata: {
             leaveType: leave.type,
             status: leave.status,
-            days: leave.days,
+            days: leave.daysCount,
           },
         })
       }
@@ -93,12 +93,11 @@ export default class EmployeeLifecycleService {
           date: t.enrolledAt.toISODate()!,
           type: 'training',
           title: `Treinamento: ${t.training.title}`,
-          description: `Status: ${t.status} - Progresso: ${t.progress}%`,
+          description: `Status: ${t.status}`,
           source: 'training',
           metadata: {
             trainingId: t.trainingId,
             status: t.status,
-            progress: t.progress,
           },
         })
       }

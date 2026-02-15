@@ -44,6 +44,10 @@ const TurnoverController = () => import('#controllers/turnover_controller')
 const AutoCommunicationController = () => import('#controllers/auto_communication_controller')
 const KanbanController = () => import('#controllers/kanban_controller')
 const EmployeeLifecycleController = () => import('#controllers/employee_lifecycle_controller')
+const SkillMatrixController = () => import('#controllers/skill_matrix_controller')
+const CareerPlanningController = () => import('#controllers/career_planning_controller')
+const OccupationalHealthController = () => import('#controllers/occupational_health_controller')
+const PeopleAnalyticsController = () => import('#controllers/people_analytics_controller')
 
 router.get('/', async () => {
   return {
@@ -661,6 +665,144 @@ router
     // --- Employee Lifecycle ---
     router.get('employees/:employeeId/lifecycle', [EmployeeLifecycleController, 'timeline'])
     router.get('employees/:employeeId/lifecycle/summary', [EmployeeLifecycleController, 'summary'])
+
+    // --- Skills Matrix ---
+    router
+      .group(() => {
+        router.get('/categories', [SkillMatrixController, 'listCategories'])
+        router
+          .post('/categories', [SkillMatrixController, 'createCategory'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .put('/categories/:id', [SkillMatrixController, 'updateCategory'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .delete('/categories/:id', [SkillMatrixController, 'deleteCategory'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router.get('/', [SkillMatrixController, 'listSkills'])
+        router
+          .post('/', [SkillMatrixController, 'createSkill'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .put('/:id', [SkillMatrixController, 'updateSkill'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .delete('/:id', [SkillMatrixController, 'deleteSkill'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router.get('/employees/:employeeId', [SkillMatrixController, 'getEmployeeSkills'])
+        router
+          .post('/assess', [SkillMatrixController, 'assessSkill'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .post('/assess/bulk', [SkillMatrixController, 'bulkAssess'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router.get('/gap-report/:employeeId', [SkillMatrixController, 'skillGapReport'])
+        router.get('/department-matrix/:departmentId', [SkillMatrixController, 'departmentMatrix'])
+        router.get('/distribution/:skillId', [SkillMatrixController, 'skillDistribution'])
+      })
+      .prefix('skills')
+
+    // --- Career Planning ---
+    router
+      .group(() => {
+        router.get('/paths', [CareerPlanningController, 'listPaths'])
+        router
+          .post('/paths', [CareerPlanningController, 'createPath'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .put('/paths/:id', [CareerPlanningController, 'updatePath'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .delete('/paths/:id', [CareerPlanningController, 'deletePath'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .post('/paths/:pathId/levels', [CareerPlanningController, 'addLevel'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .put('/levels/:id', [CareerPlanningController, 'updateLevel'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .delete('/levels/:id', [CareerPlanningController, 'removeLevel'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router.get('/employees/:employeeId', [CareerPlanningController, 'employeeCareerPath'])
+        router.get('/succession', [CareerPlanningController, 'listSuccessionPlans'])
+        router
+          .post('/succession', [CareerPlanningController, 'createSuccessionPlan'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .put('/succession/:id', [CareerPlanningController, 'updateSuccessionPlan'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .delete('/succession/:id', [CareerPlanningController, 'deleteSuccessionPlan'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router.get('/critical-positions', [CareerPlanningController, 'criticalPositions'])
+      })
+      .prefix('career')
+
+    // --- Occupational Health ---
+    router
+      .group(() => {
+        router.get('/exams', [OccupationalHealthController, 'listExams'])
+        router
+          .post('/exams', [OccupationalHealthController, 'createExam'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .put('/exams/:id', [OccupationalHealthController, 'updateExam'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .delete('/exams/:id', [OccupationalHealthController, 'deleteExam'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router.get('/exams/upcoming', [OccupationalHealthController, 'upcomingExams'])
+        router.get('/exams/expired', [OccupationalHealthController, 'expiredExams'])
+        router
+          .patch('/exams/:id/complete', [OccupationalHealthController, 'completeExam'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router.get('/certificates', [OccupationalHealthController, 'listCertificates'])
+        router
+          .post('/certificates', [OccupationalHealthController, 'createCertificate'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .patch('/certificates/:id/approve', [OccupationalHealthController, 'approveCertificate'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .patch('/certificates/:id/reject', [OccupationalHealthController, 'rejectCertificate'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router.get('/dashboard', [OccupationalHealthController, 'healthDashboard'])
+      })
+      .prefix('health')
+
+    // --- People Analytics ---
+    router
+      .group(() => {
+        router
+          .get('/workforce', [PeopleAnalyticsController, 'workforceOverview'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .get('/retention', [PeopleAnalyticsController, 'retentionAnalysis'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .get('/performance', [PeopleAnalyticsController, 'performanceDistribution'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .get('/training', [PeopleAnalyticsController, 'trainingEffectiveness'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .get('/engagement', [PeopleAnalyticsController, 'engagementOverview'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .get('/compensation', [PeopleAnalyticsController, 'compensationAnalysis'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .get('/predictive', [PeopleAnalyticsController, 'predictiveInsights'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .post('/snapshot', [PeopleAnalyticsController, 'generateSnapshot'])
+          .use(middleware.role({ roles: ['admin'] }))
+        router
+          .get('/snapshots', [PeopleAnalyticsController, 'snapshotHistory'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+      })
+      .prefix('analytics')
   })
   .prefix('api/v1')
   .use(middleware.auth({ guards: ['api'] }))

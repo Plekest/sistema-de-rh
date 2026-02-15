@@ -2,7 +2,6 @@ import TalentPool from '#models/talent_pool'
 import TalentPoolTag from '#models/talent_pool_tag'
 import Candidate from '#models/candidate'
 import AuditLogService from '#services/audit_log_service'
-import { DateTime } from 'luxon'
 
 interface ListFilters {
   page?: number

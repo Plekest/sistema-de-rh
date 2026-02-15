@@ -402,6 +402,90 @@
   --comm-variable-color: var(--color-primary);
   --comm-active-color: var(--color-success);
   --comm-inactive-color: var(--color-text-muted);
+
+  /* ==========================================================================
+   * COMPONENTES - Fase 4 (Advanced Features)
+   * ========================================================================== */
+
+  /* Skills Matrix (Matriz de Competencias) */
+  --skills-level-1: #ef4444;              /* Iniciante - vermelho */
+  --skills-level-2: #f97316;              /* Basico - laranja */
+  --skills-level-3: #eab308;              /* Intermediario - amarelo */
+  --skills-level-4: #22c55e;              /* Avancado - verde claro */
+  --skills-level-5: #16a34a;              /* Expert - verde */
+  --skills-level-1-bg: #fef2f2;
+  --skills-level-2-bg: #fff7ed;
+  --skills-level-3-bg: #fefce8;
+  --skills-level-4-bg: #f0fdf4;
+  --skills-level-5-bg: #f0fdf4;
+  --skills-gap-negative: #dc2626;         /* Gap negativo (abaixo do target) */
+  --skills-gap-positive: #16a34a;         /* Atingiu ou superou target */
+  --skills-gap-neutral: #9ca3af;          /* Sem target definido */
+  --skills-matrix-cell-size: 48px;
+  --skills-matrix-header-bg: var(--color-bg-muted);
+  --skills-matrix-border: var(--color-border);
+  --skills-category-bg: var(--color-bg-subtle);
+  --skills-category-text: var(--color-text-primary);
+
+  /* Career Planning (Planejamento de Carreira) */
+  --career-path-line: var(--color-primary);
+  --career-path-node-active: var(--color-primary);
+  --career-path-node-completed: #16a34a;
+  --career-path-node-future: #9ca3af;
+  --career-path-node-size: 40px;
+  --career-level-bg: var(--color-bg-muted);
+  --career-level-border: var(--color-border);
+  --career-level-active-border: var(--color-primary);
+  --career-succession-ready-now: #16a34a;
+  --career-succession-ready-1y: #3b82f6;
+  --career-succession-ready-2y: #f59e0b;
+  --career-succession-needs-dev: #ef4444;
+  --career-priority-critical: #dc2626;
+  --career-priority-high: #f97316;
+  --career-priority-medium: #eab308;
+  --career-priority-low: #6b7280;
+
+  /* Occupational Health (Saude Ocupacional) */
+  --health-fit: #16a34a;
+  --health-unfit: #dc2626;
+  --health-restrictions: #f59e0b;
+  --health-scheduled: #3b82f6;
+  --health-completed: #16a34a;
+  --health-expired: #dc2626;
+  --health-cancelled: #9ca3af;
+  --health-cert-pending: #f59e0b;
+  --health-cert-approved: #16a34a;
+  --health-cert-rejected: #dc2626;
+  --health-alert-bg: #fef2f2;
+  --health-alert-border: #fecaca;
+  --health-alert-text: #991b1b;
+  --health-warning-bg: #fffbeb;
+  --health-warning-border: #fde68a;
+  --health-warning-text: #92400e;
+  --health-exam-card-bg: var(--color-bg-card);
+
+  /* People Analytics (Analytics de Pessoas) */
+  --analytics-kpi-bg: var(--color-bg-muted);
+  --analytics-kpi-border: var(--color-border);
+  --analytics-kpi-value-size: 2rem;
+  --analytics-kpi-label-size: 0.875rem;
+  --analytics-chart-primary: var(--color-primary);
+  --analytics-chart-secondary: #8b5cf6;
+  --analytics-chart-tertiary: #ec4899;
+  --analytics-chart-quaternary: #14b8a6;
+  --analytics-risk-high: #dc2626;
+  --analytics-risk-high-bg: #fef2f2;
+  --analytics-risk-medium: #f59e0b;
+  --analytics-risk-medium-bg: #fffbeb;
+  --analytics-risk-low: #16a34a;
+  --analytics-risk-low-bg: #f0fdf4;
+  --analytics-trend-up: #16a34a;
+  --analytics-trend-down: #dc2626;
+  --analytics-trend-stable: #6b7280;
+  --analytics-insight-bg: #eff6ff;
+  --analytics-insight-border: #bfdbfe;
+  --analytics-insight-text: #1e40af;
+  --analytics-section-gap: 2rem;
 }
 
 /* ==========================================================================
@@ -538,4 +622,34 @@
   --comm-trigger-badge-bg: rgba(102, 126, 234, 0.15);
   --comm-template-bg: rgba(255, 255, 255, 0.03);
   --comm-active-color: rgba(72, 187, 120, 0.9);
+
+  /* Skills Matrix - dark mode */
+  --skills-level-1-bg: #451a1a;
+  --skills-level-2-bg: #451a00;
+  --skills-level-3-bg: #3d3500;
+  --skills-level-4-bg: #052e16;
+  --skills-level-5-bg: #052e16;
+  --skills-matrix-header-bg: var(--color-bg-subtle);
+  --skills-category-bg: var(--color-bg-muted);
+
+  /* Career Planning - dark mode */
+  --career-level-bg: var(--color-bg-subtle);
+
+  /* Occupational Health - dark mode */
+  --health-alert-bg: #451a1a;
+  --health-alert-border: #7f1d1d;
+  --health-alert-text: #fca5a5;
+  --health-warning-bg: #451a00;
+  --health-warning-border: #78350f;
+  --health-warning-text: #fcd34d;
+  --health-exam-card-bg: var(--color-bg-card);
+
+  /* People Analytics - dark mode */
+  --analytics-kpi-bg: var(--color-bg-subtle);
+  --analytics-risk-high-bg: #451a1a;
+  --analytics-risk-medium-bg: #451a00;
+  --analytics-risk-low-bg: #052e16;
+  --analytics-insight-bg: #1e3a5f;
+  --analytics-insight-border: #1e40af;
+  --analytics-insight-text: #93c5fd;
 }

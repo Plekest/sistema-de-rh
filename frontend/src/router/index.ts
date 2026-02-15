@@ -410,6 +410,38 @@ const router = createRouter({
           component: () => import('@/modules/communications/views/CommunicationsView.vue'),
           meta: { requiresAuth: true, module: 'admin' },
         },
+
+        // Skills Matrix
+        {
+          path: 'skills',
+          name: 'skills',
+          component: () => import('@/modules/skills/views/SkillsMatrixView.vue'),
+          meta: { requiresAuth: true, module: 'skills' },
+        },
+
+        // Career Planning
+        {
+          path: 'career',
+          name: 'career',
+          component: () => import('@/modules/career/views/CareerPlanningView.vue'),
+          meta: { requiresAuth: true, module: 'career' },
+        },
+
+        // Occupational Health
+        {
+          path: 'health',
+          name: 'health',
+          component: () => import('@/modules/health/views/OccupationalHealthView.vue'),
+          meta: { requiresAuth: true, module: 'health' },
+        },
+
+        // People Analytics
+        {
+          path: 'analytics',
+          name: 'analytics',
+          component: () => import('@/modules/analytics/views/PeopleAnalyticsView.vue'),
+          meta: { requiresAuth: true, module: 'analytics' },
+        },
       ],
     },
   ],
