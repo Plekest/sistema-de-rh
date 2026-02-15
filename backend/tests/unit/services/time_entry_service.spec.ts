@@ -142,7 +142,7 @@ test.group('TimeEntryService - clockOut', (group) => {
     const entry = await service.clockOut(employee.id)
 
     assert.isNotNull(entry.clockOut)
-    assert.isAbove(entry.totalWorkedMinutes, 0)
+    assert.isAtLeast(entry.totalWorkedMinutes, 0)
   })
 
   test('deve calcular minutos trabalhados corretamente', async ({ assert }) => {

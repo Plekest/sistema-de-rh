@@ -8,6 +8,17 @@ import Training from '#models/training'
 import TrainingEnrollment from '#models/training_enrollment'
 import Leave from '#models/leave'
 import Notification from '#models/notification'
+import SkillCategory from '#models/skill_category'
+import Skill from '#models/skill'
+import EmployeeSkill from '#models/employee_skill'
+import CareerPath from '#models/career_path'
+import CareerPathLevel from '#models/career_path_level'
+import SuccessionPlan from '#models/succession_plan'
+import OccupationalExam from '#models/occupational_exam'
+import MedicalCertificate from '#models/medical_certificate'
+import EngagementScore from '#models/engagement_score'
+import TurnoverRecord from '#models/turnover_record'
+import TalentPool from '#models/talent_pool'
 import { DateTime } from 'luxon'
 
 export default class extends BaseSeeder {
@@ -481,26 +492,658 @@ export default class extends BaseSeeder {
 
     for (const notif of notificationsData) {
       if (notif.userId) {
-        const existing = await Notification.query()
-          .where('userId', notif.userId)
-          .where('type', notif.type)
-          .where('title', notif.title)
-          .first()
+        try {
+          const existing = await Notification.query()
+            .where('userId', notif.userId)
+            .where('type', notif.type)
+            .where('title', notif.title)
+            .first()
 
-        if (!existing) {
-          await Notification.create({
-            userId: notif.userId,
-            type: notif.type,
-            title: notif.title,
-            message: notif.message,
-            isRead: Math.random() > 0.5,
-            metadata: {},
-          })
+          if (!existing) {
+            await Notification.create({
+              userId: notif.userId,
+              type: notif.type,
+              title: notif.title,
+              message: notif.message,
+              isRead: Math.random() > 0.5,
+            })
+          }
+        } catch (error) {
+          console.log(`Erro ao criar notificacao: ${error.message}`)
         }
       }
     }
 
     console.log('Notificacoes criadas')
+
+    // ============================================================
+    // 7. SKILL CATEGORIES E SKILLS
+    // ============================================================
+    console.log('Criando skill categories e skills...')
+
+    const skillCategories = [
+      { name: 'Programação', description: 'Linguagens e frameworks de programação' },
+      { name: 'Soft Skills', description: 'Habilidades comportamentais' },
+      { name: 'Vendas', description: 'Técnicas e processos de vendas' },
+      { name: 'Financeiro', description: 'Conhecimentos financeiros e contábeis' },
+      { name: 'Logística', description: 'Gestão de operações e supply chain' },
+    ]
+
+    const createdCategories: SkillCategory[] = []
+    const createdSkills: Skill[] = []
+
+    for (const [idx, catData] of skillCategories.entries()) {
+      const category = await SkillCategory.updateOrCreate(
+        { name: catData.name },
+        {
+          name: catData.name,
+          description: catData.description,
+          displayOrder: idx + 1,
+          isActive: true,
+        }
+      )
+      createdCategories.push(category)
+
+      // 3-4 skills por categoria
+      const skillsForCategory: Array<{ name: string; description: string }> = []
+
+      if (catData.name === 'Programação') {
+        skillsForCategory.push(
+          { name: 'JavaScript', description: 'Linguagem JavaScript e TypeScript' },
+          { name: 'Node.js', description: 'Backend com Node.js' },
+          { name: 'Vue.js', description: 'Frontend com Vue.js' },
+          { name: 'SQL', description: 'Bancos de dados relacionais' }
+        )
+      } else if (catData.name === 'Soft Skills') {
+        skillsForCategory.push(
+          { name: 'Comunicação', description: 'Habilidades de comunicação' },
+          { name: 'Liderança', description: 'Liderança de equipes' },
+          { name: 'Gestão de Tempo', description: 'Organização e priorização' },
+          { name: 'Resolução de Problemas', description: 'Pensamento crítico' }
+        )
+      } else if (catData.name === 'Vendas') {
+        skillsForCategory.push(
+          { name: 'Prospecção', description: 'Identificação de leads' },
+          { name: 'Negociação', description: 'Técnicas de negociação' },
+          { name: 'CRM', description: 'Uso de ferramentas CRM' }
+        )
+      } else if (catData.name === 'Financeiro') {
+        skillsForCategory.push(
+          { name: 'Contabilidade', description: 'Princípios contábeis' },
+          { name: 'Análise Financeira', description: 'Análise de balanços' },
+          { name: 'Excel Avançado', description: 'Excel para finanças' }
+        )
+      } else if (catData.name === 'Logística') {
+        skillsForCategory.push(
+          { name: 'Supply Chain', description: 'Gestão da cadeia de suprimentos' },
+          { name: 'Gestão de Estoque', description: 'Controle de inventário' },
+          { name: 'Transporte', description: 'Logística de transporte' }
+        )
+      }
+
+      for (const skillData of skillsForCategory) {
+        const skill = await Skill.updateOrCreate(
+          { categoryId: category.id, name: skillData.name },
+          {
+            categoryId: category.id,
+            name: skillData.name,
+            description: skillData.description,
+            isActive: true,
+          }
+        )
+        createdSkills.push(skill)
+      }
+    }
+
+    console.log(
+      `${createdCategories.length} categorias e ${createdSkills.length} skills criadas`
+    )
+
+    // ============================================================
+    // 8. EMPLOYEE SKILLS (15 colaboradores aleatórios)
+    // ============================================================
+    console.log('Criando employee skills...')
+
+    const selectedEmployees = employees.slice(0, Math.min(15, employees.length))
+
+    for (const employee of selectedEmployees) {
+      // Cada colaborador terá 2-4 skills aleatórias
+      const numSkills = Math.floor(Math.random() * 3) + 2
+      const randomSkills = createdSkills
+        .sort(() => Math.random() - 0.5)
+        .slice(0, numSkills)
+
+      for (const skill of randomSkills) {
+        const existing = await EmployeeSkill.query()
+          .where('employeeId', employee.id)
+          .where('skillId', skill.id)
+          .first()
+
+        if (!existing) {
+          await EmployeeSkill.create({
+            employeeId: employee.id,
+            skillId: skill.id,
+            currentLevel: Math.floor(Math.random() * 5) + 1, // 1-5
+            targetLevel: Math.floor(Math.random() * 2) + 4, // 4-5
+            assessedBy: admin.id,
+            assessedAt: DateTime.now().minus({ days: Math.floor(Math.random() * 90) }),
+          })
+        }
+      }
+    }
+
+    console.log('Employee skills criadas')
+
+    // ============================================================
+    // 9. CAREER PATHS E LEVELS
+    // ============================================================
+    console.log('Criando career paths...')
+
+    const careerPathDev = await CareerPath.updateOrCreate(
+      { name: 'Desenvolvimento de Software' },
+      {
+        name: 'Desenvolvimento de Software',
+        description: 'Carreira técnica em desenvolvimento',
+        departmentId: deptTI.id,
+        isActive: true,
+        createdBy: admin.id,
+      }
+    )
+
+    const careerPathGestao = await CareerPath.updateOrCreate(
+      { name: 'Gestão' },
+      {
+        name: 'Gestão',
+        description: 'Carreira em liderança e gestão',
+        departmentId: null,
+        isActive: true,
+        createdBy: admin.id,
+      }
+    )
+
+    // Levels para Desenvolvimento
+    await CareerPathLevel.updateOrCreate(
+      { careerPathId: careerPathDev.id, levelOrder: 1 },
+      {
+        careerPathId: careerPathDev.id,
+        levelOrder: 1,
+        title: 'Junior',
+        description: 'Desenvolvedor iniciante - Conhecimentos básicos de programação',
+        salaryRangeMin: 3000,
+        salaryRangeMax: 5000,
+        minExperienceMonths: 0,
+      }
+    )
+
+    await CareerPathLevel.updateOrCreate(
+      { careerPathId: careerPathDev.id, levelOrder: 2 },
+      {
+        careerPathId: careerPathDev.id,
+        levelOrder: 2,
+        title: 'Pleno',
+        description: 'Desenvolvedor intermediário - 2+ anos de experiência',
+        salaryRangeMin: 6000,
+        salaryRangeMax: 10000,
+        minExperienceMonths: 24,
+      }
+    )
+
+    await CareerPathLevel.updateOrCreate(
+      { careerPathId: careerPathDev.id, levelOrder: 3 },
+      {
+        careerPathId: careerPathDev.id,
+        levelOrder: 3,
+        title: 'Senior',
+        description: 'Desenvolvedor avançado - 5+ anos de experiência',
+        salaryRangeMin: 10000,
+        salaryRangeMax: 15000,
+        minExperienceMonths: 60,
+      }
+    )
+
+    await CareerPathLevel.updateOrCreate(
+      { careerPathId: careerPathDev.id, levelOrder: 4 },
+      {
+        careerPathId: careerPathDev.id,
+        levelOrder: 4,
+        title: 'Tech Lead',
+        description: 'Líder técnico - 7+ anos, liderança técnica',
+        salaryRangeMin: 15000,
+        salaryRangeMax: 25000,
+        minExperienceMonths: 84,
+      }
+    )
+
+    // Levels para Gestão
+    await CareerPathLevel.updateOrCreate(
+      { careerPathId: careerPathGestao.id, levelOrder: 1 },
+      {
+        careerPathId: careerPathGestao.id,
+        levelOrder: 1,
+        title: 'Coordenador',
+        description: 'Coordenador de equipe - Experiência técnica + liderança',
+        salaryRangeMin: 8000,
+        salaryRangeMax: 12000,
+        minExperienceMonths: 36,
+      }
+    )
+
+    await CareerPathLevel.updateOrCreate(
+      { careerPathId: careerPathGestao.id, levelOrder: 2 },
+      {
+        careerPathId: careerPathGestao.id,
+        levelOrder: 2,
+        title: 'Gerente',
+        description: 'Gerente de área - 3+ anos em gestão',
+        salaryRangeMin: 12000,
+        salaryRangeMax: 18000,
+        minExperienceMonths: 36,
+      }
+    )
+
+    await CareerPathLevel.updateOrCreate(
+      { careerPathId: careerPathGestao.id, levelOrder: 3 },
+      {
+        careerPathId: careerPathGestao.id,
+        levelOrder: 3,
+        title: 'Diretor',
+        description: 'Diretor de departamento - 5+ anos em gestão',
+        salaryRangeMin: 18000,
+        salaryRangeMax: 30000,
+        minExperienceMonths: 60,
+      }
+    )
+
+    await CareerPathLevel.updateOrCreate(
+      { careerPathId: careerPathGestao.id, levelOrder: 4 },
+      {
+        careerPathId: careerPathGestao.id,
+        levelOrder: 4,
+        title: 'VP',
+        description: 'Vice-Presidente - 10+ anos em liderança',
+        salaryRangeMin: 30000,
+        salaryRangeMax: 50000,
+        minExperienceMonths: 120,
+      }
+    )
+
+    console.log('Career paths criados')
+
+    // ============================================================
+    // 10. SUCCESSION PLANS (3)
+    // ============================================================
+    console.log('Criando succession plans...')
+
+    if (employees.length >= 5) {
+      await SuccessionPlan.updateOrCreate(
+        { positionId: posDevSenior.id, successorId: employees[0].id },
+        {
+          positionId: posDevSenior.id,
+          currentHolderId: employees[0].id,
+          successorId: employees[2].id,
+          readiness: 'ready_1_year',
+          priority: 'high',
+          developmentActions: 'Participação em decisões estratégicas, mentoria',
+          createdBy: admin.id,
+        }
+      )
+
+      await SuccessionPlan.updateOrCreate(
+        { positionId: posAnalistaRH.id, successorId: employees[1].id },
+        {
+          positionId: posAnalistaRH.id,
+          currentHolderId: employees[1].id,
+          successorId: employees[6].id,
+          readiness: 'ready_now',
+          priority: 'medium',
+          developmentActions: 'Acompanhamento de processos complexos',
+          createdBy: admin.id,
+        }
+      )
+
+      await SuccessionPlan.updateOrCreate(
+        { positionId: posContador.id, successorId: employees[4].id },
+        {
+          positionId: posContador.id,
+          currentHolderId: employees[4].id,
+          successorId: employees[8].id,
+          readiness: 'ready_2_years',
+          priority: 'medium',
+          developmentActions: 'Curso de liderança, gestão de equipes',
+          createdBy: admin.id,
+        }
+      )
+    }
+
+    console.log('Succession plans criados')
+
+    // ============================================================
+    // 11. OCCUPATIONAL EXAMS (5)
+    // ============================================================
+    console.log('Criando occupational exams...')
+
+    if (employees.length >= 5) {
+      await OccupationalExam.updateOrCreate(
+        { employeeId: employees[0].id, type: 'admission' },
+        {
+          employeeId: employees[0].id,
+          type: 'admission',
+          examDate: DateTime.now().minus({ years: 2 }),
+          result: 'fit',
+          status: 'completed',
+          doctorName: 'Dr. Roberto Silva',
+          crm: '123456',
+          clinicName: 'Clínica Vida',
+          createdBy: admin.id,
+        }
+      )
+
+      await OccupationalExam.updateOrCreate(
+        { employeeId: employees[1].id, type: 'periodic', examDate: DateTime.now().minus({ days: 30 }).toISODate()! },
+        {
+          employeeId: employees[1].id,
+          type: 'periodic',
+          examDate: DateTime.now().minus({ days: 30 }),
+          expiryDate: DateTime.now().plus({ year: 1 }),
+          result: 'fit',
+          status: 'completed',
+          doctorName: 'Dr. Roberto Silva',
+          crm: '123456',
+          clinicName: 'Clínica Vida',
+          createdBy: admin.id,
+        }
+      )
+
+      const scheduledDate = DateTime.now().plus({ days: 15 })
+      await OccupationalExam.updateOrCreate(
+        { employeeId: employees[2].id, type: 'periodic', examDate: scheduledDate.toISODate()! },
+        {
+          employeeId: employees[2].id,
+          type: 'periodic',
+          examDate: scheduledDate,
+          result: 'fit',
+          status: 'scheduled',
+          doctorName: 'Dr. Roberto Silva',
+          crm: '123456',
+          clinicName: 'Clínica Vida',
+          createdBy: admin.id,
+        }
+      )
+
+      await OccupationalExam.updateOrCreate(
+        { employeeId: employees[3].id, type: 'periodic', status: 'expired' },
+        {
+          employeeId: employees[3].id,
+          type: 'periodic',
+          examDate: DateTime.now().minus({ years: 2 }),
+          expiryDate: DateTime.now().minus({ year: 1 }),
+          result: 'fit',
+          status: 'expired',
+          doctorName: 'Dr. Roberto Silva',
+          crm: '123456',
+          clinicName: 'Clínica Vida',
+          createdBy: admin.id,
+        }
+      )
+
+      await OccupationalExam.updateOrCreate(
+        { employeeId: employees[4].id, type: 'role_change' },
+        {
+          employeeId: employees[4].id,
+          type: 'role_change',
+          examDate: DateTime.now().minus({ days: 5 }),
+          result: 'fit_with_restrictions',
+          restrictions: 'Não carregar peso superior a 10kg',
+          status: 'completed',
+          doctorName: 'Dr. Roberto Silva',
+          crm: '123456',
+          clinicName: 'Clínica Vida',
+          createdBy: admin.id,
+        }
+      )
+    }
+
+    console.log('Occupational exams criados')
+
+    // ============================================================
+    // 12. MEDICAL CERTIFICATES (3)
+    // ============================================================
+    console.log('Criando medical certificates...')
+
+    if (employees.length >= 7) {
+      await MedicalCertificate.updateOrCreate(
+        { employeeId: employees[5].id, startDate: DateTime.now().minus({ days: 10 }).toISODate()! },
+        {
+          employeeId: employees[5].id,
+          startDate: DateTime.now().minus({ days: 10 }),
+          endDate: DateTime.now().minus({ days: 8 }),
+          daysCount: 3,
+          cidCode: 'J06.9',
+          cidDescription: 'Infecção aguda das vias aéreas superiores',
+          doctorName: 'Dr. Ana Paula',
+          crm: '654321',
+          status: 'approved',
+          approvedBy: admin.id,
+        }
+      )
+
+      await MedicalCertificate.updateOrCreate(
+        { employeeId: employees[6].id, startDate: DateTime.now().minus({ days: 2 }).toISODate()! },
+        {
+          employeeId: employees[6].id,
+          startDate: DateTime.now().minus({ days: 2 }),
+          endDate: DateTime.now(),
+          daysCount: 3,
+          doctorName: 'Dr. Carlos Eduardo',
+          crm: '789012',
+          status: 'pending',
+        }
+      )
+
+      if (employees.length >= 8) {
+        await MedicalCertificate.updateOrCreate(
+          { employeeId: employees[7].id, startDate: DateTime.now().minus({ days: 30 }).toISODate()! },
+          {
+            employeeId: employees[7].id,
+            startDate: DateTime.now().minus({ days: 30 }),
+            endDate: DateTime.now().minus({ days: 25 }),
+            daysCount: 6,
+            cidCode: 'A09',
+            cidDescription: 'Gastroenterite',
+            doctorName: 'Dr. Mariana Costa',
+            crm: '345678',
+            status: 'approved',
+            approvedBy: admin.id,
+          }
+        )
+      }
+    }
+
+    console.log('Medical certificates criados')
+
+    // ============================================================
+    // 13. ENGAGEMENT SCORES (10)
+    // ============================================================
+    console.log('Criando engagement scores...')
+
+    const currentMonth = DateTime.now().month
+    const currentYear = DateTime.now().year
+
+    for (let i = 0; i < Math.min(10, employees.length); i++) {
+      const employee = employees[i]
+      const attendanceScore = Math.floor(Math.random() * 30) + 70
+      const performanceScore = Math.floor(Math.random() * 30) + 70
+      const trainingScore = Math.floor(Math.random() * 30) + 70
+      const tenureScore = Math.floor(Math.random() * 30) + 70
+      const leaveScore = Math.floor(Math.random() * 30) + 70
+
+      const overallScore =
+        (attendanceScore + performanceScore + trainingScore + tenureScore + leaveScore) / 5
+
+      await EngagementScore.updateOrCreate(
+        { employeeId: employee.id, referenceMonth: currentMonth, referenceYear: currentYear },
+        {
+          employeeId: employee.id,
+          score: Math.round(overallScore),
+          attendanceScore,
+          performanceScore,
+          trainingScore,
+          tenureScore,
+          leaveScore,
+          referenceMonth: currentMonth,
+          referenceYear: currentYear,
+          calculatedAt: DateTime.now(),
+        }
+      )
+    }
+
+    console.log('Engagement scores criados')
+
+    // ============================================================
+    // 14. TURNOVER RECORDS (3)
+    // ============================================================
+    console.log('Criando turnover records...')
+
+    if (employees.length >= 3) {
+      await TurnoverRecord.updateOrCreate(
+        { employeeId: employees[0].id, exitDate: DateTime.now().minus({ months: 2 }).toISODate()! },
+        {
+          employeeId: employees[0].id,
+          type: 'voluntary',
+          reason: 'Proposta melhor em outra empresa',
+          exitDate: DateTime.now().minus({ months: 2 }),
+          departmentId: employees[0].departmentId,
+          positionId: employees[0].positionId,
+          tenureMonths: 18,
+          salaryAtExit: employees[0].salary,
+          exitInterviewDone: true,
+          exitInterviewNotes: 'Saiu em bons termos, busca crescimento profissional',
+        }
+      )
+
+      await TurnoverRecord.updateOrCreate(
+        { employeeId: employees[1].id, exitDate: DateTime.now().minus({ months: 1 }).toISODate()! },
+        {
+          employeeId: employees[1].id,
+          type: 'involuntary',
+          reason: 'Baixo desempenho',
+          exitDate: DateTime.now().minus({ months: 1 }),
+          departmentId: employees[1].departmentId,
+          positionId: employees[1].positionId,
+          tenureMonths: 6,
+          salaryAtExit: employees[1].salary,
+          exitInterviewDone: false,
+        }
+      )
+
+      await TurnoverRecord.updateOrCreate(
+        { employeeId: employees[2].id, exitDate: DateTime.now().minus({ months: 3 }).toISODate()! },
+        {
+          employeeId: employees[2].id,
+          type: 'retirement',
+          reason: 'Aposentadoria',
+          exitDate: DateTime.now().minus({ months: 3 }),
+          departmentId: employees[2].departmentId,
+          positionId: employees[2].positionId,
+          tenureMonths: 120,
+          salaryAtExit: employees[2].salary,
+          exitInterviewDone: true,
+          exitInterviewNotes: 'Excelente colaborador, anos de casa',
+        }
+      )
+    }
+
+    console.log('Turnover records criados')
+
+    // ============================================================
+    // 15. TALENT POOL (5)
+    // ============================================================
+    console.log('Criando talent pool entries...')
+
+    await TalentPool.updateOrCreate(
+      { email: 'roberto.alves@email.com' },
+      {
+        fullName: 'Roberto Alves',
+        email: 'roberto.alves@email.com',
+        phone: '(11) 98888-7777',
+        linkedinUrl: 'https://linkedin.com/in/roberto-alves',
+        source: 'linkedin',
+        status: 'active',
+        notes: 'Desenvolvedor senior com experiência em Vue.js',
+        experienceYears: 8,
+        salaryExpectation: 13000,
+        availability: '30_days',
+        addedBy: admin.id,
+      }
+    )
+
+    await TalentPool.updateOrCreate(
+      { email: 'sandra.oliveira@email.com' },
+      {
+        fullName: 'Sandra Oliveira',
+        email: 'sandra.oliveira@email.com',
+        phone: '(11) 97777-6666',
+        source: 'referral',
+        status: 'contacted',
+        notes: 'Especialista em vendas B2B',
+        experienceYears: 5,
+        salaryExpectation: 8000,
+        availability: 'immediate',
+        addedBy: admin.id,
+      }
+    )
+
+    await TalentPool.updateOrCreate(
+      { email: 'eduardo.campos@email.com' },
+      {
+        fullName: 'Eduardo Campos',
+        email: 'eduardo.campos@email.com',
+        phone: '(11) 96666-5555',
+        linkedinUrl: 'https://linkedin.com/in/eduardo-campos',
+        source: 'event',
+        status: 'interviewing',
+        notes: 'Conheceu em evento de tecnologia, interessado em posição de Tech Lead',
+        experienceYears: 10,
+        salaryExpectation: 18000,
+        availability: '60_days',
+        addedBy: admin.id,
+      }
+    )
+
+    await TalentPool.updateOrCreate(
+      { email: 'vanessa.lima@email.com' },
+      {
+        fullName: 'Vanessa Lima',
+        email: 'vanessa.lima@email.com',
+        phone: '(11) 95555-4444',
+        source: 'spontaneous',
+        status: 'active',
+        notes: 'Candidatura espontânea, perfil interessante para RH',
+        experienceYears: 3,
+        salaryExpectation: 5500,
+        availability: '15_days',
+        addedBy: admin.id,
+      }
+    )
+
+    await TalentPool.updateOrCreate(
+      { email: 'henrique.costa@email.com' },
+      {
+        fullName: 'Henrique Costa',
+        email: 'henrique.costa@email.com',
+        phone: '(11) 94444-3333',
+        linkedinUrl: 'https://linkedin.com/in/henrique-costa',
+        source: 'recruitment',
+        status: 'hired',
+        notes: 'Contratado para posição de Analista Financeiro',
+        experienceYears: 4,
+        salaryExpectation: 7000,
+        availability: 'immediate',
+        addedBy: admin.id,
+      }
+    )
+
+    console.log('Talent pool entries criados')
 
     console.log('Seeder de demonstracao concluido!')
   }

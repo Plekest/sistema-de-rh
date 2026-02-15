@@ -84,17 +84,31 @@ export default class HttpExceptionHandler extends ExceptionHandler {
       return
     }
 
-    // Logar erros 5xx e inesperados
-    ctx.logger.error(
-      {
-        err: error,
-        url: ctx.request.url(),
-        method: ctx.request.method(),
-        ip: ctx.request.ip(),
-        userId: ctx.auth?.user?.id || null,
+    // Log estruturado de erros 5xx e inesperados
+    const logData = {
+      error: {
+        message: error.message || 'Erro nao tratado',
+        code: error.code || undefined,
+        status,
+        stack: error.stack,
       },
-      error.message || 'Erro nao tratado'
-    )
+      request: {
+        method: ctx.request.method(),
+        url: ctx.request.url(true), // URL completa com query params
+        path: ctx.request.url(),
+        ip: ctx.request.ip(),
+        userAgent: ctx.request.header('user-agent'),
+        referer: ctx.request.header('referer'),
+      },
+      user: {
+        id: ctx.auth?.user?.id || null,
+        email: ctx.auth?.user?.email || null,
+        role: ctx.auth?.user?.role || null,
+      },
+      timestamp: new Date().toISOString(),
+    }
+
+    ctx.logger.error(logData, error.message || 'Erro nao tratado')
   }
 
   /**

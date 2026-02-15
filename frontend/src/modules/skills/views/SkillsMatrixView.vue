@@ -47,12 +47,12 @@ function getLevelColor(level: number): string {
     '#84cc16', // 4 - verde claro
     '#22c55e', // 5 - verde
   ]
-  return colors[level] || colors[0]
+  return colors[level] ?? colors[0]!
 }
 
 function getLevelLabel(level: number): string {
   const labels = ['N/A', 'Iniciante', 'Básico', 'Intermediário', 'Avançado', 'Expert']
-  return labels[level] || labels[0]
+  return labels[level] ?? labels[0]!
 }
 
 async function loadCategories() {

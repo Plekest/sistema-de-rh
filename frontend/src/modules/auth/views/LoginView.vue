@@ -142,7 +142,8 @@ onMounted(() => {
           </div>
 
           <h2>Bem-vindo de volta</h2>
-          <p>Faça login para acessar o sistema</p>
+          <p class="login-subtitle">Sistema de Gestão de Recursos Humanos</p>
+          <p class="login-description">Faça login para acessar o sistema</p>
         </div>
 
         <form @submit.prevent="handleSubmit" class="login-form" novalidate>
@@ -240,6 +241,7 @@ onMounted(() => {
         </form>
 
         <div class="login-footer">
+          <p class="version">v1.0</p>
           <p>&copy; {{ new Date().getFullYear() }} Sistema de RH &mdash; Todos os direitos reservados</p>
         </div>
       </div>
@@ -435,7 +437,14 @@ onMounted(() => {
   letter-spacing: -0.01em;
 }
 
-.login-header p {
+.login-subtitle {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-2);
+}
+
+.login-description {
   font-size: 0.95rem;
   color: var(--color-text-muted);
 }
@@ -694,6 +703,15 @@ onMounted(() => {
 .login-footer {
   text-align: center;
   margin-top: var(--space-20);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.login-footer .version {
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-placeholder);
+  font-weight: var(--font-weight-semibold);
 }
 
 .login-footer p {

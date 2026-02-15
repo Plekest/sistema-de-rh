@@ -252,6 +252,12 @@ function getPageTitle(): string {
       <main class="content">
         <RouterView />
       </main>
+
+      <!-- Footer -->
+      <footer class="app-footer">
+        <span>Sistema de RH v1.0</span>
+        <span>2024-2026</span>
+      </footer>
     </div>
   </div>
 </template>
@@ -598,6 +604,18 @@ function getPageTitle(): string {
   padding: var(--space-12);
 }
 
+/* Footer */
+.app-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-8) var(--space-12);
+  border-top: var(--border-width) solid var(--color-border);
+  background-color: var(--color-bg-card);
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+}
+
 /* ==================== RESPONSIVO ==================== */
 
 @media (max-width: 768px) {
@@ -641,6 +659,13 @@ function getPageTitle(): string {
 
   .content {
     padding: var(--space-8);
+  }
+
+  .app-footer {
+    padding: var(--space-6) var(--space-8);
+    flex-direction: column;
+    gap: var(--space-2);
+    text-align: center;
   }
 }
 </style>

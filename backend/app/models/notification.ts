@@ -36,7 +36,11 @@ export default class Notification extends BaseModel {
 
   @column({
     prepare: (value: Record<string, unknown> | null) => (value ? JSON.stringify(value) : null),
-    consume: (value: string | null) => (value ? JSON.parse(value) : null),
+    consume: (value: string | Record<string, unknown> | null) => {
+      if (!value) return null
+      if (typeof value === 'string') return JSON.parse(value)
+      return value
+    },
   })
   declare metadata: Record<string, unknown> | null
 

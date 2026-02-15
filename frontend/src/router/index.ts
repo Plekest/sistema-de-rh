@@ -444,6 +444,13 @@ const router = createRouter({
         },
       ],
     },
+
+    // Rota 404 - catch-all (deve ser a ultima)
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: () => import('@/modules/common/views/NotFoundView.vue'),
+    },
   ],
 })
 

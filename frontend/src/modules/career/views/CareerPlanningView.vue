@@ -124,11 +124,12 @@ function openSuccessionModal(plan?: SuccessionPlan) {
 async function savePath() {
   try {
     error.value = null
-    if (pathForm.value.id) {
-      await careerService.updatePath(pathForm.value.id, pathForm.value)
+    const { id, ...pathPayload } = pathForm.value
+    if (id) {
+      await careerService.updatePath(id, pathPayload)
       successMessage.value = 'Plano atualizado com sucesso'
     } else {
-      await careerService.createPath(pathForm.value)
+      await careerService.createPath(pathPayload)
       successMessage.value = 'Plano criado com sucesso'
     }
     setTimeout(() => { successMessage.value = null }, 3000)
@@ -142,11 +143,12 @@ async function savePath() {
 async function saveSuccessionPlan() {
   try {
     error.value = null
-    if (successionForm.value.id) {
-      await careerService.updateSuccessionPlan(successionForm.value.id, successionForm.value)
+    const { id, ...payload } = successionForm.value
+    if (id) {
+      await careerService.updateSuccessionPlan(id, payload)
       successMessage.value = 'Plano de sucessão atualizado'
     } else {
-      await careerService.createSuccessionPlan(successionForm.value)
+      await careerService.createSuccessionPlan(payload)
       successMessage.value = 'Plano de sucessão criado'
     }
     setTimeout(() => { successMessage.value = null }, 3000)
