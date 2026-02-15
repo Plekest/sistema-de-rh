@@ -4,6 +4,7 @@ import Department from '#models/department'
 import PayrollComponent from '#models/payroll_component'
 import EmployeeHistoryService from '#services/employee_history_service'
 import NotificationService from '#services/notification_service'
+import AuditLogService from '#services/audit_log_service'
 import { generateRandomPassword } from '#utils/password_generator'
 import { DateTime } from 'luxon'
 
@@ -148,6 +149,22 @@ export default class EmployeeService {
       currentUserId
     )
 
+    // Registra no audit log
+    await AuditLogService.log({
+      userId: currentUserId,
+      action: 'create',
+      resourceType: 'employee',
+      resourceId: employee.id,
+      description: `Colaborador ${employee.fullName} cadastrado no sistema`,
+      newValues: {
+        fullName: employee.fullName,
+        email: employee.email,
+        type: employee.type,
+        departmentId: employee.departmentId,
+        positionId: employee.positionId,
+      },
+    })
+
     return { employee, temporaryPassword }
   }
 
@@ -287,6 +304,27 @@ export default class EmployeeService {
 
     await employee.load('department')
     await employee.load('position')
+
+    // Registra no audit log
+    const changedFields: Record<string, any> = {}
+    if (data.fullName !== undefined) changedFields.fullName = data.fullName
+    if (data.email !== undefined) changedFields.email = data.email
+    if (data.departmentId !== undefined) changedFields.departmentId = data.departmentId
+    if (data.positionId !== undefined) changedFields.positionId = data.positionId
+    if (data.salary !== undefined) changedFields.salary = data.salary
+    if (data.status !== undefined) changedFields.status = data.status
+
+    if (Object.keys(changedFields).length > 0) {
+      await AuditLogService.log({
+        userId: currentUserId,
+        action: 'update',
+        resourceType: 'employee',
+        resourceId: employee.id,
+        description: `Colaborador ${employee.fullName} atualizado`,
+        newValues: changedFields,
+      })
+    }
+
     return employee
   }
 
@@ -380,6 +418,17 @@ export default class EmployeeService {
       'terminated',
       currentUserId
     ).catch(() => {})
+
+    // Registra no audit log
+    await AuditLogService.log({
+      userId: currentUserId,
+      action: 'delete',
+      resourceType: 'employee',
+      resourceId: employee.id,
+      description: `Colaborador ${employee.fullName} desligado`,
+      oldValues: { status: oldStatus },
+      newValues: { status: 'terminated' },
+    })
 
     return employee
   }

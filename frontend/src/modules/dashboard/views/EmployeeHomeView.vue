@@ -7,6 +7,7 @@ import attendanceService from '@/modules/attendance/services/attendance.service'
 import type { EmployeeDashboard } from '../types'
 import type { TimeEntry } from '@/modules/attendance/types'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import BirthdaysWidget from '../components/BirthdaysWidget.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -365,6 +366,9 @@ onUnmounted(() => {
         </div>
         <span class="payslip-action">Ver detalhes do contracheque &rarr;</span>
       </div>
+
+      <!-- Birthdays Widget -->
+      <BirthdaysWidget compact />
     </template>
   </div>
 </template>

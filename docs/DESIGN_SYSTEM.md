@@ -652,4 +652,213 @@ Ao criar um novo componente, garanta:
 
 ---
 
+## Novos Componentes - Fase 1
+
+### Command Palette
+
+Atalho de teclado global para navegação rápida no sistema.
+
+**Tokens CSS:**
+```css
+--palette-max-width: 600px;
+--palette-margin-top: 15vh;
+--palette-input-height: 56px;
+--palette-item-height: 48px;
+--palette-overlay-bg: rgba(0, 0, 0, 0.5);  /* Light mode */
+--palette-overlay-bg: rgba(0, 0, 0, 0.7);  /* Dark mode */
+--palette-result-hover-bg: var(--color-bg-hover);
+```
+
+**Estrutura Visual:**
+- Overlay com backdrop escuro
+- Container centralizado, max-width 600px
+- Input de busca com altura de 56px (maior para facilitar uso)
+- Lista de resultados com cada item tendo 48px de altura
+- Highlight no resultado selecionado via teclado
+
+**Atalhos de Teclado:**
+- `Ctrl+K` ou `Cmd+K`: Abrir palette
+- `Escape`: Fechar palette
+- `Arrow Up/Down`: Navegar entre resultados
+- `Enter`: Selecionar resultado ativo
+
+**Acessibilidade:**
+- `role="dialog"` no container
+- `aria-label="Command Palette"` ou similar
+- `aria-activedescendant` apontando para item ativo
+- Focus trap: Tab não deve sair do palette enquanto aberto
+- Navegação por teclado funcional sem mouse
+
+**Responsividade:**
+- Desktop: centralizado com margin-top de 15vh
+- Mobile: full-width com padding lateral mínimo, margin-top reduzido para 10vh
+
+---
+
+### Team Calendar
+
+Calendário visual para visualizar eventos da equipe (férias, aniversários, feriados).
+
+**Tokens CSS:**
+```css
+--calendar-cell-size: 120px;              /* Desktop */
+--calendar-cell-size-mobile: 40px;        /* Mobile */
+--calendar-today-bg: var(--color-primary);
+--calendar-today-color: #ffffff;
+--calendar-event-leave: var(--color-info);
+--calendar-event-birthday: var(--color-secondary);
+--calendar-event-holiday: var(--color-success);
+--calendar-other-month-opacity: 0.4;
+```
+
+**Cores por Tipo de Evento:**
+- Férias/Licenças: `var(--calendar-event-leave)` (azul info)
+- Aniversários: `var(--calendar-event-birthday)` (roxo secundário)
+- Feriados: `var(--calendar-event-holiday)` (verde sucesso)
+
+**Layout do Grid:**
+- Desktop: grid 7 colunas (dias da semana), células de 120x120px
+- Tablet (768px): células de 80x80px
+- Mobile (480px): células de 40x40px, layout compacto
+
+**Comportamento:**
+- Dia atual: destaque com background primário e texto branco
+- Dias de outro mês: opacity de 0.4
+- Dias clicáveis: cursor pointer + hover state
+- Eventos: pequenos indicadores coloridos (dots ou badges) abaixo da data
+
+**Acessibilidade:**
+- `role="grid"` no container do calendário
+- `aria-label` com mês/ano atual
+- Dias navegáveis por teclado (Tab + Enter para abrir detalhes)
+- Contraste adequado em todos os estados
+
+---
+
+### Audit Log
+
+Tabela de registro de ações do sistema (criar, editar, deletar, login, etc.).
+
+**Tokens CSS:**
+```css
+--audit-action-create: var(--color-success);
+--audit-action-update: var(--color-info);
+--audit-action-delete: var(--color-danger);
+--audit-action-login: var(--color-secondary);
+--audit-action-approve: var(--color-success);
+--audit-action-reject: var(--color-danger);
+--audit-action-process: var(--color-warning);
+--audit-action-export: var(--color-primary);
+```
+
+**Cores por Tipo de Ação:**
+| Ação | Cor | Token |
+|------|-----|-------|
+| Create | Verde | `--audit-action-create` |
+| Update | Azul | `--audit-action-update` |
+| Delete | Vermelho | `--audit-action-delete` |
+| Login | Roxo | `--audit-action-login` |
+| Approve | Verde | `--audit-action-approve` |
+| Reject | Vermelho | `--audit-action-reject` |
+| Process | Laranja | `--audit-action-process` |
+| Export | Primário | `--audit-action-export` |
+
+**Layout da Tabela:**
+- Colunas: Data/Hora | Usuário | Ação | Detalhes
+- Linha expansível para mostrar JSON de mudanças (opcional)
+- Badge colorido para tipo de ação
+
+**Responsividade:**
+- Desktop: tabela completa com todas as colunas
+- Tablet (768px): esconder coluna "Detalhes", mostrar em linha expansível
+- Mobile (480px): layout card-based em vez de tabela, overflow-x: auto como fallback
+
+**Acessibilidade:**
+- Tabela semântica (`<table>`, `<thead>`, `<tbody>`)
+- Headers de coluna com `scope="col"`
+- Badges com texto acessível (não apenas cor)
+
+---
+
+### Birthday Widget
+
+Widget compacto mostrando próximos aniversários da equipe.
+
+**Tokens CSS:**
+```css
+--birthday-avatar-size: 40px;
+--birthday-avatar-bg: var(--color-primary-light);      /* Light mode */
+--birthday-avatar-bg: rgba(102, 126, 234, 0.15);       /* Dark mode */
+--birthday-avatar-color: var(--color-primary);
+--birthday-today-bg: var(--color-warning-light);       /* Light mode */
+--birthday-today-bg: rgba(246, 173, 85, 0.12);         /* Dark mode */
+--birthday-today-border: var(--color-warning);
+```
+
+**Layout do Avatar com Iniciais:**
+```html
+<div class="birthday-avatar">JD</div>
+```
+```css
+.birthday-avatar {
+  width: var(--birthday-avatar-size);
+  height: var(--birthday-avatar-size);
+  border-radius: var(--radius-full);
+  background: var(--birthday-avatar-bg);
+  color: var(--birthday-avatar-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+```
+
+**Destaque de "Hoje":**
+- Card com background `--birthday-today-bg`
+- Borda esquerda com `--birthday-today-border` (3px)
+- Badge "Hoje!" em destaque
+
+**Lista de Aniversários:**
+- Ordenados por data mais próxima
+- Máximo de 5 itens visíveis
+- Avatar + Nome + Data
+- Aniversário de hoje aparece primeiro com destaque
+
+**Responsividade:**
+- Desktop: card lateral no dashboard
+- Mobile: full-width, scroll horizontal se necessário
+
+---
+
+### Recruitment Module - Specific Patterns
+
+Os componentes de recrutamento seguem padrões específicos documentados abaixo.
+
+**Status Badges (Vagas):**
+- `pending_approval`: Amarelo/warning
+- `approved`: Verde/success
+- `open`: Azul/info
+- `filled`: Verde escuro/success-dark
+- `cancelled`: Vermelho/danger
+
+**Status Badges (Candidatos):**
+- `active`: Azul/info
+- `hired`: Verde/success
+- `rejected`: Vermelho/danger
+- `withdrawn`: Cinza/neutral
+
+**Pipeline (Kanban Board):**
+- Grid responsivo: `repeat(auto-fit, minmax(250px, 1fr))`
+- Mobile: 1 coluna por vez
+- Drag & drop visual (futuro): usar `cursor: grab` e feedback de drop zone
+
+**Filtros Múltiplos:**
+- Layout horizontal em desktop
+- Layout vertical (stack) em mobile (768px)
+- Todos os selects com mesmo height (40px)
+- Labels uppercase, font-size 12px, letter-spacing 0.025em
+
+---
+
 Atualizado em: 2026-02-14

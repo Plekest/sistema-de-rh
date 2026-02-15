@@ -75,3 +75,11 @@ export interface EmployeeDashboard {
     hoursTotal: string
   }
 }
+
+export interface BirthdayEmployee {
+  id: number
+  fullName: string
+  birthDate: string
+  daysUntil: number
+  isToday: boolean
+}

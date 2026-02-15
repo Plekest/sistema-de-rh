@@ -306,4 +306,50 @@ export default class DashboardService {
       attendanceThisMonth,
     }
   }
+
+  async getBirthdays(days: number = 30) {
+    const now = DateTime.now()
+    const employees = await Employee.query()
+      .where('status', 'active')
+      .whereNotNull('birth_date')
+      .preload('department')
+
+    const birthdays = []
+
+    for (const employee of employees) {
+      if (!employee.birthDate) continue
+
+      // Calcula o aniversario no ano atual
+      const birthdayThisYear = DateTime.fromObject({
+        year: now.year,
+        month: employee.birthDate.month,
+        day: employee.birthDate.day,
+      })
+
+      // Calcula quantos dias faltam
+      let daysUntil = birthdayThisYear.diff(now, 'days').days
+
+      // Se o aniversario ja passou este ano, considera o proximo ano
+      if (daysUntil < 0) {
+        const birthdayNextYear = birthdayThisYear.plus({ years: 1 })
+        daysUntil = birthdayNextYear.diff(now, 'days').days
+      }
+
+      // Se esta dentro do range solicitado
+      if (daysUntil >= 0 && daysUntil <= days) {
+        birthdays.push({
+          id: employee.id,
+          fullName: employee.fullName,
+          birthDate: employee.birthDate.toFormat('yyyy-MM-dd'),
+          department: employee.department?.name || 'N/A',
+          daysUntil: Math.floor(daysUntil),
+        })
+      }
+    }
+
+    // Ordena por dias ate o aniversario (mais proximo primeiro)
+    birthdays.sort((a, b) => a.daysUntil - b.daysUntil)
+
+    return { birthdays }
+  }
 }

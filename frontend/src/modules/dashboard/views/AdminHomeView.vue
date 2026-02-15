@@ -6,6 +6,7 @@ import dashboardService from '../services/dashboard.service'
 import type { AdminDashboard } from '../types'
 import BarChart from '@/components/common/BarChart.vue'
 import DonutChart from '@/components/common/DonutChart.vue'
+import BirthdaysWidget from '../components/BirthdaysWidget.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -273,6 +274,9 @@ onMounted(async () => {
               </div>
             </div>
           </div>
+
+          <!-- Birthdays Widget -->
+          <BirthdaysWidget />
         </div>
       </div>
     </template>

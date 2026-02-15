@@ -272,6 +272,41 @@
   --filter-bar-padding: 1rem 1.25rem;
   --filter-bar-border-radius: var(--radius-lg);
   --filter-label-font-size: var(--font-size-xs);
+
+  /* Command Palette */
+  --palette-max-width: 600px;
+  --palette-margin-top: 15vh;
+  --palette-input-height: 56px;
+  --palette-item-height: 48px;
+  --palette-overlay-bg: rgba(0, 0, 0, 0.5);
+  --palette-result-hover-bg: var(--color-bg-hover);
+
+  /* Calendar */
+  --calendar-cell-size: 120px;
+  --calendar-cell-size-mobile: 40px;
+  --calendar-today-bg: var(--color-primary);
+  --calendar-today-color: #ffffff;
+  --calendar-event-leave: var(--color-info);
+  --calendar-event-birthday: var(--color-secondary);
+  --calendar-event-holiday: var(--color-success);
+  --calendar-other-month-opacity: 0.4;
+
+  /* Audit Log */
+  --audit-action-create: var(--color-success);
+  --audit-action-update: var(--color-info);
+  --audit-action-delete: var(--color-danger);
+  --audit-action-login: var(--color-secondary);
+  --audit-action-approve: var(--color-success);
+  --audit-action-reject: var(--color-danger);
+  --audit-action-process: var(--color-warning);
+  --audit-action-export: var(--color-primary);
+
+  /* Birthday Widget */
+  --birthday-avatar-size: 40px;
+  --birthday-avatar-bg: var(--color-primary-light);
+  --birthday-avatar-color: var(--color-primary);
+  --birthday-today-bg: var(--color-warning-light);
+  --birthday-today-border: var(--color-warning);
 }
 
 /* ==========================================================================
@@ -349,4 +384,11 @@
   --table-row-border-color: #1a202c;
   --table-row-hover-bg: #1f2937;
   --table-header-bg: rgba(255, 255, 255, 0.02);
+
+  /* Command Palette - dark mode */
+  --palette-overlay-bg: rgba(0, 0, 0, 0.7);
+
+  /* Birthday Widget - dark mode */
+  --birthday-avatar-bg: rgba(102, 126, 234, 0.15);
+  --birthday-today-bg: rgba(246, 173, 85, 0.12);
 }

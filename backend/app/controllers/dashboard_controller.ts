@@ -44,4 +44,22 @@ export default class DashboardController {
       })
     }
   }
+
+  async birthdays({ request, response }: HttpContext) {
+    try {
+      const days = request.input('days', 30)
+      const daysNumber = Number(days)
+
+      if (isNaN(daysNumber) || daysNumber < 1 || daysNumber > 365) {
+        return response.badRequest({ message: 'Parametro days deve ser entre 1 e 365' })
+      }
+
+      const result = await this.service.getBirthdays(daysNumber)
+      return response.ok({ data: result })
+    } catch (error) {
+      return response.badRequest({
+        message: error.message || 'Erro ao buscar aniversariantes',
+      })
+    }
+  }
 }

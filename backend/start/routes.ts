@@ -30,6 +30,10 @@ const RecruitmentController = () => import('#controllers/recruitment_controller'
 const NotificationsController = () => import('#controllers/notifications_controller')
 const TrainingsController = () => import('#controllers/trainings_controller')
 const ReportsController = () => import('#controllers/reports_controller')
+const SearchController = () => import('#controllers/search_controller')
+const CalendarController = () => import('#controllers/calendar_controller')
+const AuditLogsController = () => import('#controllers/audit_logs_controller')
+const DataChangeRequestsController = () => import('#controllers/data_change_requests_controller')
 
 router.get('/', async () => {
   return {
@@ -73,6 +77,7 @@ router
     // --- Dashboard ---
     router.get('dashboard/admin', [DashboardController, 'admin'])
     router.get('dashboard/employee', [DashboardController, 'employee'])
+    router.get('dashboard/birthdays', [DashboardController, 'birthdays'])
 
     // --- Departamentos ---
     router.get('departments', [DepartmentsController, 'index'])
@@ -249,6 +254,7 @@ router
     // Controller filtra por role: employee ve apenas os proprios
     router.get('payroll/slips', [PayrollController, 'employeeSlips'])
     router.get('payroll/slips/:id', [PayrollController, 'slipDetail'])
+    router.get('payroll/slips/:id/pdf', [PayrollController, 'downloadPdf'])
 
     // --- Componentes Salariais ---
     router.get('employees/:employeeId/payroll-components', [PayrollController, 'components'])
@@ -415,6 +421,26 @@ router
         router.get('trainings/csv', [ReportsController, 'trainingsCSV'])
       })
       .prefix('reports')
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+
+    // --- Busca Global ---
+    router.get('search', [SearchController, 'search'])
+
+    // --- Calendario de Equipe ---
+    router.get('calendar', [CalendarController, 'index'])
+
+    // --- Audit Logs (admin only) ---
+    router.get('audit-logs', [AuditLogsController, 'index']).use(middleware.role({ roles: ['admin'] }))
+
+    // --- Solicitacoes de Alteracao de Dados (Self-Service) ---
+    router.post('data-change-requests', [DataChangeRequestsController, 'store'])
+    router.get('data-change-requests', [DataChangeRequestsController, 'index'])
+    router.get('data-change-requests/:id', [DataChangeRequestsController, 'show'])
+    router
+      .put('data-change-requests/:id/approve', [DataChangeRequestsController, 'approve'])
+      .use(middleware.role({ roles: ['admin', 'manager'] }))
+    router
+      .put('data-change-requests/:id/reject', [DataChangeRequestsController, 'reject'])
       .use(middleware.role({ roles: ['admin', 'manager'] }))
   })
   .prefix('api/v1')

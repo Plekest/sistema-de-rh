@@ -780,4 +780,12 @@ export default class PayrollService {
       entries,
     }
   }
+
+  /**
+   * Retorna um contracheque por ID (para PDF)
+   */
+  async getPaySlipById(slipId: number) {
+    const slip = await PaySlip.query().where('id', slipId).firstOrFail()
+    return slip
+  }
 }

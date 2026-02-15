@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import AuthService from '#services/auth_service'
+import AuditLogService from '#services/audit_log_service'
 import { loginValidator, registerValidator, forgotPasswordValidator, resetPasswordValidator } from '#validators/auth_validator'
 
 export default class AuthController {
@@ -14,15 +15,38 @@ export default class AuthController {
    * Autentica o usuario e retorna um access token
    */
   async login({ request, response }: HttpContext) {
+    let data: any = null
     try {
-      const data = await request.validateUsing(loginValidator)
+      data = await request.validateUsing(loginValidator)
       const result = await this.authService.login(data.email, data.password)
+
+      // Registra login bem-sucedido no audit log
+      await AuditLogService.log({
+        userId: result.user.id,
+        action: 'login',
+        resourceType: 'auth',
+        resourceId: result.user.id,
+        description: `Login realizado com sucesso para ${result.user.email}`,
+        ipAddress: request.ip(),
+        userAgent: request.header('user-agent'),
+      })
 
       return response.ok({
         token: result.token.value!.release(),
         user: result.user,
       })
     } catch (error) {
+      // Registra tentativa de login falhada
+      await AuditLogService.log({
+        userId: null,
+        action: 'login',
+        resourceType: 'auth',
+        resourceId: null,
+        description: `Tentativa de login falhada para ${data?.email || 'email desconhecido'}`,
+        ipAddress: request.ip(),
+        userAgent: request.header('user-agent'),
+      })
+
       return response.unauthorized({
         message: error.message || 'Credenciais invalidas',
       })
@@ -33,12 +57,23 @@ export default class AuthController {
    * POST /api/v1/auth/logout
    * Revoga o token atual do usuário autenticado
    */
-  async logout({ auth, response }: HttpContext) {
+  async logout({ auth, request, response }: HttpContext) {
     try {
       const user = auth.getUserOrFail()
 
       // Revoga todos os tokens do usuário
       await this.authService.logout(user)
+
+      // Registra logout no audit log
+      await AuditLogService.log({
+        userId: user.id,
+        action: 'logout',
+        resourceType: 'auth',
+        resourceId: user.id,
+        description: `Logout realizado para ${user.email}`,
+        ipAddress: request.ip(),
+        userAgent: request.header('user-agent'),
+      })
 
       return response.ok({ message: 'Logout realizado com sucesso' })
     } catch (error) {

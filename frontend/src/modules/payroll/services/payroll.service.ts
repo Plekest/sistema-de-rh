@@ -110,6 +110,16 @@ class PayrollService {
     const response = await api.post<{ data: PayrollEntry }>('/payroll/entries', data)
     return response.data.data
   }
+
+  /**
+   * Baixa contracheque em PDF
+   */
+  async downloadPDF(slipId: number): Promise<Blob> {
+    const response = await api.get(`/payroll/slips/${slipId}/pdf`, {
+      responseType: 'blob',
+    })
+    return response.data
+  }
 }
 
 export default new PayrollService()

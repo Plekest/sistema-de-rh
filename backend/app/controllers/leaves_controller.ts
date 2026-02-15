@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import LeaveService from '#services/leave_service'
+import AuditLogService from '#services/audit_log_service'
 import {
   createLeaveValidator,
   approveRejectLeaveValidator,
@@ -103,6 +104,16 @@ export default class LeavesController {
     try {
       const approverUserId = auth.user!.id
       const leave = await this.service.approve(params.id, approverUserId)
+
+      // Registra no audit log
+      await AuditLogService.log({
+        userId: approverUserId,
+        action: 'approve',
+        resourceType: 'leave',
+        resourceId: leave.id,
+        description: `Solicitação de férias/licença aprovada para colaborador ID ${leave.employeeId}`,
+      })
+
       return response.ok({ data: leave })
     } catch (error) {
       if (error.code === 'E_ROW_NOT_FOUND') {
@@ -121,6 +132,16 @@ export default class LeavesController {
       const data = await request.validateUsing(approveRejectLeaveValidator)
       const approverUserId = auth.user!.id
       const leave = await this.service.reject(params.id, approverUserId, data.rejectionReason)
+
+      // Registra no audit log
+      await AuditLogService.log({
+        userId: approverUserId,
+        action: 'reject',
+        resourceType: 'leave',
+        resourceId: leave.id,
+        description: `Solicitação de férias/licença rejeitada para colaborador ID ${leave.employeeId}`,
+      })
+
       return response.ok({ data: leave })
     } catch (error) {
       if (error.messages) {

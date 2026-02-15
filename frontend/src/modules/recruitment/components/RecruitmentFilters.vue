@@ -144,46 +144,51 @@ const emit = defineEmits<{
 <style scoped>
 .filters-bar {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: var(--space-8);
+  margin-bottom: var(--space-12);
   flex-wrap: wrap;
   background: var(--color-bg-card);
-  padding: 1rem 1.25rem;
-  border-radius: 8px;
-  border: 1px solid var(--color-border);
+  padding: var(--filter-bar-padding);
+  border-radius: var(--filter-bar-border-radius);
+  border: var(--border-width) solid var(--color-border);
   transition: background-color var(--transition-slow), border-color var(--transition-slow);
 }
 
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-2);
   min-width: 150px;
 }
 
 .filter-group label {
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: var(--filter-label-font-size);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.025em;
+  transition: color var(--transition-slow);
 }
 
 .filter-group select,
 .filter-group input {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: 5px;
-  font-size: 0.875rem;
+  height: var(--input-height);
+  padding: var(--input-padding-y) var(--input-padding-x);
+  border: var(--border-width) solid var(--input-border-color);
+  border-radius: var(--input-border-radius);
+  font-size: var(--font-size-base);
   color: var(--color-text-secondary);
   background: var(--color-bg-input);
   outline: none;
-  transition: border-color 0.2s, background-color var(--transition-slow), color var(--transition-slow);
+  transition: border-color var(--transition-base),
+              background-color var(--transition-slow),
+              color var(--transition-slow);
 }
 
 .filter-group select:focus,
 .filter-group input:focus {
   border-color: var(--color-border-focus);
+  box-shadow: var(--input-focus-ring);
 }
 
 @media (max-width: 768px) {

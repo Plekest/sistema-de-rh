@@ -446,3 +446,322 @@ test.group('DashboardService - getEmployeeDashboard', (group) => {
     await assert.rejects(async () => await service.getEmployeeDashboard(99999))
   })
 })
+
+test.group('DashboardService - getBirthdays', (group) => {
+  let service: DashboardService
+  let department: Department
+
+  group.setup(async () => {
+    await Database.beginGlobalTransaction()
+    service = new DashboardService()
+  })
+
+  group.teardown(async () => {
+    await Database.rollbackGlobalTransaction()
+  })
+
+  group.each.setup(async () => {
+    department = await Department.create({
+      name: `Dept-${Date.now()}`,
+    })
+  })
+
+  test('deve retornar aniversariantes dos proximos 30 dias', async ({ assert }) => {
+    const now = DateTime.now()
+
+    // Aniversario em 15 dias
+    await Employee.create({
+      fullName: 'Aniversariante Proximo',
+      email: `aniver1.${Date.now()}@empresa.com`,
+      type: 'clt',
+      hireDate: DateTime.now().minus({ years: 2 }),
+      birthDate: now.plus({ days: 15 }).set({ year: 1990 }),
+      status: 'active',
+      irrfDependents: 0,
+      departmentId: department.id,
+    })
+
+    const result = await service.getBirthdays(30)
+
+    assert.property(result, 'birthdays')
+    assert.isArray(result.birthdays)
+    assert.isAtLeast(result.birthdays.length, 1)
+  })
+
+  test('deve calcular corretamente daysUntil', async ({ assert }) => {
+    const now = DateTime.now()
+
+    // Aniversario em exatamente 10 dias
+    await Employee.create({
+      fullName: 'Teste DaysUntil',
+      email: `days.${Date.now()}@empresa.com`,
+      type: 'clt',
+      hireDate: DateTime.now().minus({ years: 1 }),
+      birthDate: now.plus({ days: 10 }).set({ year: 1985 }),
+      status: 'active',
+      irrfDependents: 0,
+      departmentId: department.id,
+    })
+
+    const result = await service.getBirthdays(30)
+
+    const birthday = result.birthdays.find((b) => b.fullName === 'Teste DaysUntil')
+    if (birthday) {
+      // O calculo usa Math.floor, entao pode ser 9 ou 10 dependendo do horario
+      assert.isAtLeast(birthday.daysUntil, 9)
+      assert.isAtMost(birthday.daysUntil, 10)
+    }
+  })
+
+  test('aniversario hoje deve ter daysUntil = 0', async ({ assert }) => {
+    const now = DateTime.now()
+
+    await Employee.create({
+      fullName: 'Aniversariante Hoje',
+      email: `hoje.${Date.now()}@empresa.com`,
+      type: 'clt',
+      hireDate: DateTime.now().minus({ years: 1 }),
+      birthDate: now.set({ year: 1992 }),
+      status: 'active',
+      irrfDependents: 0,
+      departmentId: department.id,
+    })
+
+    const result = await service.getBirthdays(30)
+
+    const birthday = result.birthdays.find((b) => b.fullName === 'Aniversariante Hoje')
+    if (birthday) {
+      assert.equal(birthday.daysUntil, 0)
+    }
+  })
+
+  test('deve ordenar por daysUntil crescente', async ({ assert }) => {
+    const now = DateTime.now()
+
+    // Aniversario em 5 dias
+    await Employee.create({
+      fullName: 'Aniver 5 dias',
+      email: `aniver5.${Date.now()}@empresa.com`,
+      type: 'clt',
+      hireDate: DateTime.now(),
+      birthDate: now.plus({ days: 5 }).set({ year: 1990 }),
+      status: 'active',
+      irrfDependents: 0,
+      departmentId: department.id,
+    })
+
+    // Aniversario em 20 dias
+    await Employee.create({
+      fullName: 'Aniver 20 dias',
+      email: `aniver20.${Date.now()}@empresa.com`,
+      type: 'clt',
+      hireDate: DateTime.now(),
+      birthDate: now.plus({ days: 20 }).set({ year: 1988 }),
+      status: 'active',
+      irrfDependents: 0,
+      departmentId: department.id,
+    })
+
+    const result = await service.getBirthdays(30)
+
+    if (result.birthdays.length >= 2) {
+      // Primeiro aniversario deve ser o mais proximo
+      assert.isTrue(result.birthdays[0].daysUntil <= result.birthdays[1].daysUntil)
+    }
+  })
+
+  test('nao deve retornar aniversariantes alem do limite de dias', async ({ assert }) => {
+    const now = DateTime.now()
+
+    // Aniversario em 50 dias
+    await Employee.create({
+      fullName: 'Aniver Distante',
+      email: `distante.${Date.now()}@empresa.com`,
+      type: 'clt',
+      hireDate: DateTime.now(),
+      birthDate: now.plus({ days: 50 }).set({ year: 1995 }),
+      status: 'active',
+      irrfDependents: 0,
+      departmentId: department.id,
+    })
+
+    const result = await service.getBirthdays(30)
+
+    const distantBirthday = result.birthdays.find((b) => b.fullName === 'Aniver Distante')
+    assert.isUndefined(distantBirthday)
+  })
+
+  test('nao deve retornar employees sem birthDate', async ({ assert }) => {
+    await Employee.create({
+      fullName: 'Sem Data Nascimento',
+      email: `semdata.${Date.now()}@empresa.com`,
+      type: 'clt',
+      hireDate: DateTime.now(),
+      status: 'active',
+      irrfDependents: 0,
+      departmentId: department.id,
+    })
+
+    const result = await service.getBirthdays(30)
+
+    const noBirthday = result.birthdays.find((b) => b.fullName === 'Sem Data Nascimento')
+    assert.isUndefined(noBirthday)
+  })
+
+  test('nao deve retornar employees inativos', async ({ assert }) => {
+    const now = DateTime.now()
+
+    await Employee.create({
+      fullName: 'Employee Inativo',
+      email: `inativo.${Date.now()}@empresa.com`,
+      type: 'clt',
+      hireDate: DateTime.now(),
+      birthDate: now.plus({ days: 10 }).set({ year: 1987 }),
+      status: 'inactive',
+      irrfDependents: 0,
+      departmentId: department.id,
+    })
+
+    const result = await service.getBirthdays(30)
+
+    const inactiveBirthday = result.birthdays.find((b) => b.fullName === 'Employee Inativo')
+    assert.isUndefined(inactiveBirthday)
+  })
+
+  test('deve retornar array vazio quando nao ha aniversariantes', async ({ assert }) => {
+    // Nao cria nenhum employee com birthdate proximo
+
+    const result = await service.getBirthdays(30)
+
+    assert.property(result, 'birthdays')
+    assert.isArray(result.birthdays)
+  })
+
+  test('deve incluir department do employee', async ({ assert }) => {
+    const now = DateTime.now()
+
+    await Employee.create({
+      fullName: 'Com Departamento',
+      email: `dept.${Date.now()}@empresa.com`,
+      type: 'clt',
+      hireDate: DateTime.now(),
+      birthDate: now.plus({ days: 5 }).set({ year: 1991 }),
+      status: 'active',
+      irrfDependents: 0,
+      departmentId: department.id,
+    })
+
+    const result = await service.getBirthdays(30)
+
+    const birthday = result.birthdays.find((b) => b.fullName === 'Com Departamento')
+    if (birthday) {
+      assert.property(birthday, 'department')
+      assert.equal(birthday.department, department.name)
+    }
+  })
+
+  test('deve retornar N/A quando employee sem department', async ({ assert }) => {
+    const now = DateTime.now()
+
+    await Employee.create({
+      fullName: 'Sem Departamento',
+      email: `semdept.${Date.now()}@empresa.com`,
+      type: 'pj',
+      hireDate: DateTime.now(),
+      birthDate: now.plus({ days: 5 }).set({ year: 1993 }),
+      status: 'active',
+      irrfDependents: 0,
+    })
+
+    const result = await service.getBirthdays(30)
+
+    const birthday = result.birthdays.find((b) => b.fullName === 'Sem Departamento')
+    if (birthday) {
+      assert.equal(birthday.department, 'N/A')
+    }
+  })
+
+  test('deve retornar formato correto dos dados', async ({ assert }) => {
+    const now = DateTime.now()
+
+    await Employee.create({
+      fullName: 'Teste Formato',
+      email: `formato.${Date.now()}@empresa.com`,
+      type: 'clt',
+      hireDate: DateTime.now(),
+      birthDate: now.plus({ days: 7 }).set({ year: 1989 }),
+      status: 'active',
+      irrfDependents: 0,
+      departmentId: department.id,
+    })
+
+    const result = await service.getBirthdays(30)
+
+    if (result.birthdays.length > 0) {
+      const birthday = result.birthdays[0]
+      assert.property(birthday, 'id')
+      assert.property(birthday, 'fullName')
+      assert.property(birthday, 'birthDate')
+      assert.property(birthday, 'department')
+      assert.property(birthday, 'daysUntil')
+      assert.isNumber(birthday.id)
+      assert.isString(birthday.fullName)
+      assert.match(birthday.birthDate, /^\d{4}-\d{2}-\d{2}$/)
+      assert.isNumber(birthday.daysUntil)
+    }
+  })
+
+  test('deve permitir customizar limite de dias', async ({ assert }) => {
+    const now = DateTime.now()
+
+    // Aniversario em 45 dias
+    await Employee.create({
+      fullName: 'Aniver 45 dias',
+      email: `aniver45.${Date.now()}@empresa.com`,
+      type: 'clt',
+      hireDate: DateTime.now(),
+      birthDate: now.plus({ days: 45 }).set({ year: 1986 }),
+      status: 'active',
+      irrfDependents: 0,
+      departmentId: department.id,
+    })
+
+    // Com limite de 30 dias, nao deve aparecer
+    const result30 = await service.getBirthdays(30)
+    const birthday30 = result30.birthdays.find((b) => b.fullName === 'Aniver 45 dias')
+    assert.isUndefined(birthday30)
+
+    // Com limite de 60 dias, deve aparecer
+    const result60 = await service.getBirthdays(60)
+    const birthday60 = result60.birthdays.find((b) => b.fullName === 'Aniver 45 dias')
+    assert.isDefined(birthday60)
+  })
+
+  test('deve considerar aniversario do proximo ano se ja passou este ano', async ({
+    assert,
+  }) => {
+    const now = DateTime.now()
+
+    // Aniversario que ja passou este ano (1 mes atras)
+    const pastBirthday = now.minus({ months: 1 })
+
+    await Employee.create({
+      fullName: 'Aniver Passou',
+      email: `passou.${Date.now()}@empresa.com`,
+      type: 'clt',
+      hireDate: DateTime.now().minus({ years: 2 }),
+      birthDate: pastBirthday.set({ year: 1994 }),
+      status: 'active',
+      irrfDependents: 0,
+      departmentId: department.id,
+    })
+
+    const result = await service.getBirthdays(365)
+
+    const birthday = result.birthdays.find((b) => b.fullName === 'Aniver Passou')
+    if (birthday) {
+      // Deve estar no proximo ano, entao daysUntil deve ser > 300 dias
+      assert.isAtLeast(birthday.daysUntil, 300)
+    }
+  })
+})

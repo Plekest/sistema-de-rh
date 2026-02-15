@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import PayrollService from '#services/payroll_service'
+import AuditLogService from '#services/audit_log_service'
 import Employee from '#models/employee'
 import {
   createPayrollPeriodValidator,
@@ -162,9 +163,19 @@ export default class PayrollController {
    * Calcula a folha de pagamento de um periodo
    * POST /api/v1/payroll/periods/:id/calculate
    */
-  async calculatePayroll({ params, response }: HttpContext) {
+  async calculatePayroll({ params, auth, response }: HttpContext) {
     try {
       const slips = await this.service.calculatePayroll(params.id)
+
+      // Registra no audit log
+      await AuditLogService.log({
+        userId: auth.user?.id,
+        action: 'process',
+        resourceType: 'payroll',
+        resourceId: Number(params.id),
+        description: `Folha de pagamento processada para período ID ${params.id}. ${slips.length} contracheques gerados.`,
+      })
+
       return response.ok({ data: slips })
     } catch (error) {
       console.error('Erro ao calcular folha:', error)
@@ -282,6 +293,41 @@ export default class PayrollController {
         return response.notFound({ message: 'Contracheque nao encontrado' })
       }
       return response.badRequest({ message: error.message || 'Erro ao buscar detalhes' })
+    }
+  }
+
+  /**
+   * Baixar PDF do contracheque
+   * GET /api/v1/payroll/slips/:id/pdf
+   */
+  async downloadPdf({ params, auth, response }: HttpContext) {
+    try {
+      const user = auth.getUserOrFail()
+      const paySlip = await this.service.getPaySlipById(params.id)
+
+      // Employee pode baixar apenas seu proprio contracheque
+      if (user.role === 'employee') {
+        const employeeId = await this.getEmployeeIdForUser(user.id)
+        if (!employeeId || paySlip.employeeId !== employeeId) {
+          return response.forbidden({ message: 'Acesso negado a este contracheque' })
+        }
+      }
+
+      const PdfService = (await import('#services/pdf_service')).default
+      const pdfService = new PdfService()
+      const pdfStream = await pdfService.generatePaySlipPdf(paySlip)
+
+      response.header('Content-Type', 'application/pdf')
+      response.header(
+        'Content-Disposition',
+        `attachment; filename="contracheque_${paySlip.id}.pdf"`
+      )
+      response.stream(pdfStream)
+    } catch (error) {
+      if (error.code === 'E_ROW_NOT_FOUND') {
+        return response.notFound({ message: 'Contracheque nao encontrado' })
+      }
+      return response.badRequest({ message: error.message || 'Erro ao gerar PDF' })
     }
   }
 }

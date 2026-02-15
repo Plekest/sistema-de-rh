@@ -4,12 +4,15 @@ import { RouterView, RouterLink, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useNotifications } from '@/composables/useNotifications'
 import { useTheme } from '@/composables/useTheme'
+import { useCommandPalette } from '@/composables/useCommandPalette'
+import CommandPalette from '@/components/common/CommandPalette.vue'
 import type { UserPermissions } from '@/modules/auth/types'
 
 const route = useRoute()
 const authStore = useAuthStore()
 const { unreadCount } = useNotifications()
 const { theme, toggleTheme } = useTheme()
+const { open: openCommandPalette } = useCommandPalette()
 
 // Estado do menu mobile
 const isMobileMenuOpen = ref(false)
@@ -43,6 +46,7 @@ const menuItems = computed(() => {
     { name: 'Avaliacao', path: '/performance', module: 'performance' },
     { name: 'Recrutamento', path: '/recruitment', module: 'recruitment' },
     { name: 'Treinamentos', path: '/training', module: 'training' },
+    { name: 'Calendario', path: '/calendar', module: 'calendar' },
   ]
   if (!authStore.permissions) return all
   return all.filter(item => !item.module || authStore.permissions![item.module as keyof UserPermissions])
@@ -52,6 +56,7 @@ const menuItems = computed(() => {
 const adminMenuItems = [
   { name: 'Usuarios', path: '/users' },
   { name: 'Permissoes', path: '/admin/permissions' },
+  { name: 'Audit Log', path: '/audit-log' },
 ]
 
 /**
@@ -88,12 +93,17 @@ function getPageTitle(): string {
     return 'Usuarios'
   }
   if (path.startsWith('/admin/permissions')) return 'Permissoes'
+  if (path.startsWith('/audit-log')) return 'Audit Log'
+  if (path.startsWith('/calendar')) return 'Calendario de Equipe'
   return 'Sistema RH'
 }
 </script>
 
 <template>
   <div class="layout">
+    <!-- Command Palette -->
+    <CommandPalette />
+
     <!-- Overlay mobile -->
     <div
       v-if="isMobileMenuOpen"
@@ -162,6 +172,18 @@ function getPageTitle(): string {
           <h2 class="header-title">{{ getPageTitle() }}</h2>
         </div>
         <div class="header-right">
+          <button
+            class="cmd-k-btn"
+            @click="openCommandPalette"
+            aria-label="Abrir busca rápida"
+            title="Busca rápida (Ctrl+K)"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <kbd>Ctrl+K</kbd>
+          </button>
           <button
             class="theme-toggle"
             @click="toggleTheme"
@@ -412,6 +434,38 @@ function getPageTitle(): string {
   font-weight: var(--font-weight-medium);
 }
 
+/* Botao Ctrl+K */
+.cmd-k-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-6);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-subtle);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--font-size-sm);
+}
+
+.cmd-k-btn:hover {
+  color: var(--color-text-primary);
+  background: var(--color-bg-hover);
+  border-color: var(--color-border-hover);
+}
+
+.cmd-k-btn kbd {
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  background: var(--color-bg-card);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-xs);
+  padding: var(--space-1) var(--space-2);
+  font-family: monospace;
+}
+
 /* Toggle de tema */
 .theme-toggle {
   display: flex;
@@ -546,6 +600,10 @@ function getPageTitle(): string {
   }
 
   .header-user {
+    display: none;
+  }
+
+  .cmd-k-btn kbd {
     display: none;
   }
 

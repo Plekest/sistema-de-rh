@@ -29,7 +29,7 @@ function updateField(field: keyof CreateCandidateData, value: any) {
   <div v-if="show" class="form-card">
     <div class="form-header">
       <h2 class="form-title">Novo Candidato</h2>
-      <button class="btn-close" @click="emit('close')">Fechar</button>
+      <button class="btn-close" @click="emit('close')" aria-label="Fechar formulário de novo candidato">Fechar</button>
     </div>
 
     <div v-if="formError" class="alert alert-error" role="alert">{{ formError }}</div>
@@ -147,10 +147,10 @@ function updateField(field: keyof CreateCandidateData, value: any) {
 <style scoped>
 .form-card {
   background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-12);
+  margin-bottom: var(--space-12);
   transition: background-color var(--transition-slow), border-color var(--transition-slow);
 }
 
@@ -158,26 +158,29 @@ function updateField(field: keyof CreateCandidateData, value: any) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: var(--space-10);
 }
 
 .form-title {
-  font-size: 1.125rem;
-  font-weight: 600;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0;
+  transition: color var(--transition-slow);
 }
 
 .btn-close {
-  padding: 0.375rem 0.875rem;
+  padding: var(--space-3) var(--space-6);
   background: transparent;
   color: var(--color-text-muted);
-  border: 1px solid var(--color-border);
-  border-radius: 5px;
-  font-size: 0.813rem;
-  font-weight: 500;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color var(--transition-base),
+              color var(--transition-base),
+              border-color var(--transition-base);
 }
 
 .btn-close:hover {
@@ -185,29 +188,34 @@ function updateField(field: keyof CreateCandidateData, value: any) {
   color: var(--color-text-tertiary);
 }
 
+.btn-close:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
 .alert {
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
+  padding: var(--alert-padding-y) var(--alert-padding-x);
+  border-radius: var(--alert-border-radius);
+  font-size: var(--alert-font-size);
+  margin-bottom: var(--space-8);
 }
 
 .alert-error {
   background: var(--color-danger-light);
-  border: 1px solid #fed7d7;
+  border: var(--border-width) solid var(--color-danger-lighter);
   color: var(--color-danger-dark);
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  gap: var(--space-8);
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: var(--space-3);
 }
 
 .form-col-full {
@@ -215,28 +223,32 @@ function updateField(field: keyof CreateCandidateData, value: any) {
 }
 
 .form-group label {
-  font-size: 0.813rem;
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-tertiary);
+  transition: color var(--transition-slow);
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: 5px;
-  font-size: 0.875rem;
+  padding: var(--input-padding-y) var(--input-padding-x);
+  border: var(--border-width) solid var(--input-border-color);
+  border-radius: var(--input-border-radius);
+  font-size: var(--font-size-base);
   color: var(--color-text-secondary);
   background: var(--color-bg-input);
   outline: none;
-  transition: border-color 0.2s, background-color var(--transition-slow), color var(--transition-slow);
+  transition: border-color var(--transition-base),
+              background-color var(--transition-slow),
+              color var(--transition-slow);
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   border-color: var(--color-border-focus);
+  box-shadow: var(--input-focus-ring);
 }
 
 .form-group textarea {
@@ -248,25 +260,30 @@ function updateField(field: keyof CreateCandidateData, value: any) {
   grid-column: 1 / -1;
   display: flex;
   justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: 0.5rem;
+  gap: var(--space-6);
+  margin-top: var(--space-4);
 }
 
 .btn-primary {
-  padding: 0.625rem 1.25rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  padding: var(--btn-padding-y) var(--btn-padding-x);
+  background: var(--color-primary-gradient);
+  color: #ffffff;
   border: none;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 600;
+  border-radius: var(--btn-border-radius);
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition-base);
 }
 
 .btn-primary:hover:not(:disabled) {
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+  box-shadow: var(--shadow-primary);
   transform: translateY(-1px);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .btn-primary:disabled {
@@ -275,20 +292,27 @@ function updateField(field: keyof CreateCandidateData, value: any) {
 }
 
 .btn-secondary {
-  padding: 0.625rem 1.25rem;
+  padding: var(--btn-padding-y) var(--btn-padding-x);
   background: var(--color-bg-card);
   color: var(--color-text-tertiary);
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 600;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--btn-border-radius);
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color var(--transition-base),
+              border-color var(--transition-base),
+              color var(--transition-base);
 }
 
 .btn-secondary:hover:not(:disabled) {
   background: var(--color-bg-hover);
   border-color: var(--color-border-hover);
+}
+
+.btn-secondary:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .btn-secondary:disabled {
@@ -304,7 +328,7 @@ function updateField(field: keyof CreateCandidateData, value: any) {
 
 @media (max-width: 480px) {
   .form-card {
-    padding: 1rem;
+    padding: var(--space-8);
   }
 }
 </style>

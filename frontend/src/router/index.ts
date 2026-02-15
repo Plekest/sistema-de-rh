@@ -56,9 +56,13 @@ import TrainingListView from '@/modules/training/views/TrainingListView.vue'
 
 // Views - Admin
 import PermissionsView from '@/modules/admin/views/PermissionsView.vue'
+import AuditLogView from '@/modules/admin/views/AuditLogView.vue'
 
 // Views - Notifications
 import NotificationsView from '@/modules/notifications/views/NotificationsView.vue'
+
+// Views - Calendar
+import TeamCalendarView from '@/modules/calendar/views/TeamCalendarView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -245,6 +249,14 @@ const router = createRouter({
           component: NotificationsView,
         },
 
+        // Calendario de Equipe
+        {
+          path: 'calendar',
+          name: 'calendar',
+          component: TeamCalendarView,
+          meta: { module: 'calendar' },
+        },
+
         // Usuarios (admin)
         {
           path: 'users',
@@ -270,6 +282,14 @@ const router = createRouter({
           path: 'admin/permissions',
           name: 'admin-permissions',
           component: PermissionsView,
+          meta: { adminOnly: true },
+        },
+
+        // Audit Log (admin)
+        {
+          path: 'audit-log',
+          name: 'audit-log',
+          component: AuditLogView,
           meta: { adminOnly: true },
         },
       ],

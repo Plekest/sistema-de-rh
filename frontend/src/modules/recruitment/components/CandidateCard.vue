@@ -78,79 +78,94 @@ const emit = defineEmits<{
 <style scoped>
 .candidate-card {
   background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 1rem 1.25rem;
-  transition: background-color var(--transition-slow), border-color var(--transition-slow);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8) var(--space-10);
+  transition: background-color var(--transition-slow),
+              border-color var(--transition-slow),
+              box-shadow var(--transition-base);
+}
+
+.candidate-card:hover {
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-sm);
 }
 
 .candidate-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 0.75rem;
+  margin-bottom: var(--space-6);
 }
 
 .candidate-info {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-2);
 }
 
 .candidate-name {
-  font-size: 0.938rem;
-  font-weight: 600;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin: 0;
+  transition: color var(--transition-slow);
 }
 
 .candidate-meta,
 .candidate-job {
-  font-size: 0.813rem;
+  font-size: var(--font-size-sm);
   color: var(--color-text-muted);
+  transition: color var(--transition-slow);
 }
 
 .candidate-status-info {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.25rem;
+  gap: var(--space-2);
 }
 
 .candidate-stage {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   color: var(--color-text-muted);
+  transition: color var(--transition-slow);
 }
 
 .badge {
   display: inline-block;
-  padding: 0.25rem 0.625rem;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  padding: var(--badge-padding-y) var(--badge-padding-x);
+  border-radius: var(--badge-border-radius);
+  font-size: var(--badge-font-size);
+  font-weight: var(--badge-font-weight);
   white-space: nowrap;
 }
 
 .candidate-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-4);
   flex-wrap: wrap;
 }
 
 .btn-action {
-  padding: 0.25rem 0.625rem;
+  padding: var(--space-2) var(--space-5);
   border: none;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  border-radius: var(--radius-xs);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all 0.2s;
-  margin: 0 0.125rem;
+  transition: all var(--transition-base);
+  margin: 0;
 }
 
 .btn-action:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.btn-action:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .btn-approve {
@@ -159,7 +174,7 @@ const emit = defineEmits<{
 }
 
 .btn-approve:hover:not(:disabled) {
-  background: var(--color-success);
+  background: var(--color-success-bg);
 }
 
 .btn-cancel {
@@ -175,7 +190,7 @@ const emit = defineEmits<{
   .candidate-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: var(--space-4);
   }
 
   .candidate-status-info {
@@ -186,11 +201,17 @@ const emit = defineEmits<{
     width: 100%;
     flex-wrap: wrap;
   }
+
+  .btn-action {
+    min-width: 44px;
+    min-height: 44px;
+    padding: var(--space-6) var(--space-8);
+  }
 }
 
 @media (max-width: 480px) {
   .candidate-card {
-    padding: 0.75rem;
+    padding: var(--space-6);
   }
 }
 </style>

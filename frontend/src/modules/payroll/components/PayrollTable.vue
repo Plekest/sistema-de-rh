@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PaySlip } from '../types'
+import { usePDFDownload } from '../composables/usePDFDownload'
 
 defineProps<{
   paySlips: PaySlip[]
@@ -10,6 +11,17 @@ defineProps<{
 const emit = defineEmits<{
   'view-detail': [slipId: number]
 }>()
+
+const { isDownloading, downloadPaySlipPDF } = usePDFDownload()
+
+async function handleDownload(slip: PaySlip) {
+  try {
+    const fileName = `contracheque-${slip.employee?.fullName || 'colaborador'}-${new Date(slip.createdAt).toLocaleDateString('pt-BR').replace(/\//g, '-')}.pdf`
+    await downloadPaySlipPDF(slip.id, fileName)
+  } catch {
+    // Error is handled in composable
+  }
+}
 </script>
 
 <template>
@@ -39,9 +51,35 @@ const emit = defineEmits<{
           <td class="td-right td-deduction">{{ formatCurrency(slip.totalDeductions) }}</td>
           <td class="td-right td-net">{{ formatCurrency(slip.netSalary) }}</td>
           <td class="td-center">
-            <button class="btn-action btn-detail" @click="$emit('view-detail', slip.id)">
-              Detalhe
-            </button>
+            <div class="actions-group">
+              <button class="btn-action btn-detail" @click="$emit('view-detail', slip.id)">
+                Detalhe
+              </button>
+              <button
+                class="btn-action btn-download"
+                @click="handleDownload(slip)"
+                :disabled="isDownloading"
+                title="Baixar PDF"
+                aria-label="Baixar contracheque em PDF"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>PDF</span>
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -113,6 +151,34 @@ const emit = defineEmits<{
 
 .btn-detail:hover {
   background: var(--color-info-lighter, #bee3f8);
+}
+
+.actions-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--color-success-light);
+  color: var(--color-success-darker);
+}
+
+.btn-download:hover:not(:disabled) {
+  background: var(--color-success-lighter);
+}
+
+.btn-download:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-download svg {
+  flex-shrink: 0;
 }
 
 @media (max-width: 768px) {
