@@ -1,7 +1,27 @@
 import RolePermission from '#models/role_permission'
 
 type Role = 'admin' | 'manager' | 'employee'
-type Module = 'employees' | 'attendance' | 'hours_bank' | 'documents' | 'history' | 'leave' | 'benefits' | 'payroll' | 'performance' | 'recruitment'
+type Module =
+  | 'employees'
+  | 'attendance'
+  | 'hours_bank'
+  | 'documents'
+  | 'history'
+  | 'leave'
+  | 'benefits'
+  | 'payroll'
+  | 'performance'
+  | 'recruitment'
+  | 'training'
+  | 'calendar'
+  | 'onboarding'
+  | 'surveys'
+  | 'orgchart'
+  | 'dashboard'
+  | 'skills'
+  | 'career'
+  | 'health'
+  | 'analytics'
 
 interface PermissionEntry {
   role: Role
@@ -10,6 +30,7 @@ interface PermissionEntry {
 }
 
 interface PermissionsMap {
+  [key: string]: boolean
   employees: boolean
   attendance: boolean
   hours_bank: boolean
@@ -20,9 +41,20 @@ interface PermissionsMap {
   payroll: boolean
   performance: boolean
   recruitment: boolean
+  training: boolean
+  calendar: boolean
+  onboarding: boolean
+  surveys: boolean
+  orgchart: boolean
+  dashboard: boolean
+  skills: boolean
+  career: boolean
+  health: boolean
+  analytics: boolean
 }
 
 interface GroupedPermissions {
+  [key: string]: PermissionsMap
   admin: PermissionsMap
   manager: PermissionsMap
   employee: PermissionsMap
@@ -40,6 +72,16 @@ const DEFAULT_PERMISSIONS: Record<Role, PermissionsMap> = {
     payroll: true,
     performance: true,
     recruitment: true,
+    training: true,
+    calendar: true,
+    onboarding: true,
+    surveys: true,
+    orgchart: true,
+    dashboard: true,
+    skills: true,
+    career: true,
+    health: true,
+    analytics: true,
   },
   manager: {
     employees: true,
@@ -52,6 +94,16 @@ const DEFAULT_PERMISSIONS: Record<Role, PermissionsMap> = {
     payroll: true,
     performance: true,
     recruitment: true,
+    training: true,
+    calendar: true,
+    onboarding: true,
+    surveys: true,
+    orgchart: true,
+    dashboard: true,
+    skills: true,
+    career: true,
+    health: true,
+    analytics: false,
   },
   employee: {
     employees: false,
@@ -64,6 +116,16 @@ const DEFAULT_PERMISSIONS: Record<Role, PermissionsMap> = {
     payroll: true,
     performance: true,
     recruitment: false,
+    training: true,
+    calendar: true,
+    onboarding: true,
+    surveys: true,
+    orgchart: true,
+    dashboard: true,
+    skills: true,
+    career: true,
+    health: true,
+    analytics: false,
   },
 }
 

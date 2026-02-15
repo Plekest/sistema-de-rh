@@ -25,7 +25,7 @@ test.group('TrainingService - list', (group) => {
   let user: User
   let department: Department
   let position: Position
-  let employee: Employee
+  // employee is created for FK integrity in tests
 
   group.setup(async () => {
     await Database.beginGlobalTransaction()
@@ -55,7 +55,7 @@ test.group('TrainingService - list', (group) => {
       departmentId: department.id,
     })
 
-    employee = await Employee.create({
+    await Employee.create({
       userId: user.id,
       registrationNumber: `REG${uniqueId}`,
       fullName: `Colaborador ${uniqueId}`,

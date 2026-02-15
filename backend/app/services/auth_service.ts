@@ -8,6 +8,7 @@ import { randomBytes, createHash } from 'node:crypto'
 import nodemailer from 'nodemailer'
 
 interface PermissionsMap {
+  [key: string]: boolean
   employees: boolean
   attendance: boolean
   hours_bank: boolean
@@ -18,6 +19,16 @@ interface PermissionsMap {
   payroll: boolean
   performance: boolean
   recruitment: boolean
+  training: boolean
+  calendar: boolean
+  onboarding: boolean
+  surveys: boolean
+  orgchart: boolean
+  dashboard: boolean
+  skills: boolean
+  career: boolean
+  health: boolean
+  analytics: boolean
 }
 
 interface UserWithExtras {
@@ -42,6 +53,16 @@ const DEFAULT_PERMISSIONS: Record<string, PermissionsMap> = {
     payroll: true,
     performance: true,
     recruitment: true,
+    training: true,
+    calendar: true,
+    onboarding: true,
+    surveys: true,
+    orgchart: true,
+    dashboard: true,
+    skills: true,
+    career: true,
+    health: true,
+    analytics: true,
   },
   manager: {
     employees: true,
@@ -54,6 +75,16 @@ const DEFAULT_PERMISSIONS: Record<string, PermissionsMap> = {
     payroll: true,
     performance: true,
     recruitment: true,
+    training: true,
+    calendar: true,
+    onboarding: true,
+    surveys: true,
+    orgchart: true,
+    dashboard: true,
+    skills: true,
+    career: true,
+    health: true,
+    analytics: false,
   },
   employee: {
     employees: false,
@@ -66,6 +97,16 @@ const DEFAULT_PERMISSIONS: Record<string, PermissionsMap> = {
     payroll: true,
     performance: true,
     recruitment: false,
+    training: true,
+    calendar: true,
+    onboarding: true,
+    surveys: true,
+    orgchart: true,
+    dashboard: true,
+    skills: true,
+    career: true,
+    health: true,
+    analytics: false,
   },
 }
 

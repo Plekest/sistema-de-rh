@@ -7,9 +7,6 @@ import User from '#models/user'
 import Department from '#models/department'
 import Position from '#models/position'
 import TimeEntry from '#models/time_entry'
-import Evaluation from '#models/evaluation'
-import TrainingEnrollment from '#models/training_enrollment'
-import Training from '#models/training'
 import { DateTime } from 'luxon'
 
 test.group('EngagementScoreService - Cálculo', (group) => {
@@ -103,8 +100,8 @@ test.group('EngagementScoreService - Cálculo', (group) => {
     const score = await service.calculateForEmployee(employee.id, now.month, now.year, user.id)
 
     assert.exists(score.attendanceScore)
-    assert.isAtLeast(score.attendanceScore, 0)
-    assert.isAtMost(score.attendanceScore, 100)
+    assert.isAtLeast(score.attendanceScore ?? 0, 0)
+    assert.isAtMost(score.attendanceScore ?? 0, 100)
   })
 
   test('deve calcular tenure_score baseado em tempo de empresa', async ({ assert }) => {
@@ -114,9 +111,9 @@ test.group('EngagementScoreService - Cálculo', (group) => {
     const score = await service.calculateForEmployee(employee.id, now.month, now.year, user.id)
 
     assert.exists(score.tenureScore)
-    assert.isAtLeast(score.tenureScore, 0)
+    assert.isAtLeast(score.tenureScore ?? 0, 0)
     // 6 meses = ~25% de 24 meses
-    assert.isAtMost(score.tenureScore, 50)
+    assert.isAtMost(score.tenureScore ?? 0, 50)
   })
 
   test('deve calcular score para todos os employees ativos', async ({ assert }) => {
@@ -160,7 +157,6 @@ test.group('EngagementScoreService - Cálculo', (group) => {
     const year = 2026
 
     const firstScore = await service.calculateForEmployee(employee.id, month, year, user.id)
-    const firstValue = firstScore.score
 
     // Calcular novamente
     const secondScore = await service.calculateForEmployee(employee.id, month, year, user.id)
@@ -369,11 +365,11 @@ test.group('EngagementScoreService - Pesos', (group) => {
     const score = await service.calculateForEmployee(employee.id, now.month, now.year, user.id)
 
     const calculatedScore = Math.round(
-      score.attendanceScore * 0.25 +
-        score.performanceScore * 0.3 +
-        score.trainingScore * 0.2 +
-        score.tenureScore * 0.15 +
-        score.leaveScore * 0.1
+      (score.attendanceScore ?? 0) * 0.25 +
+        (score.performanceScore ?? 0) * 0.3 +
+        (score.trainingScore ?? 0) * 0.2 +
+        (score.tenureScore ?? 0) * 0.15 +
+        (score.leaveScore ?? 0) * 0.1
     )
 
     assert.equal(score.score, calculatedScore)

@@ -9,8 +9,6 @@ import EmployeeHistory from '#models/employee_history'
 import Leave from '#models/leave'
 import TrainingEnrollment from '#models/training_enrollment'
 import Training from '#models/training'
-import Evaluation from '#models/evaluation'
-import EvaluationCycle from '#models/evaluation_cycle'
 import EngagementScore from '#models/engagement_score'
 import { DateTime } from 'luxon'
 
@@ -67,7 +65,7 @@ test.group('EmployeeLifecycleService - Timeline', (group) => {
       type: 'hire',
       title: 'Admissão',
       description: 'Colaborador admitido',
-      eventDate: employee.hireDate.toISODate()!,
+      eventDate: DateTime.fromJSDate(employee.hireDate.toJSDate()),
       createdBy: user.id,
     })
 
@@ -95,7 +93,7 @@ test.group('EmployeeLifecycleService - Timeline', (group) => {
       type: 'promotion',
       title: 'Promoção',
       description: 'Promovido a Senior',
-      eventDate: DateTime.now().minus({ months: 6 }).toISODate()!,
+      eventDate: DateTime.now().minus({ months: 6 }),
       createdBy: user.id,
     })
 
@@ -157,7 +155,7 @@ test.group('EmployeeLifecycleService - Timeline', (group) => {
       type: 'hire',
       title: 'Admissão',
       description: 'Admitido',
-      eventDate: DateTime.now().minus({ months: 12 }).toISODate()!,
+      eventDate: DateTime.now().minus({ months: 12 }),
       createdBy: user.id,
     })
 
@@ -166,7 +164,7 @@ test.group('EmployeeLifecycleService - Timeline', (group) => {
       type: 'promotion',
       title: 'Promoção',
       description: 'Promovido',
-      eventDate: DateTime.now().minus({ months: 6 }).toISODate()!,
+      eventDate: DateTime.now().minus({ months: 6 }),
       createdBy: user.id,
     })
 
@@ -190,7 +188,7 @@ test.group('EmployeeLifecycleService - Timeline', (group) => {
       type: 'hire',
       title: 'Evento Antigo',
       description: 'Evento antigo',
-      eventDate: pastEvent.toISODate()!,
+      eventDate: pastEvent,
       createdBy: user.id,
     })
 
@@ -199,7 +197,7 @@ test.group('EmployeeLifecycleService - Timeline', (group) => {
       type: 'promotion',
       title: 'Evento Recente',
       description: 'Evento recente',
-      eventDate: recentEvent.toISODate()!,
+      eventDate: recentEvent,
       createdBy: user.id,
     })
 
@@ -220,7 +218,7 @@ test.group('EmployeeLifecycleService - Timeline', (group) => {
       type: 'promotion',
       title: 'Promoção',
       description: 'Promovido',
-      eventDate: DateTime.now().toISODate()!,
+      eventDate: DateTime.now(),
       createdBy: user.id,
     })
 
@@ -304,7 +302,7 @@ test.group('EmployeeLifecycleService - Summary', (group) => {
       type: 'promotion',
       title: 'Promoção 1',
       description: 'Primeira promoção',
-      eventDate: DateTime.now().minus({ months: 6 }).toISODate()!,
+      eventDate: DateTime.now().minus({ months: 6 }),
       createdBy: user.id,
     })
 
@@ -313,7 +311,7 @@ test.group('EmployeeLifecycleService - Summary', (group) => {
       type: 'promotion',
       title: 'Promoção 2',
       description: 'Segunda promoção',
-      eventDate: DateTime.now().minus({ months: 3 }).toISODate()!,
+      eventDate: DateTime.now().minus({ months: 3 }),
       createdBy: user.id,
     })
 

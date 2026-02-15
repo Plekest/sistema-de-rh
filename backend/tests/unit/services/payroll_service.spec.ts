@@ -124,7 +124,7 @@ test.group('PayrollService - Calculo IRRF', (group) => {
     const grossSalary = 2000.0
     const inssAmount = 150.0
     const dependents = 0
-    const taxableBase = grossSalary - inssAmount // 1850.00 (abaixo de 2259.20)
+    // taxableBase = grossSalary - inssAmount = 1850.00 (abaixo de 2259.20)
 
     // Act
     const irrf = await (service as any).calculateIRRF(grossSalary, inssAmount, dependents)
@@ -140,7 +140,7 @@ test.group('PayrollService - Calculo IRRF', (group) => {
     const grossSalary = 3000.0
     const inssAmount = 281.92
     const dependents = 0
-    const taxableBase = grossSalary - inssAmount // 2718.08
+    // taxableBase = grossSalary - inssAmount = 2718.08
     // Faixa 2: 2718.08 * 7.5% - 169.44 = 203.86 - 169.44 = 34.42
     const expectedIRRF = 34.42
 
@@ -158,7 +158,7 @@ test.group('PayrollService - Calculo IRRF', (group) => {
     const grossSalary = 5000.0
     const inssAmount = 518.82
     const dependents = 0
-    const taxableBase = grossSalary - inssAmount // 4481.18
+    // taxableBase = grossSalary - inssAmount = 4481.18
     // Faixa 4: 4481.18 * 22.5% - 662.77 = 1008.27 - 662.77 = 345.50
     const expectedIRRF = 345.5
 
@@ -174,7 +174,7 @@ test.group('PayrollService - Calculo IRRF', (group) => {
     const grossSalary = 3500.0
     const inssAmount = 365.63
     const dependents = 2
-    const taxableBase = grossSalary - inssAmount - 189.59 * 2 // 2755.19
+    // taxableBase = grossSalary - inssAmount - 189.59 * 2 = 2755.19
     // Faixa 2: 2755.19 * 7.5% - 169.44 = 206.64 - 169.44 = 37.20
 
     // Act
@@ -203,7 +203,7 @@ test.group('PayrollService - Calculo IRRF', (group) => {
     const grossSalary = 10000.0
     const inssAmount = 908.86
     const dependents = 0
-    const taxableBase = grossSalary - inssAmount // 9091.14
+    // taxableBase = grossSalary - inssAmount = 9091.14
     // Faixa 5: 9091.14 * 27.5% - 896.00 = 2500.06 - 896.00 = 1604.06
     const expectedIRRF = 1604.06
 
@@ -215,18 +215,7 @@ test.group('PayrollService - Calculo IRRF', (group) => {
   })
 })
 
-test.group('PayrollService - Calculo FGTS', (group) => {
-  let service: PayrollService
-
-  group.setup(async () => {
-    await Database.beginGlobalTransaction()
-    service = new PayrollService()
-  })
-
-  group.teardown(async () => {
-    await Database.rollbackGlobalTransaction()
-  })
-
+test.group('PayrollService - Calculo FGTS', () => {
   test('deve calcular FGTS corretamente (8% sobre salario bruto)', async ({ assert }) => {
     // Arrange
     const grossSalary = 3000.0
@@ -276,7 +265,7 @@ test.group('PayrollService - Calculo FGTS', (group) => {
   })
 })
 
-test.group('PayrollService - Calculo VT', (group) => {
+test.group('PayrollService - Calculo VT', () => {
   test('deve calcular desconto VT corretamente (6% do salario)', async ({ assert }) => {
     // Arrange
     const grossSalary = 3000.0

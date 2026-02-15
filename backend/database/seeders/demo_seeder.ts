@@ -19,7 +19,21 @@ import MedicalCertificate from '#models/medical_certificate'
 import EngagementScore from '#models/engagement_score'
 import TurnoverRecord from '#models/turnover_record'
 import TalentPool from '#models/talent_pool'
+import TalentPoolTag from '#models/talent_pool_tag'
+import ChecklistTemplate from '#models/checklist_template'
+import ChecklistTemplateItem from '#models/checklist_template_item'
+import EmployeeChecklist from '#models/employee_checklist'
+import EmployeeChecklistItem from '#models/employee_checklist_item'
+import Survey from '#models/survey'
+import SurveyQuestion from '#models/survey_question'
+import SurveyResponse from '#models/survey_response'
+import SurveyAnswer from '#models/survey_answer'
+import DocumentTemplate from '#models/document_template'
+import AutomatedCommunication from '#models/automated_communication'
+import CommunicationLog from '#models/communication_log'
+import AnalyticsSnapshot from '#models/analytics_snapshot'
 import { DateTime } from 'luxon'
+import Database from '@adonisjs/lucid/services/db'
 
 export default class extends BaseSeeder {
   async run() {
@@ -839,12 +853,12 @@ export default class extends BaseSeeder {
       )
 
       await OccupationalExam.updateOrCreate(
-        { employeeId: employees[1].id, type: 'periodic', examDate: DateTime.now().minus({ days: 30 }).toISODate()! },
+        { employeeId: employees[1].id, type: 'periodic', examDate: DateTime.now().minus({ days: 30 }) },
         {
           employeeId: employees[1].id,
           type: 'periodic',
           examDate: DateTime.now().minus({ days: 30 }),
-          expiryDate: DateTime.now().plus({ year: 1 }),
+          expiryDate: DateTime.now().plus({ years: 1 }),
           result: 'fit',
           status: 'completed',
           doctorName: 'Dr. Roberto Silva',
@@ -856,7 +870,7 @@ export default class extends BaseSeeder {
 
       const scheduledDate = DateTime.now().plus({ days: 15 })
       await OccupationalExam.updateOrCreate(
-        { employeeId: employees[2].id, type: 'periodic', examDate: scheduledDate.toISODate()! },
+        { employeeId: employees[2].id, type: 'periodic', examDate: scheduledDate },
         {
           employeeId: employees[2].id,
           type: 'periodic',
@@ -876,7 +890,7 @@ export default class extends BaseSeeder {
           employeeId: employees[3].id,
           type: 'periodic',
           examDate: DateTime.now().minus({ years: 2 }),
-          expiryDate: DateTime.now().minus({ year: 1 }),
+          expiryDate: DateTime.now().minus({ years: 1 }),
           result: 'fit',
           status: 'expired',
           doctorName: 'Dr. Roberto Silva',
@@ -912,7 +926,7 @@ export default class extends BaseSeeder {
 
     if (employees.length >= 7) {
       await MedicalCertificate.updateOrCreate(
-        { employeeId: employees[5].id, startDate: DateTime.now().minus({ days: 10 }).toISODate()! },
+        { employeeId: employees[5].id, startDate: DateTime.now().minus({ days: 10 }) },
         {
           employeeId: employees[5].id,
           startDate: DateTime.now().minus({ days: 10 }),
@@ -928,7 +942,7 @@ export default class extends BaseSeeder {
       )
 
       await MedicalCertificate.updateOrCreate(
-        { employeeId: employees[6].id, startDate: DateTime.now().minus({ days: 2 }).toISODate()! },
+        { employeeId: employees[6].id, startDate: DateTime.now().minus({ days: 2 }) },
         {
           employeeId: employees[6].id,
           startDate: DateTime.now().minus({ days: 2 }),
@@ -942,7 +956,7 @@ export default class extends BaseSeeder {
 
       if (employees.length >= 8) {
         await MedicalCertificate.updateOrCreate(
-          { employeeId: employees[7].id, startDate: DateTime.now().minus({ days: 30 }).toISODate()! },
+          { employeeId: employees[7].id, startDate: DateTime.now().minus({ days: 30 }) },
           {
             employeeId: employees[7].id,
             startDate: DateTime.now().minus({ days: 30 }),
@@ -1006,7 +1020,7 @@ export default class extends BaseSeeder {
 
     if (employees.length >= 3) {
       await TurnoverRecord.updateOrCreate(
-        { employeeId: employees[0].id, exitDate: DateTime.now().minus({ months: 2 }).toISODate()! },
+        { employeeId: employees[0].id, exitDate: DateTime.now().minus({ months: 2 }) },
         {
           employeeId: employees[0].id,
           type: 'voluntary',
@@ -1022,7 +1036,7 @@ export default class extends BaseSeeder {
       )
 
       await TurnoverRecord.updateOrCreate(
-        { employeeId: employees[1].id, exitDate: DateTime.now().minus({ months: 1 }).toISODate()! },
+        { employeeId: employees[1].id, exitDate: DateTime.now().minus({ months: 1 }) },
         {
           employeeId: employees[1].id,
           type: 'involuntary',
@@ -1037,7 +1051,7 @@ export default class extends BaseSeeder {
       )
 
       await TurnoverRecord.updateOrCreate(
-        { employeeId: employees[2].id, exitDate: DateTime.now().minus({ months: 3 }).toISODate()! },
+        { employeeId: employees[2].id, exitDate: DateTime.now().minus({ months: 3 }) },
         {
           employeeId: employees[2].id,
           type: 'retirement',
@@ -1144,6 +1158,938 @@ export default class extends BaseSeeder {
     )
 
     console.log('Talent pool entries criados')
+
+    // ============================================================
+    // 16. TALENT POOL TAGS + PIVOT
+    // ============================================================
+    console.log('Criando talent pool tags...')
+
+    const tagDev = await TalentPoolTag.updateOrCreate(
+      { name: 'Desenvolvimento' },
+      { name: 'Desenvolvimento', color: '#3B82F6' }
+    )
+
+    const tagDesign = await TalentPoolTag.updateOrCreate(
+      { name: 'Design' },
+      { name: 'Design', color: '#8B5CF6' }
+    )
+
+    const tagGestao = await TalentPoolTag.updateOrCreate(
+      { name: 'Gestao' },
+      { name: 'Gestao', color: '#10B981' }
+    )
+
+    const tagFinanceiro = await TalentPoolTag.updateOrCreate(
+      { name: 'Financeiro' },
+      { name: 'Financeiro', color: '#F59E0B' }
+    )
+
+    const tagRH = await TalentPoolTag.updateOrCreate(
+      { name: 'RH' },
+      { name: 'RH', color: '#EF4444' }
+    )
+
+    const tagSenior = await TalentPoolTag.updateOrCreate(
+      { name: 'Senior' },
+      { name: 'Senior', color: '#6366F1' }
+    )
+
+    const tagRemoto = await TalentPoolTag.updateOrCreate(
+      { name: 'Remoto' },
+      { name: 'Remoto', color: '#14B8A6' }
+    )
+
+    // Associar tags aos talent pool entries
+    const talentPools = await TalentPool.query().orderBy('id', 'asc').limit(5)
+    const tagSets = [
+      [tagDev.id, tagSenior.id, tagRemoto.id],
+      [tagGestao.id, tagDesign.id],
+      [tagDev.id, tagSenior.id],
+      [tagRH.id],
+      [tagFinanceiro.id],
+    ]
+
+    for (let i = 0; i < Math.min(talentPools.length, tagSets.length); i++) {
+      const tp = talentPools[i]
+      for (const tagId of tagSets[i]) {
+        const existing = await Database.from('talent_pool_tag_pivot')
+          .where('talent_pool_id', tp.id)
+          .where('tag_id', tagId)
+          .first()
+
+        if (!existing) {
+          await Database.table('talent_pool_tag_pivot').insert({
+            talent_pool_id: tp.id,
+            tag_id: tagId,
+          })
+        }
+      }
+    }
+
+    console.log('Talent pool tags criados')
+
+    // ============================================================
+    // 17. CHECKLIST TEMPLATES + ITEMS
+    // ============================================================
+    console.log('Criando checklist templates...')
+
+    const templateOnboarding = await ChecklistTemplate.updateOrCreate(
+      { name: 'Onboarding Padrao' },
+      {
+        name: 'Onboarding Padrao',
+        type: 'onboarding',
+        description: 'Checklist padrao para integracao de novos colaboradores',
+        isActive: true,
+        createdBy: admin.id,
+      }
+    )
+
+    const onboardingItems = [
+      { title: 'Criar conta de email corporativo', responsibleRole: 'it' as const, dueDays: 1, order: 1, isRequired: true },
+      { title: 'Configurar estacao de trabalho', responsibleRole: 'it' as const, dueDays: 1, order: 2, isRequired: true },
+      { title: 'Entregar cracha e chaves', responsibleRole: 'hr' as const, dueDays: 1, order: 3, isRequired: true },
+      { title: 'Apresentar equipe e areas', responsibleRole: 'manager' as const, dueDays: 2, order: 4, isRequired: true },
+      { title: 'Assinar contrato de trabalho', responsibleRole: 'hr' as const, dueDays: 1, order: 5, isRequired: true },
+      { title: 'Realizar treinamento de seguranca', responsibleRole: 'hr' as const, dueDays: 5, order: 6, isRequired: true },
+      { title: 'Configurar acessos aos sistemas', responsibleRole: 'it' as const, dueDays: 2, order: 7, isRequired: true },
+      { title: 'Reuniao de alinhamento com gestor', responsibleRole: 'manager' as const, dueDays: 3, order: 8, isRequired: true },
+      { title: 'Preencher formulario de dados pessoais', responsibleRole: 'employee' as const, dueDays: 3, order: 9, isRequired: true },
+      { title: 'Tour pelo escritorio', responsibleRole: 'hr' as const, dueDays: 1, order: 10, isRequired: false },
+    ]
+
+    for (const item of onboardingItems) {
+      await ChecklistTemplateItem.updateOrCreate(
+        { templateId: templateOnboarding.id, title: item.title },
+        { ...item, templateId: templateOnboarding.id, description: null }
+      )
+    }
+
+    const templateOffboarding = await ChecklistTemplate.updateOrCreate(
+      { name: 'Offboarding Padrao' },
+      {
+        name: 'Offboarding Padrao',
+        type: 'offboarding',
+        description: 'Checklist padrao para desligamento de colaboradores',
+        isActive: true,
+        createdBy: admin.id,
+      }
+    )
+
+    const offboardingItems = [
+      { title: 'Revogar acessos aos sistemas', responsibleRole: 'it' as const, dueDays: 1, order: 1, isRequired: true },
+      { title: 'Devolver equipamentos (notebook, monitor)', responsibleRole: 'it' as const, dueDays: 3, order: 2, isRequired: true },
+      { title: 'Devolver cracha e chaves', responsibleRole: 'hr' as const, dueDays: 1, order: 3, isRequired: true },
+      { title: 'Realizar entrevista de desligamento', responsibleRole: 'hr' as const, dueDays: 5, order: 4, isRequired: true },
+      { title: 'Calcular rescisao', responsibleRole: 'hr' as const, dueDays: 10, order: 5, isRequired: true },
+      { title: 'Transferir responsabilidades', responsibleRole: 'manager' as const, dueDays: 5, order: 6, isRequired: true },
+      { title: 'Desativar email corporativo', responsibleRole: 'it' as const, dueDays: 1, order: 7, isRequired: true },
+    ]
+
+    for (const item of offboardingItems) {
+      await ChecklistTemplateItem.updateOrCreate(
+        { templateId: templateOffboarding.id, title: item.title },
+        { ...item, templateId: templateOffboarding.id, description: null }
+      )
+    }
+
+    const templateOnboardingTI = await ChecklistTemplate.updateOrCreate(
+      { name: 'Onboarding TI' },
+      {
+        name: 'Onboarding TI',
+        type: 'onboarding',
+        description: 'Checklist especifico para profissionais de tecnologia',
+        isActive: true,
+        createdBy: admin.id,
+      }
+    )
+
+    const onboardingTIItems = [
+      { title: 'Setup do ambiente de desenvolvimento', responsibleRole: 'it' as const, dueDays: 2, order: 1, isRequired: true },
+      { title: 'Acesso ao repositorio Git', responsibleRole: 'it' as const, dueDays: 1, order: 2, isRequired: true },
+      { title: 'Acesso ao Jira/Trello', responsibleRole: 'it' as const, dueDays: 1, order: 3, isRequired: true },
+      { title: 'Apresentacao da arquitetura do sistema', responsibleRole: 'manager' as const, dueDays: 5, order: 4, isRequired: true },
+      { title: 'Code review do primeiro PR', responsibleRole: 'manager' as const, dueDays: 10, order: 5, isRequired: true },
+      { title: 'Leitura da documentacao tecnica', responsibleRole: 'employee' as const, dueDays: 5, order: 6, isRequired: false },
+    ]
+
+    for (const item of onboardingTIItems) {
+      await ChecklistTemplateItem.updateOrCreate(
+        { templateId: templateOnboardingTI.id, title: item.title },
+        { ...item, templateId: templateOnboardingTI.id, description: null }
+      )
+    }
+
+    console.log('Checklist templates criados')
+
+    // ============================================================
+    // 18. EMPLOYEE CHECKLISTS + ITEMS (atribuidos a colaboradores)
+    // ============================================================
+    console.log('Criando employee checklists...')
+
+    // Carregar items do template de onboarding
+    const onbTemplateItems = await ChecklistTemplateItem.query()
+      .where('templateId', templateOnboarding.id)
+      .orderBy('order', 'asc')
+
+    if (employees.length >= 4) {
+      // Checklist completo para employee[5] (Patricia - contratada ha 6 meses)
+      const checklist1 = await EmployeeChecklist.updateOrCreate(
+        { employeeId: employees[6]?.id || employees[0].id, templateId: templateOnboarding.id },
+        {
+          employeeId: employees[6]?.id || employees[0].id,
+          templateId: templateOnboarding.id,
+          type: 'onboarding',
+          status: 'completed',
+          startedAt: DateTime.now().minus({ months: 6 }),
+          completedAt: DateTime.now().minus({ months: 5, days: 20 }),
+          createdBy: admin.id,
+        }
+      )
+
+      // Criar items todos completos
+      for (const tplItem of onbTemplateItems) {
+        await EmployeeChecklistItem.updateOrCreate(
+          { checklistId: checklist1.id, templateItemId: tplItem.id },
+          {
+            checklistId: checklist1.id,
+            templateItemId: tplItem.id,
+            title: tplItem.title,
+            description: tplItem.description,
+            responsibleRole: tplItem.responsibleRole,
+            status: 'completed',
+            completedBy: admin.id,
+            completedAt: DateTime.now().minus({ months: 5, days: 20 }),
+            order: tplItem.order,
+          }
+        )
+      }
+
+      // Checklist em andamento para employee[9] (Bruno - contratado ha 8 meses)
+      const checklist2 = await EmployeeChecklist.updateOrCreate(
+        { employeeId: employees[9]?.id || employees[1].id, templateId: templateOnboarding.id },
+        {
+          employeeId: employees[9]?.id || employees[1].id,
+          templateId: templateOnboarding.id,
+          type: 'onboarding',
+          status: 'in_progress',
+          startedAt: DateTime.now().minus({ days: 5 }),
+          createdBy: admin.id,
+        }
+      )
+
+      // Criar items parcialmente completos
+      for (const [idx, tplItem] of onbTemplateItems.entries()) {
+        const isCompleted = idx < 5 // Primeiros 5 completados
+        await EmployeeChecklistItem.updateOrCreate(
+          { checklistId: checklist2.id, templateItemId: tplItem.id },
+          {
+            checklistId: checklist2.id,
+            templateItemId: tplItem.id,
+            title: tplItem.title,
+            description: tplItem.description,
+            responsibleRole: tplItem.responsibleRole,
+            status: isCompleted ? 'completed' : 'pending',
+            completedBy: isCompleted ? admin.id : null,
+            completedAt: isCompleted ? DateTime.now().minus({ days: 3 }) : null,
+            dueDate: tplItem.dueDays ? DateTime.now().minus({ days: 5 }).plus({ days: tplItem.dueDays }) : null,
+            order: tplItem.order,
+          }
+        )
+      }
+
+      // Checklist pendente para employee[5] (Rafael - contratado ha 9 meses)
+      const checklist3 = await EmployeeChecklist.updateOrCreate(
+        { employeeId: employees[5]?.id || employees[2].id, templateId: templateOnboarding.id },
+        {
+          employeeId: employees[5]?.id || employees[2].id,
+          templateId: templateOnboarding.id,
+          type: 'onboarding',
+          status: 'pending',
+          startedAt: DateTime.now(),
+          createdBy: admin.id,
+        }
+      )
+
+      for (const tplItem of onbTemplateItems) {
+        await EmployeeChecklistItem.updateOrCreate(
+          { checklistId: checklist3.id, templateItemId: tplItem.id },
+          {
+            checklistId: checklist3.id,
+            templateItemId: tplItem.id,
+            title: tplItem.title,
+            description: tplItem.description,
+            responsibleRole: tplItem.responsibleRole,
+            status: 'pending',
+            dueDate: tplItem.dueDays ? DateTime.now().plus({ days: tplItem.dueDays }) : null,
+            order: tplItem.order,
+          }
+        )
+      }
+    }
+
+    console.log('Employee checklists criados')
+
+    // ============================================================
+    // 19. SURVEYS + QUESTIONS + RESPONSES + ANSWERS
+    // ============================================================
+    console.log('Criando surveys...')
+
+    // Limpar survey questions antigas que possam ter dados corrompidos
+    try {
+      await Database.rawQuery(`
+        DELETE FROM survey_questions
+        WHERE survey_id IN (
+          SELECT id FROM surveys WHERE title LIKE '%Clima%2026%' OR title LIKE '%eNPS%'
+        )
+      `)
+      await Database.rawQuery(`
+        DELETE FROM surveys WHERE title LIKE '%Clima%2026%' OR title LIKE '%eNPS%'
+      `)
+    } catch (error) {
+      console.log('Erro ao limpar surveys antigas:', error.message)
+    }
+
+    // Survey 1: Pesquisa de clima ativa
+    const survey1 = await Survey.create({
+      title: 'Pesquisa de Clima Organizacional 2026',
+      description: 'Pesquisa anual para avaliar o clima organizacional da empresa',
+      type: 'climate',
+      status: 'active',
+      isAnonymous: true,
+      startDate: DateTime.now().minus({ days: 7 }),
+      endDate: DateTime.now().plus({ days: 23 }),
+      targetDepartments: null,
+      createdBy: admin.id,
+    })
+
+    const s1Questions = [
+      { text: 'Como voce avalia o ambiente de trabalho?', type: 'scale' as const, order: 1, isRequired: true },
+      { text: 'Voce se sente valorizado pela empresa?', type: 'scale' as const, order: 2, isRequired: true },
+      { text: 'Como avalia a comunicacao interna?', type: 'scale' as const, order: 3, isRequired: true },
+      { text: 'Recomendaria a empresa como um bom lugar para trabalhar?', type: 'enps' as const, order: 4, isRequired: true },
+      { text: 'O que podemos melhorar?', type: 'text' as const, order: 5, isRequired: false },
+      { text: 'Voce tem as ferramentas necessarias para realizar seu trabalho?', type: 'yes_no' as const, order: 6, isRequired: true },
+      { text: 'Qual area precisa de mais atencao?', type: 'multiple_choice' as const, order: 7, isRequired: false, options: ['Comunicacao', 'Beneficios', 'Treinamento', 'Infraestrutura', 'Gestao'] },
+    ]
+
+    const createdQuestions1: SurveyQuestion[] = []
+    for (const q of s1Questions) {
+      const existing = await SurveyQuestion.query()
+        .where('surveyId', survey1.id)
+        .where('text', q.text)
+        .first()
+
+      if (existing) {
+        createdQuestions1.push(existing)
+      } else {
+        const question = await SurveyQuestion.create({
+          surveyId: survey1.id,
+          text: q.text,
+          type: q.type,
+          order: q.order,
+          isRequired: q.isRequired,
+          options: (q as any).options || null,
+        })
+        createdQuestions1.push(question)
+      }
+    }
+
+    // Respostas de 5 colaboradores
+    for (let i = 0; i < Math.min(5, employees.length); i++) {
+      const emp = employees[i]
+      const existingResponse = await SurveyResponse.query()
+        .where('surveyId', survey1.id)
+        .where('employeeId', emp.id)
+        .first()
+
+      if (!existingResponse) {
+        const survResp = await SurveyResponse.create({
+          surveyId: survey1.id,
+          employeeId: emp.id,
+          submittedAt: DateTime.now().minus({ days: Math.floor(Math.random() * 5) }),
+        })
+
+        for (const q of createdQuestions1) {
+          let value: string | null = null
+          let numericValue: number | null = null
+
+          if (q.type === 'scale') {
+            numericValue = Math.floor(Math.random() * 3) + 3 // 3-5
+            value = String(numericValue)
+          } else if (q.type === 'enps') {
+            numericValue = Math.floor(Math.random() * 4) + 7 // 7-10
+            value = String(numericValue)
+          } else if (q.type === 'text') {
+            value = ['Mais flexibilidade no horario', 'Melhorar o plano de saude', 'Investir em treinamentos', 'Nada a declarar', 'Mais confraternizacoes'][i]
+          } else if (q.type === 'yes_no') {
+            value = Math.random() > 0.3 ? 'sim' : 'nao'
+          } else if (q.type === 'multiple_choice') {
+            value = ['Comunicacao', 'Beneficios', 'Treinamento', 'Infraestrutura', 'Gestao'][i]
+          }
+
+          await SurveyAnswer.create({
+            responseId: survResp.id,
+            questionId: q.id,
+            value,
+            numericValue,
+          })
+        }
+      }
+    }
+
+    // Survey 2: eNPS concluida
+    const survey2 = await Survey.create({
+      title: 'eNPS Q4 2025',
+      description: 'Pesquisa de Employee Net Promoter Score do ultimo trimestre',
+      type: 'enps',
+      status: 'closed',
+      isAnonymous: true,
+      startDate: DateTime.now().minus({ months: 2 }),
+      endDate: DateTime.now().minus({ months: 1 }),
+      targetDepartments: null,
+      createdBy: admin.id,
+    })
+
+    const s2Questions = [
+      { text: 'De 0 a 10, qual a probabilidade de voce recomendar a empresa como um bom lugar para trabalhar?', type: 'enps' as const, order: 1, isRequired: true },
+      { text: 'Qual o principal motivo da sua nota?', type: 'text' as const, order: 2, isRequired: false },
+    ]
+
+    const createdQuestions2: SurveyQuestion[] = []
+    for (const q of s2Questions) {
+      const existing = await SurveyQuestion.query()
+        .where('surveyId', survey2.id)
+        .where('text', q.text)
+        .first()
+
+      if (existing) {
+        createdQuestions2.push(existing)
+      } else {
+        const question = await SurveyQuestion.create({
+          surveyId: survey2.id,
+          text: q.text,
+          type: q.type,
+          order: q.order,
+          isRequired: q.isRequired,
+          options: null,
+        })
+        createdQuestions2.push(question)
+      }
+    }
+
+    // Respostas de 8 colaboradores
+    for (let i = 0; i < Math.min(8, employees.length); i++) {
+      const emp = employees[i]
+      const existingResponse = await SurveyResponse.query()
+        .where('surveyId', survey2.id)
+        .where('employeeId', emp.id)
+        .first()
+
+      if (!existingResponse) {
+        const survResp = await SurveyResponse.create({
+          surveyId: survey2.id,
+          employeeId: emp.id,
+          submittedAt: DateTime.now().minus({ months: 1, days: Math.floor(Math.random() * 20) }),
+        })
+
+        for (const q of createdQuestions2) {
+          let value: string | null = null
+          let numericValue: number | null = null
+
+          if (q.type === 'enps') {
+            numericValue = Math.floor(Math.random() * 5) + 6 // 6-10
+            value = String(numericValue)
+          } else {
+            value = ['Bom ambiente', 'Salario competitivo', 'Equipe otima', 'Crescimento', 'Flexibilidade', 'Bons beneficios', 'Cultura forte', 'Aprendizado'][i]
+          }
+
+          await SurveyAnswer.create({
+            responseId: survResp.id,
+            questionId: q.id,
+            value,
+            numericValue,
+          })
+        }
+      }
+    }
+
+    // Survey 3: Pesquisa draft
+    await Survey.updateOrCreate(
+      { title: 'Pesquisa de Satisfacao - Beneficios' },
+      {
+        title: 'Pesquisa de Satisfacao - Beneficios',
+        description: 'Pesquisa para avaliar a satisfacao dos colaboradores com os beneficios oferecidos',
+        type: 'satisfaction',
+        status: 'draft',
+        isAnonymous: false,
+        startDate: null,
+        endDate: null,
+        targetDepartments: null,
+        createdBy: admin.id,
+      }
+    )
+
+    console.log('Surveys criados')
+
+    // ============================================================
+    // 20. DOCUMENT TEMPLATES
+    // ============================================================
+    console.log('Criando document templates...')
+
+    // Limpar document templates corrompidos
+    try {
+      await Database.rawQuery(`DELETE FROM document_templates WHERE name LIKE '%Contrato%' OR name LIKE '%Declaracao%' OR name LIKE '%NDA%' OR name LIKE '%Carta%' OR name LIKE '%Politica%'`)
+    } catch (error) {
+      console.log('Erro ao limpar document templates:', error.message)
+    }
+
+    const docTemplates = [
+      {
+        name: 'Contrato de Trabalho CLT',
+        description: 'Modelo padrao de contrato de trabalho para regime CLT',
+        type: 'contract' as const,
+        content: 'CONTRATO INDIVIDUAL DE TRABALHO\n\nEMPREGADOR: {{company_name}}, CNPJ {{company_cnpj}}\nEMPREGADO: {{employee_name}}, CPF {{employee_cpf}}\n\nCARGO: {{position_title}}\nDEPARTAMENTO: {{department_name}}\nSALARIO: R$ {{salary}}\nDATA DE ADMISSAO: {{hire_date}}\n\nO presente contrato e regido pela CLT e legislacao complementar aplicavel.',
+        variables: ['company_name', 'company_cnpj', 'employee_name', 'employee_cpf', 'position_title', 'department_name', 'salary', 'hire_date', 'current_date'],
+      },
+      {
+        name: 'Declaracao de Vinculo Empregaticio',
+        description: 'Declaracao confirmando vinculo empregaticio do colaborador',
+        type: 'declaration' as const,
+        content: 'DECLARACAO DE VINCULO EMPREGATICIO\n\nDeclaramos para os devidos fins que {{employee_name}}, portador(a) do CPF {{employee_cpf}}, e funcionario(a) desta empresa desde {{hire_date}}, exercendo o cargo de {{position_title}} no departamento de {{department_name}}, com remuneracao de R$ {{salary}}.\n\n{{company_name}}\nData: {{current_date}}',
+        variables: ['employee_name', 'employee_cpf', 'hire_date', 'position_title', 'department_name', 'salary', 'company_name', 'current_date'],
+      },
+      {
+        name: 'Termo de Confidencialidade (NDA)',
+        description: 'Acordo de confidencialidade para protecao de informacoes da empresa',
+        type: 'nda' as const,
+        content: 'TERMO DE CONFIDENCIALIDADE\n\nEu, {{employee_name}}, CPF {{employee_cpf}}, me comprometo a manter sigilo absoluto sobre todas as informacoes confidenciais a que tiver acesso durante o exercicio de minhas funcoes na empresa {{company_name}}.\n\nEste termo permanece vigente durante e apos o vinculo empregaticio.',
+        variables: ['employee_name', 'employee_cpf', 'company_name', 'current_date'],
+      },
+      {
+        name: 'Carta de Recomendacao',
+        description: 'Modelo de carta de recomendacao para ex-colaboradores',
+        type: 'letter' as const,
+        content: 'CARTA DE RECOMENDACAO\n\nA quem possa interessar,\n\nRecomendamos {{employee_name}}, que trabalhou conosco de {{hire_date}} a {{termination_date}} no cargo de {{position_title}}.\n\nDurante sua atuacao, demonstrou profissionalismo e competencia.\n\n{{company_name}}\nData: {{current_date}}',
+        variables: ['employee_name', 'hire_date', 'termination_date', 'position_title', 'company_name', 'current_date'],
+      },
+      {
+        name: 'Politica de Home Office',
+        description: 'Politica interna para trabalho remoto',
+        type: 'policy' as const,
+        content: 'POLITICA DE HOME OFFICE\n\nA empresa {{company_name}} permite o regime de trabalho remoto conforme as diretrizes abaixo:\n\n1. O colaborador deve manter disponibilidade no horario comercial\n2. Reunioes presenciais podem ser convocadas com antecedencia minima de 24h\n3. O colaborador e responsavel por manter ambiente adequado de trabalho\n4. Equipamentos sao fornecidos pela empresa\n\nData de vigencia: {{current_date}}',
+        variables: ['company_name', 'current_date'],
+      },
+    ]
+
+    for (const tpl of docTemplates) {
+      await DocumentTemplate.updateOrCreate(
+        { name: tpl.name },
+        {
+          ...tpl,
+          isActive: true,
+          createdBy: admin.id,
+        }
+      )
+    }
+
+    console.log('Document templates criados')
+
+    // ============================================================
+    // 21. AUTOMATED COMMUNICATIONS
+    // ============================================================
+    console.log('Criando automated communications...')
+
+    // Limpar automated communications corrompidos
+    try {
+      await Database.rawQuery(`DELETE FROM communication_logs`)
+      await Database.rawQuery(`DELETE FROM automated_communications`)
+    } catch (error) {
+      console.log('Erro ao limpar automated communications:', error.message)
+    }
+
+    const comm1 = await AutomatedCommunication.updateOrCreate(
+      { name: 'Feliz Aniversario' },
+      {
+        name: 'Feliz Aniversario',
+        triggerType: 'birthday',
+        triggerDaysBefore: 0,
+        messageTemplate: 'Parabens pelo seu aniversario, {{employee_name}}! Desejamos muitas felicidades!',
+        isActive: true,
+        targetRoles: ['admin', 'manager', 'employee'],
+        createdBy: admin.id,
+      }
+    )
+
+    const comm2 = await AutomatedCommunication.updateOrCreate(
+      { name: 'Aniversario de Empresa' },
+      {
+        name: 'Aniversario de Empresa',
+        triggerType: 'work_anniversary',
+        triggerDaysBefore: 0,
+        messageTemplate: 'Parabens pelos seus anos de empresa, {{employee_name}}! Obrigado pela dedicacao!',
+        isActive: true,
+        targetRoles: ['admin', 'manager'],
+        createdBy: admin.id,
+      }
+    )
+
+    await AutomatedCommunication.updateOrCreate(
+      { name: 'Documento Vencendo' },
+      {
+        name: 'Documento Vencendo',
+        triggerType: 'document_expiring',
+        triggerDaysBefore: 30,
+        messageTemplate: 'Atencao: O documento {{document_type}} do colaborador {{employee_name}} vence em 30 dias.',
+        isActive: true,
+        targetRoles: ['admin', 'manager'],
+        createdBy: admin.id,
+      }
+    )
+
+    await AutomatedCommunication.updateOrCreate(
+      { name: 'Fim do Periodo de Experiencia' },
+      {
+        name: 'Fim do Periodo de Experiencia',
+        triggerType: 'probation_ending',
+        triggerDaysBefore: 15,
+        messageTemplate: 'O periodo de experiencia de {{employee_name}} termina em 15 dias. Avalie a efetivacao.',
+        isActive: true,
+        targetRoles: ['admin', 'manager'],
+        createdBy: admin.id,
+      }
+    )
+
+    await AutomatedCommunication.updateOrCreate(
+      { name: 'Retorno de Ferias' },
+      {
+        name: 'Retorno de Ferias',
+        triggerType: 'leave_returning',
+        triggerDaysBefore: 1,
+        messageTemplate: '{{employee_name}} retorna de ferias amanha. Prepare o acolhimento!',
+        isActive: true,
+        targetRoles: ['manager'],
+        createdBy: admin.id,
+      }
+    )
+
+    await AutomatedCommunication.updateOrCreate(
+      { name: 'Onboarding Incompleto' },
+      {
+        name: 'Onboarding Incompleto',
+        triggerType: 'onboarding_incomplete',
+        triggerDaysBefore: 0,
+        messageTemplate: 'O checklist de onboarding de {{employee_name}} ainda nao foi concluido. Por favor, verifique os itens pendentes.',
+        isActive: false,
+        targetRoles: ['admin', 'manager'],
+        createdBy: admin.id,
+      }
+    )
+
+    console.log('Automated communications criados')
+
+    // ============================================================
+    // 22. COMMUNICATION LOGS
+    // ============================================================
+    console.log('Criando communication logs...')
+
+    if (employees.length >= 5) {
+      await CommunicationLog.updateOrCreate(
+        { communicationId: comm1.id, employeeId: employees[0].id },
+        {
+          communicationId: comm1.id,
+          employeeId: employees[0].id,
+          userId: employees[0].userId,
+          message: `Parabens pelo seu aniversario, ${employees[0].fullName}! Desejamos muitas felicidades!`,
+          sentAt: DateTime.now().minus({ days: 10 }),
+          status: 'read',
+        }
+      )
+
+      await CommunicationLog.updateOrCreate(
+        { communicationId: comm1.id, employeeId: employees[2].id },
+        {
+          communicationId: comm1.id,
+          employeeId: employees[2].id,
+          userId: employees[2].userId,
+          message: `Parabens pelo seu aniversario, ${employees[2].fullName}! Desejamos muitas felicidades!`,
+          sentAt: DateTime.now().minus({ days: 5 }),
+          status: 'sent',
+        }
+      )
+
+      await CommunicationLog.updateOrCreate(
+        { communicationId: comm2.id, employeeId: employees[0].id },
+        {
+          communicationId: comm2.id,
+          employeeId: employees[0].id,
+          userId: employees[0].userId,
+          message: `Parabens pelos seus 2 anos de empresa, ${employees[0].fullName}! Obrigado pela dedicacao!`,
+          sentAt: DateTime.now().minus({ days: 3 }),
+          status: 'read',
+        }
+      )
+
+      await CommunicationLog.updateOrCreate(
+        { communicationId: comm2.id, employeeId: employees[1].id },
+        {
+          communicationId: comm2.id,
+          employeeId: employees[1].id,
+          userId: employees[1].userId,
+          message: `Parabens pelos seus anos de empresa, ${employees[1].fullName}! Obrigado pela dedicacao!`,
+          sentAt: DateTime.now().minus({ days: 1 }),
+          status: 'sent',
+        }
+      )
+
+      await CommunicationLog.updateOrCreate(
+        { communicationId: comm1.id, employeeId: employees[4].id },
+        {
+          communicationId: comm1.id,
+          employeeId: employees[4].id,
+          userId: employees[4].userId,
+          message: `Parabens pelo seu aniversario, ${employees[4].fullName}! Desejamos muitas felicidades!`,
+          sentAt: DateTime.now().minus({ days: 15 }),
+          status: 'read',
+        }
+      )
+    }
+
+    console.log('Communication logs criados')
+
+    // ============================================================
+    // 23. ANALYTICS SNAPSHOTS
+    // ============================================================
+    console.log('Criando analytics snapshots...')
+
+    // Limpar snapshots corrompidos
+    try {
+      await Database.rawQuery(`DELETE FROM analytics_snapshots`)
+    } catch (error) {
+      console.log('Erro ao limpar analytics snapshots:', error.message)
+    }
+
+    const now = DateTime.now()
+
+    // Snapshot mensal dos ultimos 3 meses
+    for (let i = 0; i < 3; i++) {
+      const refDate = now.minus({ months: i })
+      const month = refDate.month
+      const year = refDate.year
+
+      await AnalyticsSnapshot.updateOrCreate(
+        { type: 'monthly_summary', referenceMonth: month, referenceYear: year },
+        {
+          type: 'monthly_summary',
+          referenceMonth: month,
+          referenceYear: year,
+          data: {
+            totalEmployees: 20 - i,
+            activeEmployees: 18 - i,
+            newHires: Math.floor(Math.random() * 3),
+            terminations: Math.floor(Math.random() * 2),
+            averageSalary: 7200 + (i * 100),
+            averageTenureMonths: 15 + i,
+            absenteeismRate: (2.5 + Math.random() * 2).toFixed(1),
+            overtimeHours: Math.floor(Math.random() * 100) + 50,
+            trainingHoursTotal: Math.floor(Math.random() * 200) + 100,
+          },
+          generatedAt: refDate.endOf('month'),
+        }
+      )
+
+      await AnalyticsSnapshot.updateOrCreate(
+        { type: 'department_health', referenceMonth: month, referenceYear: year },
+        {
+          type: 'department_health',
+          referenceMonth: month,
+          referenceYear: year,
+          data: {
+            departments: [
+              { name: 'Tecnologia da Informacao', headcount: 10, avgSalary: 8500, turnoverRate: 5, engagementScore: 82 },
+              { name: 'Recursos Humanos', headcount: 4, avgSalary: 5500, turnoverRate: 0, engagementScore: 88 },
+              { name: 'Financeiro', headcount: 3, avgSalary: 6800, turnoverRate: 0, engagementScore: 85 },
+            ],
+          },
+          generatedAt: refDate.endOf('month'),
+        }
+      )
+
+      await AnalyticsSnapshot.updateOrCreate(
+        { type: 'engagement_trend', referenceMonth: month, referenceYear: year },
+        {
+          type: 'engagement_trend',
+          referenceMonth: month,
+          referenceYear: year,
+          data: {
+            overallScore: 84 - i,
+            participationRate: 85 + Math.floor(Math.random() * 10),
+            topFactors: ['Ambiente de trabalho', 'Remuneracao', 'Crescimento'],
+            bottomFactors: ['Comunicacao', 'Beneficios'],
+            trendDirection: i === 0 ? 'up' : 'stable',
+          },
+          generatedAt: refDate.endOf('month'),
+        }
+      )
+
+      await AnalyticsSnapshot.updateOrCreate(
+        { type: 'turnover_prediction', referenceMonth: month, referenceYear: year },
+        {
+          type: 'turnover_prediction',
+          referenceMonth: month,
+          referenceYear: year,
+          data: {
+            predictedTurnoverRate: (8 + Math.random() * 5).toFixed(1),
+            highRiskEmployees: Math.floor(Math.random() * 3),
+            mainRiskFactors: ['Salario abaixo do mercado', 'Tempo de empresa > 3 anos sem promocao'],
+            recommendedActions: ['Ajustar remuneracao', 'Plano de carreira', 'Feedback regular'],
+          },
+          generatedAt: refDate.endOf('month'),
+        }
+      )
+    }
+
+    console.log('Analytics snapshots criados')
+
+    // ============================================================
+    // 24. NOTIFICAÇÕES ADICIONAIS (mais variadas)
+    // ============================================================
+    console.log('Criando notificações adicionais...')
+
+    const additionalNotifications = [
+      {
+        userId: employees[3]?.userId,
+        type: 'training_enrollment' as const,
+        title: 'Nova Inscrição em Treinamento',
+        message: 'Você foi inscrito no treinamento "Segurança da Informação". Início previsto para daqui a 5 dias.',
+        metadata: { trainingId: 1, trainingTitle: 'Segurança da Informação' },
+      },
+      {
+        userId: employees[4]?.userId,
+        type: 'training_completed' as const,
+        title: 'Treinamento Concluído com Sucesso',
+        message: 'Parabéns! Você concluiu o treinamento "TypeScript Avançado" com nota 9.0.',
+        metadata: { trainingId: 2, score: 9.0, trainingTitle: 'TypeScript Avançado' },
+      },
+      {
+        userId: employees[5]?.userId,
+        type: 'salary_changed' as const,
+        title: 'Reajuste Salarial Aprovado',
+        message: 'Seu salário foi reajustado. O novo valor já está disponível para consulta.',
+        metadata: { adjustmentType: 'merit', effectiveDate: DateTime.now().toISODate() },
+      },
+      {
+        userId: employees[6]?.userId,
+        type: 'general' as const,
+        title: 'Pesquisa de Clima - Participe!',
+        message: 'A pesquisa de clima organizacional 2026 está aberta. Sua opinião é muito importante!',
+        metadata: { surveyId: 1, deadline: DateTime.now().plus({ days: 20 }).toISODate() },
+      },
+      {
+        userId: employees[7]?.userId,
+        type: 'document_uploaded' as const,
+        title: 'Holerite Disponível',
+        message: 'O holerite referente ao mês de fevereiro/2026 está disponível para download.',
+        metadata: { documentType: 'payslip', period: '2026-02' },
+      },
+      {
+        userId: employees[8]?.userId,
+        type: 'leave_approved' as const,
+        title: 'Solicitação de Férias Aprovada',
+        message: 'Suas férias foram aprovadas! Período: 15/03/2026 a 29/03/2026 (15 dias).',
+        metadata: { leaveId: 1, startDate: '2026-03-15', endDate: '2026-03-29' },
+      },
+      {
+        userId: employees[9]?.userId,
+        type: 'general' as const,
+        title: 'Atualização de Política Interna',
+        message: 'A política de home office foi atualizada. Confira as novas diretrizes no portal.',
+        metadata: { policyType: 'home_office', version: '2.0' },
+      },
+      {
+        userId: employees[0]?.userId,
+        type: 'training_enrollment' as const,
+        title: 'Curso de Liderança Disponível',
+        message: 'Novo curso "Liderança e Gestão de Equipes" disponível. Inscrições abertas!',
+        metadata: { trainingId: 3, category: 'Liderança' },
+      },
+      {
+        userId: employees[1]?.userId,
+        type: 'general' as const,
+        title: 'Novo Benefício - Gympass',
+        message: 'A empresa agora oferece Gympass como benefício. Acesse academias em todo o Brasil!',
+        metadata: { benefitType: 'gympass', startDate: DateTime.now().plus({ days: 10 }).toISODate() },
+      },
+      {
+        userId: employees[2]?.userId,
+        type: 'general' as const,
+        title: 'Aniversário de Empresa Próximo',
+        message: 'Você completa 1 ano de empresa na próxima semana. Parabéns pela dedicação!',
+        metadata: { years: 1, anniversaryDate: DateTime.now().plus({ days: 7 }).toISODate() },
+      },
+      {
+        userId: employees[3]?.userId,
+        type: 'general' as const,
+        title: 'Pesquisa eNPS Fechada',
+        message: 'A pesquisa eNPS foi encerrada. Em breve divulgaremos os resultados.',
+        metadata: { surveyId: 2, closedDate: DateTime.now().minus({ days: 30 }).toISODate() },
+      },
+      {
+        userId: employees[4]?.userId,
+        type: 'document_uploaded' as const,
+        title: 'Novo Documento Disponível',
+        message: 'Declaração de vínculo empregatício emitida e disponível para download.',
+        metadata: { documentType: 'declaration', issuedDate: DateTime.now().toISODate() },
+      },
+      {
+        userId: employees[5]?.userId,
+        type: 'general' as const,
+        title: 'Confraternização de Fim de Mês',
+        message: 'Não esqueça! Sexta-feira teremos happy hour da empresa às 18h.',
+        metadata: { eventDate: DateTime.now().plus({ days: 3 }).toISODate(), eventType: 'happy_hour' },
+      },
+      {
+        userId: employees[6]?.userId,
+        type: 'training_enrollment' as const,
+        title: 'Treinamento Obrigatório - LGPD',
+        message: 'Você foi inscrito no treinamento obrigatório sobre LGPD. Prazo: 7 dias.',
+        metadata: { trainingId: 4, mandatory: true, deadline: DateTime.now().plus({ days: 7 }).toISODate() },
+      },
+      {
+        userId: employees[7]?.userId,
+        type: 'general' as const,
+        title: 'Avaliação de Desempenho',
+        message: 'Seu ciclo de avaliação de desempenho iniciará em breve. Prepare-se!',
+        metadata: { cycleId: 1, startDate: DateTime.now().plus({ days: 15 }).toISODate() },
+      },
+    ]
+
+    for (const notif of additionalNotifications) {
+      if (notif.userId) {
+        try {
+          const existing = await Notification.query()
+            .where('userId', notif.userId)
+            .where('type', notif.type)
+            .where('title', notif.title)
+            .first()
+
+          if (!existing) {
+            await Notification.create({
+              userId: notif.userId,
+              type: notif.type,
+              title: notif.title,
+              message: notif.message,
+              isRead: Math.random() > 0.6, // 40% lidas
+              readAt: Math.random() > 0.6 ? DateTime.now().minus({ hours: Math.floor(Math.random() * 48) }) : null,
+              metadata: notif.metadata,
+            })
+          }
+        } catch (error) {
+          console.log(`Erro ao criar notificacao: ${error.message}`)
+        }
+      }
+    }
+
+    console.log('Notificações adicionais criadas')
 
     console.log('Seeder de demonstracao concluido!')
   }

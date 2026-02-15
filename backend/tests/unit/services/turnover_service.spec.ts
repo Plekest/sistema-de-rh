@@ -1,7 +1,6 @@
 import { test } from '@japa/runner'
 import Database from '@adonisjs/lucid/services/db'
 import TurnoverService from '#services/turnover_service'
-import TurnoverRecord from '#models/turnover_record'
 import Employee from '#models/employee'
 import User from '#models/user'
 import Department from '#models/department'

@@ -7,17 +7,17 @@ export default {
   // Career Paths
   async getPaths(): Promise<CareerPath[]> {
     const { data } = await axios.get(`${BASE_URL}/paths`)
-    return data
+    return data.data
   },
 
   async createPath(payload: Partial<CareerPath>): Promise<CareerPath> {
     const { data } = await axios.post(`${BASE_URL}/paths`, payload)
-    return data
+    return data.data
   },
 
   async updatePath(id: number, payload: Partial<CareerPath>): Promise<CareerPath> {
     const { data } = await axios.put(`${BASE_URL}/paths/${id}`, payload)
-    return data
+    return data.data
   },
 
   async deletePath(id: number): Promise<void> {
@@ -27,12 +27,12 @@ export default {
   // Career Path Levels
   async createLevel(pathId: number, payload: Partial<CareerPathLevel>): Promise<CareerPathLevel> {
     const { data } = await axios.post(`${BASE_URL}/paths/${pathId}/levels`, payload)
-    return data
+    return data.data
   },
 
   async updateLevel(id: number, payload: Partial<CareerPathLevel>): Promise<CareerPathLevel> {
     const { data } = await axios.put(`${BASE_URL}/levels/${id}`, payload)
-    return data
+    return data.data
   },
 
   async deleteLevel(id: number): Promise<void> {
@@ -42,23 +42,23 @@ export default {
   // Employee Career
   async getEmployeeCareer(employeeId: number): Promise<EmployeeCareerPlan> {
     const { data } = await axios.get(`${BASE_URL}/employees/${employeeId}`)
-    return data
+    return data.data
   },
 
   // Succession Planning
   async getSuccessionPlans(): Promise<SuccessionPlan[]> {
     const { data } = await axios.get(`${BASE_URL}/succession`)
-    return data
+    return data.data
   },
 
   async createSuccessionPlan(payload: Partial<SuccessionPlan>): Promise<SuccessionPlan> {
     const { data } = await axios.post(`${BASE_URL}/succession`, payload)
-    return data
+    return data.data
   },
 
   async updateSuccessionPlan(id: number, payload: Partial<SuccessionPlan>): Promise<SuccessionPlan> {
     const { data } = await axios.put(`${BASE_URL}/succession/${id}`, payload)
-    return data
+    return data.data
   },
 
   async deleteSuccessionPlan(id: number): Promise<void> {
@@ -67,6 +67,6 @@ export default {
 
   async getCriticalPositions(): Promise<Array<{ position: { id: number; title: string }; reason: string }>> {
     const { data } = await axios.get(`${BASE_URL}/critical-positions`)
-    return data
+    return data.data
   },
 }

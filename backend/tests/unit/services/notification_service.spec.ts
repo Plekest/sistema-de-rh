@@ -2,7 +2,6 @@ import { test } from '@japa/runner'
 import Database from '@adonisjs/lucid/services/db'
 import NotificationService from '#services/notification_service'
 import User from '#models/user'
-import Notification from '#models/notification'
 import { DateTime } from 'luxon'
 
 test.group('NotificationService', (group) => {

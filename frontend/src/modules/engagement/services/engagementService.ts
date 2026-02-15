@@ -10,7 +10,7 @@ export default {
     const response = await api.get('/engagement/ranking', {
       params: { month, year, limit },
     })
-    return response.data
+    return response.data.data
   },
 
   async getCompanyAverage(
@@ -20,7 +20,7 @@ export default {
     const response = await api.get('/engagement/company-average', {
       params: { month, year },
     })
-    return response.data
+    return response.data.data
   },
 
   async getDepartmentAverage(
@@ -31,7 +31,7 @@ export default {
     const response = await api.get(`/engagement/departments/${departmentId}`, {
       params: { month, year },
     })
-    return response.data
+    return response.data.data
   },
 
   async getEmployeeHistory(
@@ -41,7 +41,7 @@ export default {
     const response = await api.get(`/engagement/employees/${employeeId}/history`, {
       params: { months },
     })
-    return response.data
+    return response.data.data
   },
 
   async calculateForEmployee(
@@ -54,7 +54,7 @@ export default {
       month,
       year,
     })
-    return response.data
+    return response.data.data
   },
 
   async calculateAll(
@@ -65,6 +65,6 @@ export default {
       month,
       year,
     })
-    return response.data
+    return response.data.data
   },
 }

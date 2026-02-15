@@ -333,7 +333,7 @@ test.group('OnboardingService - Checklists', (group) => {
         description: templateItem.description,
         responsibleRole: 'hr',
         status: 'pending',
-        dueDate: startedAt.plus({ days: templateItem.dueDays }),
+        dueDate: startedAt.plus({ days: templateItem.dueDays ?? 0 }),
         order: templateItem.order,
       })
     }
@@ -389,7 +389,7 @@ test.group('OnboardingService - Checklists', (group) => {
   })
 
   test('deve listar checklists por employee', async ({ assert }) => {
-    const checklist = await EmployeeChecklist.create({
+    await EmployeeChecklist.create({
       employeeId: employee.id,
       type: 'onboarding',
       status: 'pending',
@@ -492,7 +492,7 @@ test.group('OnboardingService - Checklists', (group) => {
       createdBy: user.id,
     })
 
-    const item1 = await EmployeeChecklistItem.create({
+    await EmployeeChecklistItem.create({
       checklistId: checklist.id,
       title: 'Item obrigatório 1',
       responsibleRole: 'hr',
@@ -500,7 +500,7 @@ test.group('OnboardingService - Checklists', (group) => {
       order: 1,
     })
 
-    const item2 = await EmployeeChecklistItem.create({
+    await EmployeeChecklistItem.create({
       checklistId: checklist.id,
       title: 'Item obrigatório 2',
       responsibleRole: 'hr',

@@ -252,13 +252,13 @@ test.group('ReportService - exportPayrollCSV', (group) => {
     await PaySlip.create({
       payrollPeriodId: period.id,
       employeeId: employee.id,
-      grossSalary: '5000.00',
-      totalEarnings: '5000.00',
-      totalDeductions: '800.00',
-      inssAmount: '550.00',
-      irrfAmount: '150.00',
-      fgtsAmount: '400.00',
-      netSalary: '4200.00',
+      grossSalary: 5000.00,
+      totalEarnings: 5000.00,
+      totalDeductions: 800.00,
+      inssAmount: 550.00,
+      irrfAmount: 150.00,
+      fgtsAmount: 400.00,
+      netSalary: 4200.00,
       status: 'draft',
     })
 
@@ -283,13 +283,13 @@ test.group('ReportService - exportPayrollCSV', (group) => {
     await PaySlip.create({
       payrollPeriodId: period.id,
       employeeId: employee.id,
-      grossSalary: '5000.00',
-      totalEarnings: '5000.00',
-      totalDeductions: '800.00',
-      inssAmount: '550.00',
-      irrfAmount: '150.00',
-      fgtsAmount: '400.00',
-      netSalary: '4200.00',
+      grossSalary: 5000.00,
+      totalEarnings: 5000.00,
+      totalDeductions: 800.00,
+      inssAmount: 550.00,
+      irrfAmount: 150.00,
+      fgtsAmount: 400.00,
+      netSalary: 4200.00,
       status: 'draft',
     })
 
@@ -307,13 +307,13 @@ test.group('ReportService - exportPayrollCSV', (group) => {
     await PaySlip.create({
       payrollPeriodId: period.id,
       employeeId: employee.id,
-      grossSalary: '5000.00',
-      totalEarnings: '5000.00',
-      totalDeductions: '800.00',
-      inssAmount: '550.00',
-      irrfAmount: '150.00',
-      fgtsAmount: '400.00',
-      netSalary: '4200.00',
+      grossSalary: 5000.00,
+      totalEarnings: 5000.00,
+      totalDeductions: 800.00,
+      inssAmount: 550.00,
+      irrfAmount: 150.00,
+      fgtsAmount: 400.00,
+      netSalary: 4200.00,
       status: 'draft',
     })
 
@@ -329,13 +329,13 @@ test.group('ReportService - exportPayrollCSV', (group) => {
     await PaySlip.create({
       payrollPeriodId: period.id,
       employeeId: employee.id,
-      grossSalary: '5000.00',
-      totalEarnings: '5000.00',
-      totalDeductions: '800.00',
-      inssAmount: '550.00',
-      irrfAmount: '150.00',
-      fgtsAmount: '400.00',
-      netSalary: '4200.00',
+      grossSalary: 5000.00,
+      totalEarnings: 5000.00,
+      totalDeductions: 800.00,
+      inssAmount: 550.00,
+      irrfAmount: 150.00,
+      fgtsAmount: 400.00,
+      netSalary: 4200.00,
       status: 'draft',
     })
 

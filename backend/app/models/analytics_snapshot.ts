@@ -18,7 +18,10 @@ export default class AnalyticsSnapshot extends BaseModel {
 
   @column({
     prepare: (value: any) => JSON.stringify(value),
-    consume: (value: string) => JSON.parse(value),
+    consume: (value: any) => {
+      if (typeof value === 'string') return JSON.parse(value)
+      return value
+    },
   })
   declare data: Record<string, any>
 

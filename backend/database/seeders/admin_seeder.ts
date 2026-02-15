@@ -320,7 +320,7 @@ export default class extends BaseSeeder {
       { title: 'Vendedor', departmentId: depComercial.id }
     )
 
-    const cargoGerenteComercial = await Position.updateOrCreate(
+    await Position.updateOrCreate(
       { title: 'Gerente Comercial', departmentId: depComercial.id },
       { title: 'Gerente Comercial', departmentId: depComercial.id }
     )
@@ -863,10 +863,10 @@ export default class extends BaseSeeder {
           const clockInTime = minutesToTime(clockInMinutes)
 
           await TimeEntry.updateOrCreate(
-            { employeeId: emp.id, date: currentDate.toSQLDate()! },
+            { employeeId: emp.id, date: DateTime.fromSQL(currentDate.toSQLDate()!) },
             {
               employeeId: emp.id,
-              date: currentDate.toSQLDate()!,
+              date: DateTime.fromSQL(currentDate.toSQLDate()!),
               clockIn: currentDate.set({ hour: clockInTime.hour, minute: clockInTime.minute }),
               clockOut: null,
               lunchStart: null,
@@ -905,10 +905,10 @@ export default class extends BaseSeeder {
         )
 
         await TimeEntry.updateOrCreate(
-          { employeeId: emp.id, date: currentDate.toSQLDate()! },
+          { employeeId: emp.id, date: DateTime.fromSQL(currentDate.toSQLDate()!) },
           {
             employeeId: emp.id,
-            date: currentDate.toSQLDate()!,
+            date: DateTime.fromSQL(currentDate.toSQLDate()!),
             clockIn,
             clockOut,
             lunchStart,
@@ -1709,8 +1709,7 @@ export default class extends BaseSeeder {
     }
 
     function getBaseDocsForEmployee(
-      emp: Employee,
-      firstName: string
+      emp: Employee
     ): DocTemplate[] {
       const isPJ = emp.type === 'pj'
       const docs: DocTemplate[] = [
@@ -1842,10 +1841,10 @@ export default class extends BaseSeeder {
     ])
 
     for (const emp of allEmployees) {
-      const firstName = firstNames.get(emp.id)!
-      const baseDocs = getBaseDocsForEmployee(emp, firstName)
+      const baseDocs = getBaseDocsForEmployee(emp)
       const extraDocs = extraDocsMap.get(emp.id) || []
       const allDocs = [...baseDocs, ...extraDocs]
+      const firstName = firstNames.get(emp.id) || 'employee'
 
       for (const doc of allDocs) {
         const fileName = `${firstName}_${doc.fileNameSuffix}.pdf`

@@ -98,7 +98,7 @@ test.group('UserService', (group) => {
   })
 
   test('deve filtrar usuarios por isActive', async ({ assert }) => {
-    const active = await service.create({
+    await service.create({
       fullName: 'Active User',
       email: `active-${Date.now()}@example.com`,
       password: 'password123',
@@ -222,7 +222,7 @@ test.group('UserService', (group) => {
     assert.equal(updated.role, 'manager')
   })
 
-  test('deve atualizar senha', async ({ assert }) => {
+  test('deve atualizar senha', async () => {
     const user = await service.create({
       fullName: 'Test User',
       email: `test-${Date.now()}@example.com`,
@@ -258,7 +258,7 @@ test.group('UserService', (group) => {
     assert.isNotNull(found)
   })
 
-  test('deve resetar senha', async ({ assert }) => {
+  test('deve resetar senha', async () => {
     const user = await service.create({
       fullName: 'Test User',
       email: `test-${Date.now()}@example.com`,

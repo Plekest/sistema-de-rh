@@ -52,7 +52,7 @@ class TalentPoolService {
    * Importa candidato rejeitado para o talent pool
    */
   async importFromCandidate(candidateId: number): Promise<TalentPoolEntry> {
-    const response = await api.post<{ data: TalentPoolEntry }>('/talent-pool/import', { candidateId })
+    const response = await api.post<{ data: TalentPoolEntry }>(`/talent-pool/import/${candidateId}`)
     return response.data.data
   }
 

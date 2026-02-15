@@ -1,7 +1,6 @@
 import { test } from '@japa/runner'
 import PeopleAnalyticsService from '#services/people_analytics_service'
 import Database from '@adonisjs/lucid/services/db'
-import AnalyticsSnapshot from '#models/analytics_snapshot'
 import Employee from '#models/employee'
 import User from '#models/user'
 import Department from '#models/department'

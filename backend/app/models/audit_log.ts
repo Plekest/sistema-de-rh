@@ -36,13 +36,19 @@ export default class AuditLog extends BaseModel {
 
   @column({
     prepare: (value: any) => JSON.stringify(value),
-    consume: (value: string) => JSON.parse(value),
+    consume: (value: any) => {
+      if (typeof value === 'string') return JSON.parse(value)
+      return value
+    },
   })
   declare oldValues: Record<string, any> | null
 
   @column({
     prepare: (value: any) => JSON.stringify(value),
-    consume: (value: string) => JSON.parse(value),
+    consume: (value: any) => {
+      if (typeof value === 'string') return JSON.parse(value)
+      return value
+    },
   })
   declare newValues: Record<string, any> | null
 

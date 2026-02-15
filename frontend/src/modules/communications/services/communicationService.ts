@@ -4,14 +4,14 @@ import type { AutomatedCommunication, CommunicationLog } from '../types'
 export default {
   async list(): Promise<AutomatedCommunication[]> {
     const response = await api.get('/communications')
-    return response.data
+    return response.data.data
   },
 
   async create(
     data: Partial<AutomatedCommunication>
   ): Promise<AutomatedCommunication> {
     const response = await api.post('/communications', data)
-    return response.data
+    return response.data.data
   },
 
   async update(
@@ -19,7 +19,7 @@ export default {
     data: Partial<AutomatedCommunication>
   ): Promise<AutomatedCommunication> {
     const response = await api.put(`/communications/${id}`, data)
-    return response.data
+    return response.data.data
   },
 
   async destroy(id: number): Promise<void> {
@@ -32,7 +32,7 @@ export default {
 
   async execute(): Promise<{ sent: number }> {
     const response = await api.post('/communications/execute')
-    return response.data
+    return response.data.data
   },
 
   async getLog(
@@ -40,8 +40,11 @@ export default {
     page?: number,
     limit?: number
   ): Promise<{ data: CommunicationLog[]; meta: any }> {
-    const response = await api.get('/communications/log', {
-      params: { communicationId, page, limit },
+    const url = communicationId
+      ? `/communications/${communicationId}/log`
+      : '/communications/logs'
+    const response = await api.get(url, {
+      params: { page, limit },
     })
     return response.data
   },

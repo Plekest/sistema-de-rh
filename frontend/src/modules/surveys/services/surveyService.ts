@@ -27,12 +27,12 @@ class SurveyService {
   }
 
   async activate(id: number): Promise<Survey> {
-    const response = await api.patch<{ data: Survey }>(`/surveys/${id}/activate`)
+    const response = await api.put<{ data: Survey }>(`/surveys/${id}/activate`)
     return response.data.data
   }
 
   async close(id: number): Promise<Survey> {
-    const response = await api.patch<{ data: Survey }>(`/surveys/${id}/close`)
+    const response = await api.put<{ data: Survey }>(`/surveys/${id}/close`)
     return response.data.data
   }
 

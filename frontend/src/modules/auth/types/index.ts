@@ -9,6 +9,16 @@ export interface UserPermissions {
   payroll: boolean
   performance: boolean
   recruitment: boolean
+  training: boolean
+  calendar: boolean
+  onboarding: boolean
+  surveys: boolean
+  orgchart: boolean
+  dashboard: boolean
+  skills: boolean
+  career: boolean
+  health: boolean
+  analytics: boolean
 }
 
 export interface User {

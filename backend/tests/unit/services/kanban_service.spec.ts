@@ -7,7 +7,6 @@ import RecruitmentStage from '#models/recruitment_stage'
 import CandidateStageHistory from '#models/candidate_stage_history'
 import User from '#models/user'
 import Department from '#models/department'
-import { DateTime } from 'luxon'
 
 test.group('KanbanService - Board', (group) => {
   let service: KanbanService

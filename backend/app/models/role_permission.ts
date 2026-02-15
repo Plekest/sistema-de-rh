@@ -9,7 +9,27 @@ export default class RolePermission extends BaseModel {
   declare role: 'admin' | 'manager' | 'employee'
 
   @column()
-  declare module: 'employees' | 'attendance' | 'hours_bank' | 'documents' | 'history' | 'leave' | 'benefits' | 'payroll' | 'performance' | 'recruitment'
+  declare module:
+    | 'employees'
+    | 'attendance'
+    | 'hours_bank'
+    | 'documents'
+    | 'history'
+    | 'leave'
+    | 'benefits'
+    | 'payroll'
+    | 'performance'
+    | 'recruitment'
+    | 'training'
+    | 'calendar'
+    | 'onboarding'
+    | 'surveys'
+    | 'orgchart'
+    | 'dashboard'
+    | 'skills'
+    | 'career'
+    | 'health'
+    | 'analytics'
 
   @column()
   declare canAccess: boolean

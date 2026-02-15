@@ -369,8 +369,6 @@ test.group('CalendarService - Filtro por Departamento', (group) => {
   let service: CalendarService
   let department1: Department
   let department2: Department
-  let employee1: Employee
-  let employee2: Employee
 
   group.setup(async () => {
     await Database.beginGlobalTransaction()
@@ -390,7 +388,7 @@ test.group('CalendarService - Filtro por Departamento', (group) => {
       name: `RH-${Date.now()}`,
     })
 
-    employee1 = await Employee.create({
+    await Employee.create({
       fullName: 'Employee TI',
       email: `ti.${Date.now()}@empresa.com`,
       type: 'clt',
@@ -401,7 +399,7 @@ test.group('CalendarService - Filtro por Departamento', (group) => {
       departmentId: department1.id,
     })
 
-    employee2 = await Employee.create({
+    await Employee.create({
       fullName: 'Employee RH',
       email: `rh.${Date.now()}@empresa.com`,
       type: 'clt',

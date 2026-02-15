@@ -204,7 +204,7 @@ test.group('AutoCommunicationService - Execução', (group) => {
   })
 
   test('deve encontrar employees com aniversário de empresa', async ({ assert }) => {
-    const emp = await Employee.create({
+    await Employee.create({
       userId: user.id,
       fullName: 'Anniversary Employee',
       email: `anniv.${Date.now()}@empresa.com`,

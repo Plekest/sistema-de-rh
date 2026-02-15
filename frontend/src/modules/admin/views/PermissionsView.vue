@@ -26,6 +26,16 @@ const modules = [
   { key: 'payroll', label: 'Folha de Pagamento' },
   { key: 'performance', label: 'Avaliacao de Desempenho' },
   { key: 'recruitment', label: 'Recrutamento' },
+  { key: 'training', label: 'Treinamentos' },
+  { key: 'calendar', label: 'Calendario' },
+  { key: 'onboarding', label: 'Onboarding' },
+  { key: 'surveys', label: 'Pesquisas' },
+  { key: 'orgchart', label: 'Organograma' },
+  { key: 'dashboard', label: 'Dashboard' },
+  { key: 'skills', label: 'Competencias' },
+  { key: 'career', label: 'Carreira' },
+  { key: 'health', label: 'Saude Ocupacional' },
+  { key: 'analytics', label: 'People Analytics' },
 ]
 
 const roles = [

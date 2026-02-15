@@ -388,7 +388,7 @@ test.group('AuditLogService - Filtros', (group) => {
   })
 })
 
-test.group('AuditLogService - Resiliencia', (group) => {
+test.group('AuditLogService - Resiliencia', () => {
   test('nao deve quebrar execucao se log falhar', async ({ assert }) => {
     // Este teste verifica que erros no audit log nao quebram a aplicacao
     // O service captura erros e apenas loga no console

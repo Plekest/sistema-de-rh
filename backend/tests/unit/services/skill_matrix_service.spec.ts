@@ -77,7 +77,7 @@ test.group('SkillMatrixService - Categories', (group) => {
       categoryId: category.id,
       name: 'JavaScript',
       description: 'Linguagem de programação',
-      levelDescriptors: JSON.stringify({ 1: 'Básico', 5: 'Expert' }),
+      levelDescriptors: { 1: 'Básico', 5: 'Expert' },
       isActive: true,
     })
 
@@ -182,7 +182,7 @@ test.group('SkillMatrixService - Skills', (group) => {
       categoryId: category.id,
       name: `Skill A ${generateUniqueId()}`,
       description: 'Skill A',
-      levelDescriptors: JSON.stringify({ 1: 'Básico' }),
+      levelDescriptors: { 1: 'Básico' },
       isActive: true,
     })
 
@@ -203,7 +203,7 @@ test.group('SkillMatrixService - Skills', (group) => {
       categoryId: category.id,
       name: `Active ${generateUniqueId()}`,
       description: 'Ativa',
-      levelDescriptors: JSON.stringify({ 1: 'Básico' }),
+      levelDescriptors: { 1: 'Básico' },
       isActive: true,
     })
 
@@ -211,7 +211,7 @@ test.group('SkillMatrixService - Skills', (group) => {
       categoryId: category.id,
       name: `Inactive ${generateUniqueId()}`,
       description: 'Inativa',
-      levelDescriptors: JSON.stringify({ 1: 'Básico' }),
+      levelDescriptors: { 1: 'Básico' },
       isActive: false,
     })
 
@@ -231,7 +231,7 @@ test.group('SkillMatrixService - Skills', (group) => {
       categoryId: category.id,
       name: `Old ${generateUniqueId()}`,
       description: 'Antiga',
-      levelDescriptors: JSON.stringify({ 1: 'Básico' }),
+      levelDescriptors: { 1: 'Básico' },
       isActive: true,
     })
 
@@ -252,7 +252,7 @@ test.group('SkillMatrixService - Skills', (group) => {
       categoryId: category.id,
       name: `To Deactivate ${generateUniqueId()}`,
       description: 'Para desativar',
-      levelDescriptors: JSON.stringify({ 1: 'Básico' }),
+      levelDescriptors: { 1: 'Básico' },
       isActive: true,
     })
 
@@ -332,7 +332,7 @@ test.group('SkillMatrixService - Assessment', (group) => {
       categoryId: category.id,
       name: `Skill ${uniqueId}`,
       description: 'Skill de teste',
-      levelDescriptors: JSON.stringify({ 1: 'Básico', 5: 'Expert' }),
+      levelDescriptors: { 1: 'Básico', 5: 'Expert' },
       isActive: true,
     })
   })
@@ -393,7 +393,7 @@ test.group('SkillMatrixService - Assessment', (group) => {
       categoryId: skill.categoryId,
       name: `Skill 2 ${generateUniqueId()}`,
       description: 'Segunda skill',
-      levelDescriptors: JSON.stringify({ 1: 'Básico' }),
+      levelDescriptors: { 1: 'Básico' },
       isActive: true,
     })
 
@@ -554,7 +554,7 @@ test.group('SkillMatrixService - Reports', (group) => {
       categoryId: category.id,
       name: `Skill1 ${uniqueId}`,
       description: 'Skill 1',
-      levelDescriptors: JSON.stringify({ 1: 'Básico', 5: 'Expert' }),
+      levelDescriptors: { 1: 'Básico', 5: 'Expert' },
       isActive: true,
     })
 
@@ -562,7 +562,7 @@ test.group('SkillMatrixService - Reports', (group) => {
       categoryId: category.id,
       name: `Skill2 ${uniqueId}`,
       description: 'Skill 2',
-      levelDescriptors: JSON.stringify({ 1: 'Básico', 5: 'Expert' }),
+      levelDescriptors: { 1: 'Básico', 5: 'Expert' },
       isActive: true,
     })
   })

@@ -1,13 +1,11 @@
 import { test } from '@japa/runner'
 import Database from '@adonisjs/lucid/services/db'
 import TalentPoolService from '#services/talent_pool_service'
-import TalentPool from '#models/talent_pool'
 import TalentPoolTag from '#models/talent_pool_tag'
 import Candidate from '#models/candidate'
 import JobRequisition from '#models/job_requisition'
 import User from '#models/user'
 import Department from '#models/department'
-import { DateTime } from 'luxon'
 
 test.group('TalentPoolService - CRUD', (group) => {
   let service: TalentPoolService
@@ -143,7 +141,7 @@ test.group('TalentPoolService - CRUD', (group) => {
   })
 
   test('deve filtrar talentos por status', async ({ assert }) => {
-    const talent1 = await service.create(
+    await service.create(
       {
         name: `Ativo ${Date.now()}`,
         email: `ativo.${Date.now()}@email.com`,

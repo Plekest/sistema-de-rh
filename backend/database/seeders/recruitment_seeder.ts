@@ -100,7 +100,7 @@ export default class extends BaseSeeder {
       }
     )
 
-    const req3 = await JobRequisition.updateOrCreate(
+    await JobRequisition.updateOrCreate(
       { title: 'DevOps Engineer' },
       {
         title: 'DevOps Engineer',
@@ -143,7 +143,7 @@ export default class extends BaseSeeder {
       }
     )
 
-    const req5 = await JobRequisition.updateOrCreate(
+    await JobRequisition.updateOrCreate(
       { title: 'Gerente Comercial' },
       {
         title: 'Gerente Comercial',
@@ -412,13 +412,13 @@ export default class extends BaseSeeder {
       score: number | null = null
     ) => {
       await CandidateStageHistory.updateOrCreate(
-        { candidateId, stageId, enteredAt: enteredAt.toSQL()! },
+        { candidateId, stageId, enteredAt: enteredAt },
         {
           candidateId,
           stageId,
           movedBy: movedById,
-          enteredAt,
-          leftAt,
+          enteredAt: enteredAt,
+          leftAt: leftAt,
           feedback,
           score,
         }
@@ -754,7 +754,7 @@ export default class extends BaseSeeder {
       {
         candidateId: cand1.id,
         stageId: stageEntrevistaRH.id,
-        scheduledAt: DateTime.fromISO('2026-01-08T10:00:00').toSQL()!,
+        scheduledAt: DateTime.fromISO('2026-01-08T10:00:00'),
       },
       {
         candidateId: cand1.id,
@@ -774,7 +774,7 @@ export default class extends BaseSeeder {
       {
         candidateId: cand1.id,
         stageId: stageEntrevistaGestor.id,
-        scheduledAt: DateTime.fromISO('2026-01-20T14:00:00').toSQL()!,
+        scheduledAt: DateTime.fromISO('2026-01-20T14:00:00'),
       },
       {
         candidateId: cand1.id,
@@ -795,7 +795,7 @@ export default class extends BaseSeeder {
       {
         candidateId: cand2.id,
         stageId: stageEntrevistaRH.id,
-        scheduledAt: DateTime.fromISO('2026-01-12T11:00:00').toSQL()!,
+        scheduledAt: DateTime.fromISO('2026-01-12T11:00:00'),
       },
       {
         candidateId: cand2.id,
@@ -815,7 +815,7 @@ export default class extends BaseSeeder {
       {
         candidateId: cand5.id,
         stageId: stageEntrevistaRH.id,
-        scheduledAt: DateTime.fromISO('2025-12-12T15:00:00').toSQL()!,
+        scheduledAt: DateTime.fromISO('2025-12-12T15:00:00'),
       },
       {
         candidateId: cand5.id,
@@ -835,7 +835,7 @@ export default class extends BaseSeeder {
       {
         candidateId: cand5.id,
         stageId: stageEntrevistaGestor.id,
-        scheduledAt: DateTime.fromISO('2025-12-22T10:00:00').toSQL()!,
+        scheduledAt: DateTime.fromISO('2025-12-22T10:00:00'),
       },
       {
         candidateId: cand5.id,
@@ -856,7 +856,7 @@ export default class extends BaseSeeder {
       {
         candidateId: cand7.id,
         stageId: stageEntrevistaRH.id,
-        scheduledAt: DateTime.fromISO('2026-01-18T09:00:00').toSQL()!,
+        scheduledAt: DateTime.fromISO('2026-01-18T09:00:00'),
       },
       {
         candidateId: cand7.id,
@@ -876,7 +876,7 @@ export default class extends BaseSeeder {
       {
         candidateId: cand11.id,
         stageId: stageEntrevistaRH.id,
-        scheduledAt: DateTime.fromISO('2025-11-03T14:00:00').toSQL()!,
+        scheduledAt: DateTime.fromISO('2025-11-03T14:00:00'),
       },
       {
         candidateId: cand11.id,
@@ -896,7 +896,7 @@ export default class extends BaseSeeder {
       {
         candidateId: cand11.id,
         stageId: stageEntrevistaGestor.id,
-        scheduledAt: DateTime.fromISO('2025-11-08T10:30:00').toSQL()!,
+        scheduledAt: DateTime.fromISO('2025-11-08T10:30:00'),
       },
       {
         candidateId: cand11.id,
@@ -917,7 +917,7 @@ export default class extends BaseSeeder {
       {
         candidateId: cand4.id,
         stageId: stageEntrevistaRH.id,
-        scheduledAt: DateTime.fromISO('2026-02-15T10:00:00').toSQL()!,
+        scheduledAt: DateTime.fromISO('2026-02-15T10:00:00'),
       },
       {
         candidateId: cand4.id,
@@ -937,7 +937,7 @@ export default class extends BaseSeeder {
       {
         candidateId: cand9.id,
         stageId: stageEntrevistaRH.id,
-        scheduledAt: DateTime.fromISO('2026-02-12T15:00:00').toSQL()!,
+        scheduledAt: DateTime.fromISO('2026-02-12T15:00:00'),
       },
       {
         candidateId: cand9.id,
@@ -958,7 +958,7 @@ export default class extends BaseSeeder {
       {
         candidateId: cand12.id,
         stageId: stageEntrevistaGestor.id,
-        scheduledAt: DateTime.fromISO('2025-11-12T11:00:00').toSQL()!,
+        scheduledAt: DateTime.fromISO('2025-11-12T11:00:00'),
       },
       {
         candidateId: cand12.id,

@@ -34,7 +34,11 @@ export default class AutomatedCommunication extends BaseModel {
 
   @column({
     prepare: (value: any) => (value ? JSON.stringify(value) : null),
-    consume: (value: any) => (value ? JSON.parse(value) : null),
+    consume: (value: any) => {
+      if (!value) return null
+      if (typeof value === 'string') return JSON.parse(value)
+      return value
+    },
   })
   declare targetRoles: string[] | null
 

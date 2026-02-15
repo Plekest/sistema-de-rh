@@ -320,9 +320,9 @@ test.group('DataChangeRequestService - Aprovar Solicitacao', (group) => {
     request.reviewedAt = DateTime.now()
     await request.save()
 
-    // Tenta aprovar novamente
-    const canApprove = request.status === 'pending'
-    assert.isFalse(canApprove)
+    // Verifica que status não é mais pending
+    await request.refresh()
+    assert.equal(request.status, 'approved')
   })
 })
 
@@ -414,13 +414,13 @@ test.group('DataChangeRequestService - Rejeitar Solicitacao', (group) => {
     request.reviewedAt = DateTime.now()
     await request.save()
 
-    // Tenta rejeitar novamente
-    const canReject = request.status === 'pending'
-    assert.isFalse(canReject)
+    // Verifica que status não é mais pending
+    await request.refresh()
+    assert.equal(request.status, 'rejected')
   })
 })
 
-test.group('DataChangeRequestService - Validacoes', (group) => {
+test.group('DataChangeRequestService - Validacoes', () => {
   test('deve validar campos permitidos para alteracao', async ({ assert }) => {
     const allowedFields = [
       'phone',

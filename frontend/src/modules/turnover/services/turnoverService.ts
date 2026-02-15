@@ -15,7 +15,7 @@ export default {
 
   async record(data: Partial<TurnoverRecord>): Promise<TurnoverRecord> {
     const response = await api.post('/turnover', data)
-    return response.data
+    return response.data.data
   },
 
   async getRate(
@@ -26,34 +26,34 @@ export default {
     const response = await api.get('/turnover/rate', {
       params: { from, to, departmentId },
     })
-    return response.data
+    return response.data.data
   },
 
   async getByDepartment(year: number): Promise<TurnoverByDepartment[]> {
     const response = await api.get('/turnover/by-department', {
       params: { year },
     })
-    return response.data
+    return response.data.data
   },
 
   async getByReason(from: string, to: string): Promise<TurnoverByReason[]> {
     const response = await api.get('/turnover/by-reason', {
       params: { from, to },
     })
-    return response.data
+    return response.data.data
   },
 
   async getTrend(months?: number): Promise<TurnoverTrend[]> {
     const response = await api.get('/turnover/trend', {
       params: { months },
     })
-    return response.data
+    return response.data.data
   },
 
   async getAverageTenure(departmentId?: number): Promise<{ averageMonths: number }> {
     const response = await api.get('/turnover/average-tenure', {
       params: { departmentId },
     })
-    return response.data
+    return response.data.data
   },
 }

@@ -153,7 +153,6 @@ export default class extends BaseSeeder {
       for (let i = 0; i < periodsToCreate; i++) {
         const accrualStartDate = hireDate.plus({ months: i * 12 })
         const accrualEndDate = accrualStartDate.plus({ months: 12 })
-        const expiryDate = accrualEndDate.plus({ months: 12 }) // Vacation expires 12 months after accrual
 
         // Randomize usage for realism
         const isUsed = Math.random() > 0.3 // 70% chance of some usage
@@ -164,12 +163,12 @@ export default class extends BaseSeeder {
         await LeaveBalance.updateOrCreate(
           {
             employeeId: employee.id,
-            accrualStartDate: accrualStartDate.toSQLDate(),
+            accrualStartDate: accrualStartDate,
           },
           {
             employeeId: employee.id,
-            accrualStartDate: accrualStartDate.toSQLDate(),
-            accrualEndDate: accrualEndDate.toSQLDate(),
+            accrualStartDate: accrualStartDate,
+            accrualEndDate: accrualEndDate,
             totalDays: 30,
             usedDays,
             soldDays,
@@ -425,7 +424,7 @@ export default class extends BaseSeeder {
   private async createBenefits() {
     console.log('Creating benefits...')
 
-    const benefits = [
+    const benefits: Array<{ name: string; type: 'vt' | 'vr' | 'va' | 'health' | 'dental' | 'life_insurance' | 'daycare' | 'gym' | 'other'; provider: string | null; description: string; isActive: boolean }> = [
       {
         name: 'Vale Transporte',
         type: 'vt',
@@ -485,7 +484,7 @@ export default class extends BaseSeeder {
     ]
 
     for (const benefit of benefits) {
-      await Benefit.updateOrCreate({ type: benefit.type }, benefit)
+      await Benefit.updateOrCreate({ type: benefit.type as any }, benefit)
     }
 
     console.log(`Created ${benefits.length} benefits`)
@@ -633,7 +632,7 @@ export default class extends BaseSeeder {
     ]
 
     for (const plan of plans) {
-      const benefit = benefitMap.get(plan.benefitCode)
+      const benefit = benefitMap.get(plan.benefitCode as any)
       if (!benefit) continue
 
       await BenefitPlan.create({
@@ -668,6 +667,7 @@ export default class extends BaseSeeder {
     let enrollmentCount = 0
 
     for (const employee of cltEmployees) {
+      await employee.load('position')
       const enrollmentDate = employee.hireDate.plus({ days: 30 }) // Benefits start after 30 days
 
       // All CLT employees get VT and VR (basic)
@@ -678,7 +678,7 @@ export default class extends BaseSeeder {
           await EmployeeBenefit.updateOrCreate(
             { employeeId: employee.id, benefitPlanId: vtPlans[0].id },
             {
-              enrollmentDate: enrollmentDate.toSQLDate(),
+              enrollmentDate: enrollmentDate,
               status: 'active',
             }
           )
@@ -696,7 +696,7 @@ export default class extends BaseSeeder {
           await EmployeeBenefit.updateOrCreate(
             { employeeId: employee.id, benefitPlanId: selectedPlan.id },
             {
-              enrollmentDate: enrollmentDate.toSQLDate(),
+              enrollmentDate: enrollmentDate,
               status: 'active',
             }
           )
@@ -712,7 +712,8 @@ export default class extends BaseSeeder {
           if (healthPlans.length > 0) {
             // Junior employees get basic, senior get plus or premium
             let planIndex = 0
-            if (employee.position?.includes('Senior') || employee.position?.includes('Gerente')) {
+            const positionTitle = employee.position?.title || ''
+            if (positionTitle.includes('Senior') || positionTitle.includes('Gerente')) {
               planIndex = Math.random() > 0.5 ? 2 : 1 // Premium or Plus
             } else {
               planIndex = Math.random() > 0.7 ? 1 : 0 // Plus or Basic
@@ -721,7 +722,7 @@ export default class extends BaseSeeder {
             await EmployeeBenefit.updateOrCreate(
               { employeeId: employee.id, benefitPlanId: selectedPlan.id },
               {
-                enrollmentDate: enrollmentDate.toSQLDate(),
+                enrollmentDate: enrollmentDate,
                 status: 'active',
               }
             )
@@ -741,7 +742,7 @@ export default class extends BaseSeeder {
             await EmployeeBenefit.updateOrCreate(
               { employeeId: employee.id, benefitPlanId: selectedPlan.id },
               {
-                enrollmentDate: enrollmentDate.toSQLDate(),
+                enrollmentDate: enrollmentDate,
                 status: 'active',
               }
             )
@@ -758,7 +759,7 @@ export default class extends BaseSeeder {
           await EmployeeBenefit.updateOrCreate(
             { employeeId: employee.id, benefitPlanId: lifePlans[0].id },
             {
-              enrollmentDate: enrollmentDate.toSQLDate(),
+              enrollmentDate: enrollmentDate,
               status: 'active',
             }
           )
@@ -777,7 +778,7 @@ export default class extends BaseSeeder {
             await EmployeeBenefit.updateOrCreate(
               { employeeId: employee.id, benefitPlanId: selectedPlan.id },
               {
-                enrollmentDate: enrollmentDate.toSQLDate(),
+                enrollmentDate: enrollmentDate,
                 status: 'active',
               }
             )
@@ -795,7 +796,7 @@ export default class extends BaseSeeder {
             await EmployeeBenefit.updateOrCreate(
               { employeeId: employee.id, benefitPlanId: daycarePlans[0].id },
               {
-                enrollmentDate: enrollmentDate.toSQLDate(),
+                enrollmentDate: enrollmentDate,
                 status: 'active',
               }
             )
@@ -815,9 +816,9 @@ export default class extends BaseSeeder {
           await EmployeeBenefit.updateOrCreate(
             { employeeId: employee.id, benefitPlanId: gymPlans[0].id },
             {
-              enrollmentDate: employee.hireDate.plus({ days: 30 }).toSQLDate(),
+              enrollmentDate: employee.hireDate.plus({ days: 30 }),
               status: 'cancelled',
-              cancellationDate: DateTime.now().minus({ months: 2 }).toSQLDate(),
+              cancellationDate: DateTime.now().minus({ months: 2 }),
               notes: 'Solicitado pelo funcionário',
             }
           )
@@ -851,10 +852,10 @@ export default class extends BaseSeeder {
 
       await BenefitDependent.create({
         employeeBenefitId: enrollment.id,
-        name: `Cônjuge de ${enrollment.employee.name}`,
+        name: `Cônjuge de ${enrollment.employee.fullName}`,
         relationship: 'spouse',
         cpf: this.generateRandomCPF(),
-        birthDate: DateTime.now().minus({ years: 30 + Math.floor(Math.random() * 15) }).toSQLDate(),
+        birthDate: DateTime.now().minus({ years: 30 + Math.floor(Math.random() * 15) }),
       })
       dependentCount++
     }
@@ -868,10 +869,10 @@ export default class extends BaseSeeder {
       for (let j = 0; j < childrenCount; j++) {
         await BenefitDependent.create({
           employeeBenefitId: enrollment.id,
-          name: `Filho(a) ${j + 1} de ${enrollment.employee.name}`,
+          name: `Filho(a) ${j + 1} de ${enrollment.employee.fullName}`,
           relationship: 'child',
           cpf: this.generateRandomCPF(),
-          birthDate: DateTime.now().minus({ years: 2 + Math.floor(Math.random() * 15) }).toSQLDate(),
+          birthDate: DateTime.now().minus({ years: 2 + Math.floor(Math.random() * 15) }),
         })
         dependentCount++
       }

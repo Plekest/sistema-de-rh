@@ -154,18 +154,7 @@ test.group('LeaveService - Validacao Regras CLT Ferias', (group) => {
   })
 })
 
-test.group('LeaveService - Calculo de Saldo', (group) => {
-  let service: LeaveService
-
-  group.setup(async () => {
-    await Database.beginGlobalTransaction()
-    service = new LeaveService()
-  })
-
-  group.teardown(async () => {
-    await Database.rollbackGlobalTransaction()
-  })
-
+test.group('LeaveService - Calculo de Saldo', () => {
   test('deve calcular 30 dias de ferias por periodo aquisitivo de 12 meses', async ({
     assert,
   }) => {
@@ -207,7 +196,7 @@ test.group('LeaveService - Calculo de Saldo', (group) => {
   })
 })
 
-test.group('LeaveService - Fracionamento de Ferias', (group) => {
+test.group('LeaveService - Fracionamento de Ferias', () => {
   test('deve permitir fracionamento em ate 3 periodos', async ({ assert }) => {
     // Regra CLT: Ferias podem ser fracionadas em ate 3 periodos
     const maxPeriods = 3
@@ -256,7 +245,7 @@ test.group('LeaveService - Fracionamento de Ferias', (group) => {
   })
 })
 
-test.group('LeaveService - Tipos de Licenca', (group) => {
+test.group('LeaveService - Tipos de Licenca', () => {
   test('deve ter configuracao para licenca maternidade (120 dias)', async ({ assert }) => {
     const maternityDays = 120
     assert.equal(maternityDays, 120)
@@ -283,7 +272,7 @@ test.group('LeaveService - Tipos de Licenca', (group) => {
   })
 })
 
-test.group('LeaveService - Atualizacao de Saldo', (group) => {
+test.group('LeaveService - Atualizacao de Saldo', () => {
   test('deve atualizar saldo corretamente apos aprovacao', async ({ assert }) => {
     // Arrange
     const totalDays = 30
@@ -356,7 +345,7 @@ test.group('LeaveService - Atualizacao de Saldo', (group) => {
   })
 })
 
-test.group('LeaveService - Edge Cases', (group) => {
+test.group('LeaveService - Edge Cases', () => {
   test('nao deve permitir saldo negativo', async ({ assert }) => {
     // Arrange
     const totalDays = 30

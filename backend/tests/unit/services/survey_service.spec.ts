@@ -342,7 +342,7 @@ test.group('SurveyService - Respostas', (group) => {
 
   test('deve listar pesquisas pendentes do employee', async ({ assert }) => {
     // Criar pesquisa ativa que o employee não respondeu
-    const pendingSurvey = await Survey.create({
+    await Survey.create({
       title: `Pesquisa Pendente ${Date.now()}`,
       type: 'satisfaction',
       status: 'active',
@@ -461,7 +461,7 @@ test.group('SurveyService - Resultados', (group) => {
 
     const answers = await SurveyAnswer.query().where('question_id', question.id)
 
-    const values = answers.map((a) => Number.parseFloat(a.value))
+    const values = answers.map((a) => Number.parseFloat(a.value!))
     const average = values.reduce((sum, val) => sum + val, 0) / values.length
 
     assert.equal(average, 8)
@@ -514,7 +514,7 @@ test.group('SurveyService - Resultados', (group) => {
     let detractors = 0
 
     for (const answer of answers) {
-      const score = Number.parseInt(answer.value)
+      const score = Number.parseInt(answer.value!)
       if (score >= 9) promoters++
       else if (score >= 7) passives++
       else detractors++
@@ -605,7 +605,7 @@ test.group('SurveyService - Resultados', (group) => {
     const distribution: Record<string, number> = {}
 
     for (const answer of answers) {
-      distribution[answer.value] = (distribution[answer.value] || 0) + 1
+      distribution[answer.value!] = (distribution[answer.value!] || 0) + 1
     }
 
     assert.equal(distribution['5'], 2)

@@ -189,7 +189,7 @@ export default class extends BaseSeeder {
       }
     )
 
-    const periodFeb2026 = await PayrollPeriod.updateOrCreate(
+    await PayrollPeriod.updateOrCreate(
       { referenceMonth: 2, referenceYear: 2026 },
       {
         referenceMonth: 2,

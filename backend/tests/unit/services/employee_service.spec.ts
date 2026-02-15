@@ -1,13 +1,9 @@
 import { test } from '@japa/runner'
-import EmployeeService from '#services/employee_service'
 import Database from '@adonisjs/lucid/services/db'
 
 test.group('EmployeeService - Criacao de Colaborador', (group) => {
-  let service: EmployeeService
-
   group.setup(async () => {
     await Database.beginGlobalTransaction()
-    service = new EmployeeService()
   })
 
   group.teardown(async () => {
@@ -49,11 +45,8 @@ test.group('EmployeeService - Criacao de Colaborador', (group) => {
 })
 
 test.group('EmployeeService - Atualizacao de Colaborador', (group) => {
-  let service: EmployeeService
-
   group.setup(async () => {
     await Database.beginGlobalTransaction()
-    service = new EmployeeService()
   })
 
   group.teardown(async () => {
@@ -95,11 +88,8 @@ test.group('EmployeeService - Atualizacao de Colaborador', (group) => {
 })
 
 test.group('EmployeeService - Soft Delete', (group) => {
-  let service: EmployeeService
-
   group.setup(async () => {
     await Database.beginGlobalTransaction()
-    service = new EmployeeService()
   })
 
   group.teardown(async () => {
@@ -125,7 +115,7 @@ test.group('EmployeeService - Soft Delete', (group) => {
   })
 })
 
-test.group('EmployeeService - Validacoes', (group) => {
+test.group('EmployeeService - Validacoes', () => {
   test('deve validar email obrigatorio', async ({ assert }) => {
     // Validator verifica email obrigatorio
     assert.plan(1)
@@ -181,7 +171,7 @@ test.group('EmployeeService - Validacoes', (group) => {
   })
 })
 
-test.group('EmployeeService - Filtros de Listagem', (group) => {
+test.group('EmployeeService - Filtros de Listagem', () => {
   test('deve permitir buscar por nome, email, matricula ou CPF', async ({ assert }) => {
     // whereILike nos campos: fullName, email, registrationNumber, cpf
     assert.plan(1)

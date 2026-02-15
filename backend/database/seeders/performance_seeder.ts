@@ -350,7 +350,7 @@ export default class extends BaseSeeder {
       await employee.load('department')
 
       const departmentName = employee.department?.name?.toLowerCase() || ''
-      const positionName = employee.position?.name?.toLowerCase() || ''
+      const positionName = employee.position?.title?.toLowerCase() || ''
 
       let templates = goalTemplates.default
       if (positionName.includes('desenvolvedor') || positionName.includes('dev')) {

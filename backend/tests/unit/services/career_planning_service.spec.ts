@@ -91,7 +91,7 @@ test.group('CareerPlanningService - Paths', (group) => {
       title: 'Júnior',
       description: 'Nível inicial',
       minExperienceMonths: 0,
-      requiredSkills: JSON.stringify(['JavaScript']),
+      requiredSkills: ['JavaScript'],
       salaryRangeMin: 3000,
       salaryRangeMax: 5000,
     })
@@ -257,7 +257,7 @@ test.group('CareerPlanningService - Levels', (group) => {
       title: 'Old Title',
       description: 'Old',
       minExperienceMonths: 0,
-      requiredSkills: JSON.stringify(['Old']),
+      requiredSkills: ['Old'],
       salaryRangeMin: 3000,
       salaryRangeMax: 5000,
     })
@@ -284,7 +284,7 @@ test.group('CareerPlanningService - Levels', (group) => {
       title: 'To Remove',
       description: 'Remove me',
       minExperienceMonths: 0,
-      requiredSkills: JSON.stringify(['Skill']),
+      requiredSkills: ['Skill'],
       salaryRangeMin: 3000,
       salaryRangeMax: 5000,
     })
@@ -306,7 +306,7 @@ test.group('CareerPlanningService - Levels', (group) => {
       title: 'Senior',
       description: 'Senior',
       minExperienceMonths: 60,
-      requiredSkills: JSON.stringify(['Senior Skills']),
+      requiredSkills: ['Senior Skills'],
       salaryRangeMin: 8000,
       salaryRangeMax: 12000,
     })
@@ -318,7 +318,7 @@ test.group('CareerPlanningService - Levels', (group) => {
       title: 'Júnior',
       description: 'Júnior',
       minExperienceMonths: 0,
-      requiredSkills: JSON.stringify(['Basic']),
+      requiredSkills: ['Basic'],
       salaryRangeMin: 3000,
       salaryRangeMax: 5000,
     })
@@ -330,7 +330,7 @@ test.group('CareerPlanningService - Levels', (group) => {
       title: 'Pleno',
       description: 'Pleno',
       minExperienceMonths: 24,
-      requiredSkills: JSON.stringify(['Mid']),
+      requiredSkills: ['Mid'],
       salaryRangeMin: 5000,
       salaryRangeMax: 8000,
     })
@@ -563,7 +563,7 @@ test.group('CareerPlanningService - Succession', (group) => {
 
   test('deve retornar posições críticas (sem successor)', async ({ assert }) => {
     // Arrange
-    const criticalPosition = await Position.create({
+    await Position.create({
       title: `Critical ${generateUniqueId()}`,
       departmentId: position.departmentId,
     })
@@ -680,7 +680,7 @@ test.group('CareerPlanningService - Employee Path', (group) => {
       title: 'Current Level',
       description: 'Current position',
       minExperienceMonths: 0,
-      requiredSkills: JSON.stringify(['Skill A']),
+      requiredSkills: ['Skill A'],
       salaryRangeMin: 3000,
       salaryRangeMax: 5000,
     })
@@ -692,11 +692,11 @@ test.group('CareerPlanningService - Employee Path', (group) => {
 
     // Assert
     assert.exists(result)
-    assert.exists(result.path)
-    assert.equal(result.path.id, careerPath.id)
-    assert.exists(result.currentLevel)
-    assert.property(result, 'nextLevel')
-    assert.property(result, 'currentLevelIndex')
-    assert.property(result, 'totalLevels')
+    assert.exists(result!.path)
+    assert.equal(result!.path.id, careerPath.id)
+    assert.exists(result!.currentLevel)
+    assert.property(result!, 'nextLevel')
+    assert.property(result!, 'currentLevelIndex')
+    assert.property(result!, 'totalLevels')
   })
 })
