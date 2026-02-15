@@ -39,14 +39,19 @@ const menuItems = computed(() => {
     { name: 'Registro de Ponto', path: '/attendance', module: 'attendance' },
     { name: 'Banco de Horas', path: '/hours-bank', module: 'hours_bank' },
     { name: 'Documentos', path: '/documents', module: 'documents' },
+    { name: 'Templates', path: '/document-templates', module: 'documents' },
     { name: 'Historico', path: '/history', module: 'history' },
     { name: 'Ferias e Licencas', path: '/leave', module: 'leave' },
+    { name: 'Onboarding', path: '/onboarding', module: 'onboarding' },
+    { name: 'Checklists', path: '/onboarding/checklists', module: 'onboarding' },
+    { name: 'Pesquisas', path: '/surveys', module: 'surveys' },
     { name: 'Beneficios', path: '/benefits', module: 'benefits' },
     { name: 'Folha de Pagamento', path: '/payroll', module: 'payroll' },
     { name: 'Avaliacao', path: '/performance', module: 'performance' },
     { name: 'Recrutamento', path: '/recruitment', module: 'recruitment' },
     { name: 'Treinamentos', path: '/training', module: 'training' },
     { name: 'Calendario', path: '/calendar', module: 'calendar' },
+    { name: 'Organograma', path: '/orgchart', module: 'orgchart' },
   ]
   if (!authStore.permissions) return all
   return all.filter(item => !item.module || authStore.permissions![item.module as keyof UserPermissions])
@@ -76,6 +81,7 @@ function getPageTitle(): string {
     return 'Registro de Ponto'
   }
   if (path.startsWith('/hours-bank')) return 'Banco de Horas'
+  if (path.startsWith('/document-templates')) return 'Templates de Documentos'
   if (path.startsWith('/documents')) return 'Documentos'
   if (path.startsWith('/history')) return 'Historico'
   if (path.startsWith('/leave')) {
@@ -83,6 +89,12 @@ function getPageTitle(): string {
     if (path.includes('/calendar')) return 'Calendario de Ausencias'
     return 'Ferias e Licencas'
   }
+  if (path.startsWith('/onboarding/checklists')) return 'Checklists de Onboarding'
+  if (path.startsWith('/onboarding')) return 'Templates de Onboarding'
+  if (path.startsWith('/surveys/create')) return 'Nova Pesquisa'
+  if (path.startsWith('/surveys') && path.includes('/respond')) return 'Responder Pesquisa'
+  if (path.startsWith('/surveys') && path.includes('/results')) return 'Resultados da Pesquisa'
+  if (path.startsWith('/surveys')) return 'Pesquisas'
   if (path.startsWith('/payroll')) return 'Folha de Pagamento'
   if (path.startsWith('/performance')) return 'Avaliacao de Desempenho'
   if (path.startsWith('/recruitment')) return 'Recrutamento e Selecao'
@@ -95,6 +107,7 @@ function getPageTitle(): string {
   if (path.startsWith('/admin/permissions')) return 'Permissoes'
   if (path.startsWith('/audit-log')) return 'Audit Log'
   if (path.startsWith('/calendar')) return 'Calendario de Equipe'
+  if (path.startsWith('/orgchart')) return 'Organograma'
   return 'Sistema RH'
 }
 </script>

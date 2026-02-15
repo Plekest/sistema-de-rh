@@ -64,6 +64,22 @@ import NotificationsView from '@/modules/notifications/views/NotificationsView.v
 // Views - Calendar
 import TeamCalendarView from '@/modules/calendar/views/TeamCalendarView.vue'
 
+// Views - Onboarding
+import OnboardingTemplatesView from '@/modules/onboarding/views/OnboardingTemplatesView.vue'
+import OnboardingChecklistView from '@/modules/onboarding/views/OnboardingChecklistView.vue'
+
+// Views - Surveys
+import SurveyListView from '@/modules/surveys/views/SurveyListView.vue'
+import SurveyCreateView from '@/modules/surveys/views/SurveyCreateView.vue'
+import SurveyRespondView from '@/modules/surveys/views/SurveyRespondView.vue'
+import SurveyResultsView from '@/modules/surveys/views/SurveyResultsView.vue'
+
+// Views - Document Templates
+import DocumentTemplatesView from '@/modules/documents/views/DocumentTemplatesView.vue'
+
+// Views - Orgchart
+import OrgChartView from '@/modules/orgchart/views/OrgChartView.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -255,6 +271,62 @@ const router = createRouter({
           name: 'calendar',
           component: TeamCalendarView,
           meta: { module: 'calendar' },
+        },
+
+        // Onboarding
+        {
+          path: 'onboarding',
+          name: 'onboarding',
+          component: OnboardingTemplatesView,
+          meta: { module: 'onboarding' },
+        },
+        {
+          path: 'onboarding/checklists',
+          name: 'onboarding-checklists',
+          component: OnboardingChecklistView,
+          meta: { module: 'onboarding' },
+        },
+
+        // Surveys (Pesquisas)
+        {
+          path: 'surveys',
+          name: 'surveys',
+          component: SurveyListView,
+          meta: { module: 'surveys' },
+        },
+        {
+          path: 'surveys/create',
+          name: 'survey-create',
+          component: SurveyCreateView,
+          meta: { module: 'surveys' },
+        },
+        {
+          path: 'surveys/:id/respond',
+          name: 'survey-respond',
+          component: SurveyRespondView,
+          meta: { module: 'surveys' },
+        },
+        {
+          path: 'surveys/:id/results',
+          name: 'survey-results',
+          component: SurveyResultsView,
+          meta: { module: 'surveys' },
+        },
+
+        // Templates de Documentos
+        {
+          path: 'document-templates',
+          name: 'document-templates',
+          component: DocumentTemplatesView,
+          meta: { module: 'documents' },
+        },
+
+        // Organograma
+        {
+          path: 'orgchart',
+          name: 'orgchart',
+          component: OrgChartView,
+          meta: { module: 'orgchart' },
         },
 
         // Usuarios (admin)

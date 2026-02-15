@@ -34,6 +34,10 @@ const SearchController = () => import('#controllers/search_controller')
 const CalendarController = () => import('#controllers/calendar_controller')
 const AuditLogsController = () => import('#controllers/audit_logs_controller')
 const DataChangeRequestsController = () => import('#controllers/data_change_requests_controller')
+const OnboardingController = () => import('#controllers/onboarding_controller')
+const SurveysController = () => import('#controllers/surveys_controller')
+const DocumentTemplatesController = () => import('#controllers/document_templates_controller')
+const OrgchartController = () => import('#controllers/orgchart_controller')
 
 router.get('/', async () => {
   return {
@@ -442,6 +446,105 @@ router
     router
       .put('data-change-requests/:id/reject', [DataChangeRequestsController, 'reject'])
       .use(middleware.role({ roles: ['admin', 'manager'] }))
+
+    // --- Onboarding Digital ---
+    router
+      .group(() => {
+        // Templates (admin/manager only)
+        router
+          .get('templates', [OnboardingController, 'listTemplates'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .post('templates', [OnboardingController, 'createTemplate'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .get('templates/:id', [OnboardingController, 'showTemplate'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .put('templates/:id', [OnboardingController, 'updateTemplate'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .delete('templates/:id', [OnboardingController, 'deleteTemplate'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .post('templates/:id/items', [OnboardingController, 'addItem'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .put('templates/:id/items/:itemId', [OnboardingController, 'updateItem'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .delete('templates/:id/items/:itemId', [OnboardingController, 'deleteItem'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+
+        // Checklists
+        router
+          .post('checklists', [OnboardingController, 'createChecklist'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router.get('checklists', [OnboardingController, 'listChecklists'])
+        router.get('checklists/:id', [OnboardingController, 'showChecklist'])
+        router.put('checklists/:id/items/:itemId/complete', [OnboardingController, 'completeItem'])
+        router.put('checklists/:id/items/:itemId/skip', [OnboardingController, 'skipItem'])
+        router.get('stats', [OnboardingController, 'stats'])
+      })
+      .prefix('onboarding')
+
+    // --- Surveys / Pesquisas de Clima ---
+    router
+      .group(() => {
+        // Admin/Manager endpoints
+        router
+          .get('/', [SurveysController, 'index'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .post('/', [SurveysController, 'store'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .get('/:id', [SurveysController, 'show'])
+        router
+          .put('/:id', [SurveysController, 'update'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .put('/:id/activate', [SurveysController, 'activate'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .put('/:id/close', [SurveysController, 'close'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .get('/:id/results', [SurveysController, 'results'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+
+        // Employee endpoints
+        router.get('/pending', [SurveysController, 'pending'])
+        router.post('/:id/respond', [SurveysController, 'respond'])
+      })
+      .prefix('surveys')
+
+    // --- Templates de Documentos ---
+    router
+      .group(() => {
+        router
+          .get('/', [DocumentTemplatesController, 'index'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .post('/', [DocumentTemplatesController, 'store'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .get('/:id', [DocumentTemplatesController, 'show'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .put('/:id', [DocumentTemplatesController, 'update'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .delete('/:id', [DocumentTemplatesController, 'destroy'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+        router
+          .post('/:id/generate/:employeeId', [DocumentTemplatesController, 'generate'])
+          .use(middleware.role({ roles: ['admin', 'manager'] }))
+      })
+      .prefix('document-templates')
+
+    // --- Organograma ---
+    router.get('orgchart', [OrgchartController, 'index'])
   })
   .prefix('api/v1')
   .use(middleware.auth({ guards: ['api'] }))

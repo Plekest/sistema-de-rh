@@ -943,6 +943,65 @@ onMounted(() => {
   white-space: nowrap;
 }
 
+/* Status Badge Variants - Requisitions */
+.badge-pending_approval,
+.badge-pending-approval {
+  background: var(--color-warning-light);
+  color: var(--color-warning-darker);
+}
+
+.badge-approved {
+  background: var(--color-success-light);
+  color: var(--color-success-dark);
+}
+
+.badge-open {
+  background: var(--color-info-light);
+  color: var(--color-info-dark);
+}
+
+.badge-filled {
+  background: var(--color-success-bg);
+  color: var(--color-success-darker);
+}
+
+.badge-cancelled {
+  background: var(--color-danger-light);
+  color: var(--color-danger-dark);
+}
+
+/* Status Badge Variants - Candidates */
+.badge-active {
+  background: var(--color-info-light);
+  color: var(--color-info-dark);
+}
+
+.badge-hired {
+  background: var(--color-success-light);
+  color: var(--color-success-dark);
+}
+
+.badge-rejected {
+  background: var(--color-danger-light);
+  color: var(--color-danger-dark);
+}
+
+.badge-withdrawn {
+  background: var(--color-bg-muted);
+  color: var(--color-text-muted);
+}
+
+/* Status Badge Variants - Interviews */
+.badge-scheduled {
+  background: var(--color-info-light);
+  color: var(--color-info-dark);
+}
+
+.badge-completed {
+  background: var(--color-success-light);
+  color: var(--color-success-dark);
+}
+
 /* Estados */
 .loading-state {
   text-align: center;
@@ -958,7 +1017,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--palette-overlay-bg);
   display: flex;
   align-items: center;
   justify-content: center;

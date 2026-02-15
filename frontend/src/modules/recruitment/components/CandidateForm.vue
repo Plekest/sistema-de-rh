@@ -267,7 +267,7 @@ function updateField(field: keyof CreateCandidateData, value: any) {
 .btn-primary {
   padding: var(--btn-padding-y) var(--btn-padding-x);
   background: var(--color-primary-gradient);
-  color: #ffffff;
+  color: var(--color-bg-card);
   border: none;
   border-radius: var(--btn-border-radius);
   font-size: var(--btn-font-size);

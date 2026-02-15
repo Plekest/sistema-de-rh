@@ -307,6 +307,40 @@
   --birthday-avatar-color: var(--color-primary);
   --birthday-today-bg: var(--color-warning-light);
   --birthday-today-border: var(--color-warning);
+
+  /* ==========================================================================
+   * COMPONENTES - Fase 2
+   * ========================================================================== */
+
+  /* Onboarding */
+  --onboarding-progress-bg: var(--color-bg-muted);
+  --onboarding-progress-fill: var(--color-primary);
+  --onboarding-progress-height: 8px;
+  --onboarding-item-pending: var(--color-text-muted);
+  --onboarding-item-complete: var(--color-success);
+  --onboarding-item-overdue: var(--color-danger);
+  --onboarding-item-skipped: var(--color-warning);
+
+  /* Surveys */
+  --survey-scale-btn-size: 40px;
+  --survey-enps-promoter: var(--color-success);
+  --survey-enps-passive: var(--color-warning);
+  --survey-enps-detractor: var(--color-danger);
+  --survey-enps-score-size: 80px;
+  --survey-bar-height: 24px;
+  --survey-bar-bg: var(--color-bg-muted);
+
+  /* Orgchart */
+  --orgchart-card-width: 280px;
+  --orgchart-manager-border: var(--color-primary);
+  --orgchart-connector-color: var(--color-border);
+  --orgchart-avatar-size: 36px;
+
+  /* Document Templates */
+  --template-editor-min-height: 400px;
+  --template-variable-bg: var(--color-primary-light);
+  --template-variable-color: var(--color-primary);
+  --template-preview-bg: var(--color-bg-card);
 }
 
 /* ==========================================================================
@@ -391,4 +425,14 @@
   /* Birthday Widget - dark mode */
   --birthday-avatar-bg: rgba(102, 126, 234, 0.15);
   --birthday-today-bg: rgba(246, 173, 85, 0.12);
+
+  /* Onboarding - dark mode */
+  --onboarding-progress-bg: var(--color-bg-muted);
+
+  /* Surveys - dark mode */
+  --survey-bar-bg: rgba(255, 255, 255, 0.08);
+
+  /* Document Templates - dark mode */
+  --template-variable-bg: rgba(102, 126, 234, 0.15);
+  --template-preview-bg: var(--color-bg-subtle);
 }

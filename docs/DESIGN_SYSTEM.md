@@ -861,4 +861,374 @@ Os componentes de recrutamento seguem padrões específicos documentados abaixo.
 
 ---
 
+## Novos Componentes - Fase 2
+
+### Onboarding Digital
+
+Sistema de checklist para onboarding de novos colaboradores.
+
+**Tokens CSS:**
+```css
+--onboarding-progress-bg: var(--color-bg-muted);
+--onboarding-progress-fill: var(--color-primary);
+--onboarding-progress-height: 8px;
+--onboarding-item-pending: var(--color-text-muted);
+--onboarding-item-complete: var(--color-success);
+--onboarding-item-overdue: var(--color-danger);
+--onboarding-item-skipped: var(--color-warning);
+```
+
+**Progress Bar:**
+- Container: background `--onboarding-progress-bg`, altura de 8px
+- Fill: background `--onboarding-progress-fill`, largura baseada em porcentagem
+- Border radius: `var(--radius-full)` para efeito pill
+
+**Checklist Items:**
+```css
+.checklist-item {
+  padding: var(--space-6);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+}
+
+.checklist-item.pending {
+  color: var(--onboarding-item-pending);
+}
+
+.checklist-item.complete {
+  border-left: 3px solid var(--onboarding-item-complete);
+  background: var(--color-success-light);
+}
+
+.checklist-item.overdue {
+  border-left: 3px solid var(--onboarding-item-overdue);
+  background: var(--color-danger-light);
+}
+
+.checklist-item.skipped {
+  border-left: 3px solid var(--onboarding-item-skipped);
+  opacity: 0.7;
+}
+```
+
+**Checkbox customizado:**
+```css
+.custom-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-xs);
+  background: var(--color-bg-card);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.custom-checkbox.checked {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+```
+
+**Responsividade:**
+- Desktop: layout grid com 2 colunas
+- Mobile (768px): 1 coluna, stack vertical
+
+**Acessibilidade:**
+- Checkboxes com labels associados
+- Status anunciado por screen readers (aria-live)
+- Navegação por teclado funcional
+
+---
+
+### Pesquisas de Clima (Surveys)
+
+Sistema de pesquisas de satisfação e eNPS.
+
+**Tokens CSS:**
+```css
+--survey-scale-btn-size: 40px;
+--survey-enps-promoter: var(--color-success);   /* 9-10 */
+--survey-enps-passive: var(--color-warning);    /* 7-8 */
+--survey-enps-detractor: var(--color-danger);   /* 0-6 */
+--survey-enps-score-size: 80px;
+--survey-bar-height: 24px;
+--survey-bar-bg: var(--color-bg-muted);         /* Light mode */
+--survey-bar-bg: rgba(255, 255, 255, 0.08);     /* Dark mode */
+```
+
+**Escala 1-5 (Likert):**
+```css
+.scale-buttons {
+  display: flex;
+  gap: var(--space-4);
+  justify-content: center;
+}
+
+.scale-btn {
+  width: var(--survey-scale-btn-size);
+  height: var(--survey-scale-btn-size);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-border);
+  background: var(--color-bg-card);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.scale-btn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.scale-btn.selected {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-bg-card);
+}
+```
+
+**eNPS Scale (0-10):**
+- Grid de 11 botões (0-10)
+- Cores por categoria:
+  - 0-6: `--survey-enps-detractor` (vermelho)
+  - 7-8: `--survey-enps-passive` (amarelo)
+  - 9-10: `--survey-enps-promoter` (verde)
+
+**Gráficos de Resultados (CSS puro):**
+```css
+.survey-bar {
+  height: var(--survey-bar-height);
+  background: var(--survey-bar-bg);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.survey-bar-fill {
+  height: 100%;
+  background: var(--color-primary);
+  transition: width var(--transition-slow);
+}
+
+.enps-score {
+  width: var(--survey-enps-score-size);
+  height: var(--survey-enps-score-size);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.enps-score.promoter {
+  background: var(--survey-enps-promoter);
+  color: var(--color-bg-card);
+}
+
+.enps-score.passive {
+  background: var(--survey-enps-passive);
+  color: var(--color-text-primary);
+}
+
+.enps-score.detractor {
+  background: var(--survey-enps-detractor);
+  color: var(--color-bg-card);
+}
+```
+
+**Responsividade:**
+- Desktop: escala horizontal
+- Mobile (480px): escala wrap com botões menores (36px)
+
+**Acessibilidade:**
+- `aria-label` em cada botão da escala (ex: "Nota 5 de 5")
+- `role="radiogroup"` no container
+- `aria-checked` no botão selecionado
+
+---
+
+### Organograma
+
+Visualização hierárquica da estrutura organizacional.
+
+**Tokens CSS:**
+```css
+--orgchart-card-width: 280px;
+--orgchart-manager-border: var(--color-primary);
+--orgchart-connector-color: var(--color-border);
+--orgchart-avatar-size: 36px;
+```
+
+**Department Card:**
+```css
+.orgchart-card {
+  width: var(--orgchart-card-width);
+  background: var(--color-bg-card);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  position: relative;
+}
+
+.orgchart-card.manager {
+  border-left: 3px solid var(--orgchart-manager-border);
+  background: var(--color-primary-light);
+}
+```
+
+**Avatar com Iniciais:**
+Reutilizar padrão do Birthday Widget:
+```css
+.orgchart-avatar {
+  width: var(--orgchart-avatar-size);
+  height: var(--orgchart-avatar-size);
+  border-radius: var(--radius-full);
+  background: var(--birthday-avatar-bg);
+  color: var(--birthday-avatar-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+```
+
+**Linhas de Conexão (Opcional):**
+```css
+.orgchart-connector {
+  position: absolute;
+  border: 1px solid var(--orgchart-connector-color);
+}
+
+.orgchart-connector-vertical {
+  width: 1px;
+  height: 40px;
+  top: 100%;
+  left: 50%;
+}
+
+.orgchart-connector-horizontal {
+  height: 1px;
+  width: 100px;
+  top: 20px;
+  left: 100%;
+}
+```
+
+**Layout:**
+- Desktop: grid com colunas flexíveis
+- Tablet (768px): 2 colunas
+- Mobile (480px): 1 coluna (stack vertical)
+
+**Responsividade:**
+```css
+.orgchart-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-12);
+}
+
+@media (max-width: 768px) {
+  .orgchart-card {
+    width: 100%;
+  }
+}
+```
+
+**Acessibilidade:**
+- Estrutura semântica com headings (h2, h3)
+- `role="tree"` ou `role="list"` conforme layout
+- Navegação por teclado entre cards
+
+---
+
+### Templates de Documentos
+
+Editor de templates com variáveis dinâmicas.
+
+**Tokens CSS:**
+```css
+--template-editor-min-height: 400px;
+--template-variable-bg: var(--color-primary-light);       /* Light mode */
+--template-variable-bg: rgba(102, 126, 234, 0.15);        /* Dark mode */
+--template-variable-color: var(--color-primary);
+--template-preview-bg: var(--color-bg-card);              /* Light mode */
+--template-preview-bg: var(--color-bg-subtle);            /* Dark mode */
+```
+
+**Editor de Template:**
+```css
+.template-editor {
+  min-height: var(--template-editor-min-height);
+  padding: var(--space-8);
+  border: var(--border-width) solid var(--input-border-color);
+  border-radius: var(--input-border-radius);
+  font-size: var(--font-size-base);
+  font-family: 'Courier New', monospace;
+  background: var(--color-bg-input);
+  color: var(--color-text-secondary);
+  resize: vertical;
+}
+
+.template-editor:focus {
+  border-color: var(--color-border-focus);
+  box-shadow: var(--input-focus-ring);
+}
+```
+
+**Variáveis Clicáveis:**
+```css
+.template-variable {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  background: var(--template-variable-bg);
+  color: var(--template-variable-color);
+  border-radius: var(--radius-xs);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.template-variable:hover {
+  background: var(--color-primary);
+  color: var(--color-bg-card);
+}
+```
+
+**Preview:**
+```css
+.template-preview {
+  min-height: var(--template-editor-min-height);
+  padding: var(--space-8);
+  background: var(--template-preview-bg);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+}
+```
+
+**Lista de Variáveis Disponíveis:**
+```css
+.variables-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-8);
+}
+```
+
+**Layout:**
+- Desktop: 2 colunas (editor | preview)
+- Mobile (768px): stack vertical
+
+**Acessibilidade:**
+- Labels em todos inputs
+- Preview com `role="region"` e `aria-label="Pré-visualização do template"`
+- Variáveis com `aria-label` descritivo (ex: "Inserir variável Nome do Colaborador")
+
+---
+
 Atualizado em: 2026-02-14
